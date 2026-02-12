@@ -1,0 +1,9 @@
+{
+  "_meta": { "features": ["title", "description"] },
+  "type": "object",
+  "title": "Example",
+  "description": "Schema with title and description",
+  "properties": {
+    "name": { "type": "string" }
+  }
+}

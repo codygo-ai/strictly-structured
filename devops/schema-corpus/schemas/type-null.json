@@ -1,0 +1,7 @@
+{
+  "_meta": { "features": ["type:null"] },
+  "type": "object",
+  "properties": {
+    "value": { "type": "null" }
+  }
+}

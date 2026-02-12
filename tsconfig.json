@@ -1,0 +1,6 @@
+{
+  "extends": "@ssv/tsconfig/base.json",
+  "compilerOptions": { "noEmit": true },
+  "include": [],
+  "exclude": ["node_modules", "packages", "devops"]
+}

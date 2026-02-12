@@ -1,0 +1,10 @@
+{
+  "_meta": { "features": ["multipleOf"] },
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "number",
+      "multipleOf": 0.01
+    }
+  }
+}

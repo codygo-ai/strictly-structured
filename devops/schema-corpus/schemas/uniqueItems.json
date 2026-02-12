@@ -1,0 +1,11 @@
+{
+  "_meta": { "features": ["uniqueItems"] },
+  "type": "object",
+  "properties": {
+    "ids": {
+      "type": "array",
+      "items": { "type": "integer" },
+      "uniqueItems": true
+    }
+  }
+}

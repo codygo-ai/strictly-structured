@@ -1,0 +1,6 @@
+{
+  "name": "@ssv/schema-corpus",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Curated JSON Schema test cases by feature for compatibility testing"
+}

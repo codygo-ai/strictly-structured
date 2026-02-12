@@ -1,0 +1,12 @@
+{
+  "_meta": { "features": ["minItems", "maxItems"] },
+  "type": "object",
+  "properties": {
+    "list": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 10
+    }
+  }
+}

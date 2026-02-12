@@ -1,0 +1,5 @@
+[
+  { "id": "openai:gpt-4o-mini", "provider": "openai", "model": "gpt-4o-mini" },
+  { "id": "google:gemini-2.0-flash", "provider": "google", "model": "gemini-2.0-flash" },
+  { "id": "anthropic:claude-3-5-haiku", "provider": "anthropic", "model": "claude-3-5-haiku-20241022" }
+]

@@ -1,0 +1,10 @@
+{
+  "_meta": { "features": ["format:date-time"] },
+  "type": "object",
+  "properties": {
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "_meta": { "features": ["allOf"] },
+  "type": "object",
+  "properties": {
+    "value": {
+      "allOf": [
+        { "type": "string" },
+        { "minLength": 1 }
+      ]
+    }
+  }
+}

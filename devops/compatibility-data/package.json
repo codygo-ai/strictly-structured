@@ -1,0 +1,10 @@
+{
+  "name": "@ssv/compatibility-data",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Per-model JSON Schema compatibility data produced by the compatibility runner",
+  "exports": {
+    "./data": "./data/compatibility.json",
+    "./data/compatibility.json": "./data/compatibility.json"
+  }
+}

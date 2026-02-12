@@ -1,0 +1,12 @@
+{
+  "_meta": { "features": ["oneOf"] },
+  "type": "object",
+  "properties": {
+    "value": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "number" }
+      ]
+    }
+  }
+}

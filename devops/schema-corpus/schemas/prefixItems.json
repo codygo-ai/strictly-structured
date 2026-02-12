@@ -1,0 +1,14 @@
+{
+  "_meta": { "features": ["items:tuple", "prefixItems"] },
+  "type": "object",
+  "properties": {
+    "pair": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "string" },
+        { "type": "integer" }
+      ],
+      "items": false
+    }
+  }
+}

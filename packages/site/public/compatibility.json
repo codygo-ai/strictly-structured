@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "models": {
+    "openai:gpt-4o-mini": {
+      "supported": [],
+      "failed": {
+        "additionalProperties": "No API key",
+        "allOf": "No API key",
+        "anyOf": "No API key",
+        "const": "No API key",
+        "enum": "No API key",
+        "format-date-time": "No API key",
+        "format-uri": "No API key",
+        "minItems-maxItems": "No API key",
+        "minLength-maxLength": "No API key",
+        "minimum-maximum": "No API key",
+        "multipleOf": "No API key",
+        "not": "No API key",
+        "oneOf-two-branches": "No API key",
+        "pattern": "No API key",
+        "patternProperties": "No API key",
+        "prefixItems": "No API key",
+        "ref-defs": "No API key",
+        "required": "No API key",
+        "title-description": "No API key",
+        "type-array": "No API key",
+        "type-boolean": "No API key",
+        "type-integer": "No API key",
+        "type-null": "No API key",
+        "type-number": "No API key",
+        "type-object": "No API key",
+        "type-string": "No API key",
+        "uniqueItems": "No API key"
+      },
+      "supported_keywords": []
+    },
+    "google:gemini-2.0-flash": {
+      "supported": [],
+      "failed": {
+        "additionalProperties": "No API key",
+        "allOf": "No API key",
+        "anyOf": "No API key",
+        "const": "No API key",
+        "enum": "No API key",
+        "format-date-time": "No API key",
+        "format-uri": "No API key",
+        "minItems-maxItems": "No API key",
+        "minLength-maxLength": "No API key",
+        "minimum-maximum": "No API key",
+        "multipleOf": "No API key",
+        "not": "No API key",
+        "oneOf-two-branches": "No API key",
+        "pattern": "No API key",
+        "patternProperties": "No API key",
+        "prefixItems": "No API key",
+        "ref-defs": "No API key",
+        "required": "No API key",
+        "title-description": "No API key",
+        "type-array": "No API key",
+        "type-boolean": "No API key",
+        "type-integer": "No API key",
+        "type-null": "No API key",
+        "type-number": "No API key",
+        "type-object": "No API key",
+        "type-string": "No API key",
+        "uniqueItems": "No API key"
+      },
+      "supported_keywords": []
+    },
+    "anthropic:claude-3-5-haiku": {
+      "supported": [],
+      "failed": {
+        "additionalProperties": "No API key",
+        "allOf": "No API key",
+        "anyOf": "No API key",
+        "const": "No API key",
+        "enum": "No API key",
+        "format-date-time": "No API key",
+        "format-uri": "No API key",
+        "minItems-maxItems": "No API key",
+        "minLength-maxLength": "No API key",
+        "minimum-maximum": "No API key",
+        "multipleOf": "No API key",
+        "not": "No API key",
+        "oneOf-two-branches": "No API key",
+        "pattern": "No API key",
+        "patternProperties": "No API key",
+        "prefixItems": "No API key",
+        "ref-defs": "No API key",
+        "required": "No API key",
+        "title-description": "No API key",
+        "type-array": "No API key",
+        "type-boolean": "No API key",
+        "type-integer": "No API key",
+        "type-null": "No API key",
+        "type-number": "No API key",
+        "type-object": "No API key",
+        "type-string": "No API key",
+        "uniqueItems": "No API key"
+      },
+      "supported_keywords": []
+    }
+  },
+  "schemas": {
+    "additionalProperties": {
+      "features": [
+        "additionalProperties"
+      ]
+    },
+    "allOf": {
+      "features": [
+        "allOf"
+      ]
+    },
+    "anyOf": {
+      "features": [
+        "anyOf"
+      ]
+    },
+    "const": {
+      "features": [
+        "const"
+      ]
+    },
+    "enum": {
+      "features": [
+        "enum"
+      ]
+    },
+    "format-date-time": {
+      "features": [
+        "format:date-time"
+      ]
+    },
+    "format-uri": {
+      "features": [
+        "format:uri"
+      ]
+    },
+    "minItems-maxItems": {
+      "features": [
+        "minItems",
+        "maxItems"
+      ]
+    },
+    "minLength-maxLength": {
+      "features": [
+        "minLength",
+        "maxLength"
+      ]
+    },
+    "minimum-maximum": {
+      "features": [
+        "minimum",
+        "maximum"
+      ]
+    },
+    "multipleOf": {
+      "features": [
+        "multipleOf"
+      ]
+    },
+    "not": {
+      "features": [
+        "not"
+      ]
+    },
+    "oneOf-two-branches": {
+      "features": [
+        "oneOf"
+      ]
+    },
+    "pattern": {
+      "features": [
+        "pattern"
+      ]
+    },
+    "patternProperties": {
+      "features": [
+        "patternProperties"
+      ]
+    },
+    "prefixItems": {
+      "features": [
+        "items:tuple",
+        "prefixItems"
+      ]
+    },
+    "ref-defs": {
+      "features": [
+        "$ref",
+        "$defs"
+      ]
+    },
+    "required": {
+      "features": [
+        "properties",
+        "required"
+      ]
+    },
+    "title-description": {
+      "features": [
+        "title",
+        "description"
+      ]
+    },
+    "type-array": {
+      "features": [
+        "type:array",
+        "items"
+      ]
+    },
+    "type-boolean": {
+      "features": [
+        "type:boolean"
+      ]
+    },
+    "type-integer": {
+      "features": [
+        "type:integer"
+      ]
+    },
+    "type-null": {
+      "features": [
+        "type:null"
+      ]
+    },
+    "type-number": {
+      "features": [
+        "type:number"
+      ]
+    },
+    "type-object": {
+      "features": [
+        "type:object",
+        "properties"
+      ]
+    },
+    "type-string": {
+      "features": [
+        "type:string"
+      ]
+    },
+    "uniqueItems": {
+      "features": [
+        "uniqueItems"
+      ]
+    }
+  }
+}

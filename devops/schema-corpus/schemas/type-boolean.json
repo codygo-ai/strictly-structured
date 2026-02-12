@@ -1,0 +1,7 @@
+{
+  "_meta": { "features": ["type:boolean"] },
+  "type": "object",
+  "properties": {
+    "value": { "type": "boolean" }
+  }
+}

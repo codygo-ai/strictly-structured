@@ -1,0 +1,10 @@
+{
+  "_meta": { "features": ["enum"] },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["pending", "active", "done"]
+    }
+  }
+}
