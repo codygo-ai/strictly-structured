@@ -1,5 +1,6 @@
 export type {
   CompatibilityData,
+  CompatibilityGroup,
   ModelResult,
   JsonSchemaKeyword,
 } from "./types.js";

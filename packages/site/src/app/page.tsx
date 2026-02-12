@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { SchemaEditor } from "~/components/SchemaEditor";
 import { ModelSelector } from "~/components/ModelSelector";
 import { ValidationResults } from "~/components/ValidationResults";
-import type { ProviderId } from "~/lib/providers/types";
 import type { ValidationResult } from "~/lib/providers/types";
 import type { CompatibilityData } from "@ssv/schema-utils";
 import { validateSchemaForModel } from "@ssv/schema-utils";
@@ -20,12 +19,32 @@ const DEFAULT_SCHEMA = `{
 }
 `;
 
+function defaultGroupsFromLegacy(): Array<{
+  id: string;
+  provider: string;
+  modelIds: string[];
+  representative: string;
+}> {
+  const providers = ["openai", "google", "anthropic"] as const;
+  return providers.map((p) => {
+    const rep = PROVIDER_TO_MODEL_ID[p];
+    return {
+      id: rep,
+      provider: p,
+      modelIds: [rep],
+      representative: rep,
+    };
+  });
+}
+
 export default function Home() {
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
-  const [providers, setProviders] = useState<ProviderId[]>([
-    "openai",
-    "google",
-    "anthropic",
+  const [selectedRepresentatives, setSelectedRepresentatives] = useState<
+    string[]
+  >([
+    PROVIDER_TO_MODEL_ID.openai,
+    PROVIDER_TO_MODEL_ID.google,
+    PROVIDER_TO_MODEL_ID.anthropic,
   ]);
   const [results, setResults] = useState<ValidationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,11 +55,20 @@ export default function Home() {
     Array<{ modelId: string; message: string; path: string }>
   >([]);
 
+  const groups = useMemo(() => {
+    if (compatibilityData?.groups && compatibilityData.groups.length > 0) {
+      return compatibilityData.groups;
+    }
+    return defaultGroupsFromLegacy();
+  }, [compatibilityData]);
+
   useEffect(() => {
     fetch("/compatibility.json")
       .then((r) => r.json())
       .then(setCompatibilityData)
-      .catch(() => setCompatibilityData({ version: 1, models: {}, schemas: {} }));
+      .catch(() =>
+        setCompatibilityData({ version: 1, models: {}, schemas: {} })
+      );
   }, []);
 
   const handleValidate = useCallback(async () => {
@@ -59,15 +87,18 @@ export default function Home() {
       setError("Schema is not valid JSON.");
       return;
     }
-    if (providers.length === 0) {
-      setError("Select at least one provider.");
+    if (selectedRepresentatives.length === 0) {
+      setError("Select at least one model group.");
       return;
     }
 
     if (compatibilityData && Object.keys(compatibilityData.models).length > 0) {
-      const issues: Array<{ modelId: string; message: string; path: string }> = [];
-      for (const provider of providers) {
-        const modelId = PROVIDER_TO_MODEL_ID[provider];
+      const issues: Array<{
+        modelId: string;
+        message: string;
+        path: string;
+      }> = [];
+      for (const modelId of selectedRepresentatives) {
         const modelIssues = validateSchemaForModel(
           parsed,
           modelId,
@@ -95,7 +126,7 @@ export default function Home() {
       const res = await fetch(`${apiUrl}/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schema: trimmed, providers }),
+        body: JSON.stringify({ schema: trimmed, modelIds: selectedRepresentatives }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -108,7 +139,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [schema, providers, compatibilityData]);
+  }, [schema, selectedRepresentatives, compatibilityData]);
 
   const handlePaste = useCallback(async () => {
     try {
@@ -126,8 +157,8 @@ export default function Home() {
           Validate JSON schemas for LLM structured outputs
         </h1>
         <p className="text-zinc-400 max-w-xl mx-auto">
-          Pick providers, paste or load a schema, then validate. We call each
-          provider’s min-cost model to check your schema works.
+          Pick model groups (same validation behavior), paste or load a schema,
+          then validate. We use the minimal-cost model in each selected group.
         </p>
         <p className="text-sm text-zinc-500">
           Structured Schema Validator by Codygo · Open source
@@ -135,12 +166,16 @@ export default function Home() {
       </section>
 
       <section className="rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-6 space-y-6">
-        <ModelSelector selected={providers} onChange={setProviders} />
+        <ModelSelector
+          groups={groups}
+          selectedRepresentatives={selectedRepresentatives}
+          onChange={setSelectedRepresentatives}
+        />
         <SchemaEditor
           value={schema}
           onChange={setSchema}
           onPaste={handlePaste}
-          selectedModelIds={providers.map((p) => PROVIDER_TO_MODEL_ID[p])}
+          selectedModelIds={selectedRepresentatives}
           compatibilityData={compatibilityData}
         />
         {error && (
@@ -153,7 +188,7 @@ export default function Home() {
           onClick={handleValidate}
           disabled={
             loading ||
-            providers.length === 0 ||
+            selectedRepresentatives.length === 0 ||
             !process.env.NEXT_PUBLIC_VALIDATE_API_URL
           }
           className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"

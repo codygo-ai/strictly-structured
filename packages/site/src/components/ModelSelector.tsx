@@ -1,41 +1,56 @@
 "use client";
 
-import type { ProviderId } from "~/lib/providers/types";
+import type { CompatibilityGroup } from "@ssv/schema-utils";
 
-const LABELS: Record<ProviderId, string> = {
-  openai: "OpenAI (GPT-4o mini)",
-  google: "Google (Gemini 2.0 Flash)",
-  anthropic: "Anthropic (Claude 3.5 Haiku)",
+const PROVIDER_LABELS: Record<string, string> = {
+  openai: "OpenAI",
+  google: "Google",
+  anthropic: "Anthropic",
 };
 
-interface ModelSelectorProps {
-  selected: ProviderId[];
-  onChange: (ids: ProviderId[]) => void;
+function groupLabel(g: CompatibilityGroup): string {
+  const provider = PROVIDER_LABELS[g.provider] ?? g.provider;
+  if (g.modelIds.length === 1) {
+    return `${provider} (${g.representative.split(":")[1]})`;
+  }
+  return `${provider} (${g.modelIds.length} models, use ${g.representative.split(":")[1]})`;
 }
 
-export function ModelSelector({ selected, onChange }: ModelSelectorProps) {
-  const toggle = (id: ProviderId) => {
-    if (selected.includes(id)) {
-      onChange(selected.filter((p) => p !== id));
+interface ModelSelectorProps {
+  groups: CompatibilityGroup[];
+  selectedRepresentatives: string[];
+  onChange: (representatives: string[]) => void;
+}
+
+export function ModelSelector({
+  groups,
+  selectedRepresentatives,
+  onChange,
+}: ModelSelectorProps) {
+  const toggle = (rep: string) => {
+    if (selectedRepresentatives.includes(rep)) {
+      onChange(selectedRepresentatives.filter((r) => r !== rep));
     } else {
-      onChange([...selected, id]);
+      onChange([...selectedRepresentatives, rep]);
     }
   };
 
+  if (groups.length === 0) return null;
+
   return (
     <div className="flex flex-wrap gap-4">
-      {(["openai", "google", "anthropic"] as const).map((id) => (
+      {groups.map((g) => (
         <label
-          key={id}
+          key={g.id}
           className="flex items-center gap-2 cursor-pointer text-sm"
         >
           <input
             type="checkbox"
-            checked={selected.includes(id)}
-            onChange={() => toggle(id)}
+            checked={selectedRepresentatives.includes(g.representative)}
+            onChange={() => toggle(g.representative)}
             className="rounded border-[var(--card-border)] bg-[var(--card)] text-[var(--accent)] focus:ring-[var(--accent)]"
           />
-          <span>{LABELS[id]}</span>
+          <span>{groupLabel(g)}</span>
         </label>
       ))}
     </div>

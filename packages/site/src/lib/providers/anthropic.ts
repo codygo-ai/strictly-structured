@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { ValidationResult } from "./types";
 
-const MODEL = "claude-3-5-haiku-20241022";
+const MODEL = "claude-haiku-4-5";
 const PROMPT =
   "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
 

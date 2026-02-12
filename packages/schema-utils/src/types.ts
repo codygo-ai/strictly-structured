@@ -6,12 +6,23 @@ export interface ModelResult {
   supported: string[];
   failed: Record<string, string>;
   supported_keywords: string[];
+  provider?: string;
+  model?: string;
+}
+
+export interface CompatibilityGroup {
+  id: string;
+  provider: string;
+  modelIds: string[];
+  representative: string;
 }
 
 export interface CompatibilityData {
   version: number;
   models: Record<string, ModelResult>;
   schemas: Record<string, { features: string[] }>;
+  /** Groups of models with identical validation behavior; representative = min-cost in group. */
+  groups?: CompatibilityGroup[];
 }
 
 /**

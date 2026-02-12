@@ -4,11 +4,15 @@ import { validateWithOpenAI } from "~/providers/openai";
 import { validateWithGoogle } from "~/providers/google";
 import { validateWithAnthropic } from "~/providers/anthropic";
 import type { ProviderId } from "~/types";
+import { MODEL_MAP } from "~/model-map";
 
-const RUNNERS: Record<
-  ProviderId,
-  (schema: object, apiKey: string) => Promise<{ provider: string; model: string; ok: boolean; latencyMs: number; error?: string }>
-> = {
+type ValidateFn = (
+  schema: object,
+  apiKey: string,
+  model?: string
+) => Promise<{ provider: string; model: string; ok: boolean; latencyMs: number; error?: string }>;
+
+const RUNNERS: Record<ProviderId, ValidateFn> = {
   openai: validateWithOpenAI,
   google: validateWithGoogle,
   anthropic: validateWithAnthropic,
@@ -49,7 +53,7 @@ export async function handler(
     return jsonResponse(405, { error: "Method not allowed" });
   }
 
-  let body: { schema?: string; providers?: string[] };
+  let body: { schema?: string; providers?: string[]; modelIds?: string[] };
   try {
     const raw = event.body;
     const str =
@@ -63,7 +67,7 @@ export async function handler(
     return jsonResponse(400, { error: "Invalid JSON body" });
   }
 
-  const { schema: raw, providers: providerIds } = body;
+  const { schema: raw, providers: providerIds, modelIds } = body;
   if (typeof raw !== "string") {
     return jsonResponse(400, { error: "Missing or invalid 'schema' (string)" });
   }
@@ -72,27 +76,39 @@ export async function handler(
   if (!parsed.ok) {
     return jsonResponse(400, { error: parsed.error });
   }
-
-  const providers: ProviderId[] = Array.isArray(providerIds)
-    ? (providerIds.filter((p): p is ProviderId =>
-        ["openai", "google", "anthropic"].includes(p)
-      ))
-    : ["openai", "google", "anthropic"];
   const schema = parsed.schema;
 
+  const targets: Array<{ provider: ProviderId; model?: string }> = [];
+  if (Array.isArray(modelIds) && modelIds.length > 0) {
+    for (const id of modelIds) {
+      const entry = typeof id === "string" ? MODEL_MAP[id] : undefined;
+      if (entry) targets.push({ provider: entry.provider, model: entry.model });
+    }
+  }
+  if (targets.length === 0) {
+    const providers: ProviderId[] = Array.isArray(providerIds)
+      ? (providerIds.filter((p): p is ProviderId =>
+          ["openai", "google", "anthropic"].includes(p)
+        ))
+      : ["openai", "google", "anthropic"];
+    for (const id of providers) {
+      targets.push({ provider: id });
+    }
+  }
+
   const results = await Promise.all(
-    providers.map(async (id) => {
-      const key = API_KEYS[id];
+    targets.map(async (t) => {
+      const key = API_KEYS[t.provider];
       if (!key) {
         return {
-          provider: id,
-          model: "-",
+          provider: t.provider,
+          model: t.model ?? "-",
           ok: false,
           latencyMs: 0,
           error: "API key not configured",
         };
       }
-      return RUNNERS[id](schema, key);
+      return RUNNERS[t.provider](schema, key, t.model);
     })
   );
 

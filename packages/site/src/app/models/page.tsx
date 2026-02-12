@@ -8,7 +8,7 @@ export default function ModelSupportPage() {
   const [data, setData] = useState<CompatibilityData | null>(null);
 
   useEffect(() => {
-    fetch("/api/compatibility")
+    fetch("/compatibility.json")
       .then((r) => r.json())
       .then(setData)
       .catch(() => setData({ version: 1, models: {}, schemas: {} }));
@@ -44,6 +44,8 @@ export default function ModelSupportPage() {
     );
   }
 
+  const groups = data.groups ?? [];
+
   return (
     <div className="space-y-8">
       <div>
@@ -52,8 +54,8 @@ export default function ModelSupportPage() {
         </h1>
         <p className="mt-2 text-zinc-400">
           JSON Schema features that each model accepted in our compatibility
-          runs. Use this to choose schemas that work with your selected
-          providers.
+          runs. Models with identical support are grouped; the validator uses
+          the minimal-cost model in each group at runtime.
         </p>
         <Link
           href="/"
@@ -62,6 +64,25 @@ export default function ModelSupportPage() {
           Back to validator
         </Link>
       </div>
+
+      {groups.length > 0 && (
+        <section className="rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">
+            Validation groups (used in validator)
+          </h2>
+          <ul className="space-y-3 text-sm">
+            {groups.map((g) => (
+              <li key={g.id} className="text-zinc-300">
+                <span className="font-medium text-white capitalize">
+                  {g.provider}
+                </span>
+                : {g.modelIds.join(", ")} → use{" "}
+                <code className="rounded bg-zinc-800 px-1">{g.representative}</code>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="space-y-8">
         {modelIds.map((modelId) => {

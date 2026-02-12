@@ -11,11 +11,11 @@ export interface CorpusSchema {
 }
 
 /**
- * Load all JSON schema files from the schema-corpus package.
+ * Load all JSON schema files from this package's schemas directory.
  * Strips _meta from the schema for API calls; returns features for mapping.
  */
 export async function loadCorpus(): Promise<CorpusSchema[]> {
-  const corpusPath = join(__dirname, "../../schema-corpus/schemas");
+  const corpusPath = join(__dirname, "../schemas");
   const files = await readdir(corpusPath);
   const jsonFiles = files.filter((f) => f.endsWith(".json"));
   const out: CorpusSchema[] = [];

@@ -2,7 +2,7 @@
   "name": "@ssv/compatibility-runner",
   "version": "0.0.0",
   "private": true,
-  "description": "CLI to run schema corpus against each provider/model and write compatibility data",
+  "description": "Test schemas + CLI to run them against each provider/model and write compatibility data",
   "type": "module",
   "scripts": {
     "run": "tsx src/run.ts",
@@ -15,7 +15,12 @@
   },
   "devDependencies": {
     "@ssv/tsconfig": "workspace:*",
+    "@types/node": "^22.15.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.2"
+  },
+  "exports": {
+    "./data": "./data/compatibility.json",
+    "./data/compatibility.json": "./data/compatibility.json"
   }
 }

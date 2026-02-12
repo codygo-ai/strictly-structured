@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import type { ValidationResult } from "./types";
 
-const MODEL = "gpt-4o-mini";
+const MODEL = "gpt-4.1-mini";
 const PROMPT =
   "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
 

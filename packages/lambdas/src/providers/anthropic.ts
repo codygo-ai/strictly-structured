@@ -1,26 +1,30 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { ValidationResult } from "~/types";
 
-const MODEL = "claude-3-5-haiku-20241022";
+const DEFAULT_MODEL = "claude-haiku-4-5";
 const PROMPT =
   "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
 
 export async function validateWithAnthropic(
   schema: object,
-  apiKey: string
+  apiKey: string,
+  model: string = DEFAULT_MODEL
 ): Promise<ValidationResult> {
   const start = Date.now();
   const client = new Anthropic({ apiKey });
   try {
     const message = await client.messages.create({
-      model: MODEL,
+      model,
       max_tokens: 256,
       messages: [{ role: "user", content: PROMPT }],
       tools: [
         {
           name: "output",
           description: "Return the JSON output",
-          input_schema: schema as Record<string, unknown>,
+          input_schema: { type: "object" as const, ...schema } as {
+            type: "object";
+            [key: string]: unknown;
+          },
         },
       ],
       tool_choice: { type: "tool", name: "output" },
@@ -31,7 +35,7 @@ export async function validateWithAnthropic(
     if (!toolUse || toolUse.name !== "output") {
       return {
         provider: "anthropic",
-        model: MODEL,
+        model,
         ok: false,
         latencyMs: Date.now() - start,
         error: "Model did not return tool use",
@@ -39,7 +43,7 @@ export async function validateWithAnthropic(
     }
     return {
       provider: "anthropic",
-      model: MODEL,
+      model,
       ok: true,
       latencyMs: Date.now() - start,
     };
@@ -47,7 +51,7 @@ export async function validateWithAnthropic(
     const error = e instanceof Error ? e.message : String(e);
     return {
       provider: "anthropic",
-      model: MODEL,
+      model,
       ok: false,
       latencyMs: Date.now() - start,
       error,

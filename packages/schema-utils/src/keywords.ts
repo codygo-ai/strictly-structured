@@ -1,7 +1,7 @@
 import type { CompatibilityData, ModelResult } from "./types.js";
 
 /**
- * Map compatibility-data "supported_keywords" (feature ids like "type:string")
+ * Map compatibility data "supported_keywords" (feature ids like "type:string")
  * to the main keyword name for validation. A schema key like "type" is allowed
  * if any of type:string, type:number, ... is supported.
  */

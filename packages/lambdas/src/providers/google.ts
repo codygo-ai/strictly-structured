@@ -1,30 +1,31 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { ValidationResult } from "~/types";
 
-const MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 const PROMPT =
   "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
 
 export async function validateWithGoogle(
   schema: object,
-  apiKey: string
+  apiKey: string,
+  model: string = DEFAULT_MODEL
 ): Promise<ValidationResult> {
   const start = Date.now();
   const genAI = new GoogleGenerativeAI(apiKey);
   try {
-    const model = genAI.getGenerativeModel({
-      model: MODEL,
+    const m = genAI.getGenerativeModel({
+      model,
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: schema as Record<string, unknown>,
       },
     });
-    const result = await model.generateContent(PROMPT);
+    const result = await m.generateContent(PROMPT);
     const response = result.response;
     if (!response.text()) {
       return {
         provider: "google",
-        model: MODEL,
+        model,
         ok: false,
         latencyMs: Date.now() - start,
         error: "Empty response from model",
@@ -33,7 +34,7 @@ export async function validateWithGoogle(
     JSON.parse(response.text());
     return {
       provider: "google",
-      model: MODEL,
+      model,
       ok: true,
       latencyMs: Date.now() - start,
     };
@@ -41,7 +42,7 @@ export async function validateWithGoogle(
     const error = e instanceof Error ? e.message : String(e);
     return {
       provider: "google",
-      model: MODEL,
+      model,
       ok: false,
       latencyMs: Date.now() - start,
       error,

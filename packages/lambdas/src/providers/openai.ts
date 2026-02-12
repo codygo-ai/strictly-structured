@@ -1,19 +1,20 @@
 import OpenAI from "openai";
 import type { ValidationResult } from "~/types";
 
-const MODEL = "gpt-4o-mini";
+const DEFAULT_MODEL = "gpt-4.1-mini";
 const PROMPT =
   "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
 
 export async function validateWithOpenAI(
   schema: object,
-  apiKey: string
+  apiKey: string,
+  model: string = DEFAULT_MODEL
 ): Promise<ValidationResult> {
   const start = Date.now();
   const openai = new OpenAI({ apiKey });
   try {
     await openai.chat.completions.create({
-      model: MODEL,
+      model,
       messages: [
         { role: "system", content: PROMPT },
         { role: "user", content: "Generate a minimal valid instance." },
@@ -29,7 +30,7 @@ export async function validateWithOpenAI(
     });
     return {
       provider: "openai",
-      model: MODEL,
+      model,
       ok: true,
       latencyMs: Date.now() - start,
     };
@@ -37,7 +38,7 @@ export async function validateWithOpenAI(
     const error = e instanceof Error ? e.message : String(e);
     return {
       provider: "openai",
-      model: MODEL,
+      model,
       ok: false,
       latencyMs: Date.now() - start,
       error,

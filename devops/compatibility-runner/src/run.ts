@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Compatibility runner: load corpus, run each schema against each model, write compatibility data.
+ * Compatibility runner: load test schemas, run each against each model, write compatibility data.
  * Requires env: OPENAI_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, ANTHROPIC_API_KEY (optional per provider).
  */
 
 import { loadCorpus } from "~/loadCorpus.js";
 import { runProvider, type ProviderId } from "~/providers.js";
 import { deriveModelResults } from "~/derive.js";
-import { writeCompatibility } from "~/write.js";
+import { writeCompatibility, loadCostOrder } from "~/write.js";
 import { readFile } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -85,8 +85,9 @@ async function main(): Promise<void> {
     );
   }
 
-  await writeCompatibility(derived, corpus);
-  console.log("Wrote devops/compatibility-data/data/compatibility.json");
+  const costOrder = await loadCostOrder();
+  await writeCompatibility(derived, corpus, models, costOrder);
+  console.log("Wrote devops/compatibility-runner/data/compatibility.json");
 }
 
 main().catch((e) => {

@@ -1,6 +1,6 @@
 # Structured Schema Validator
 
-**Structured Schema Validator** is an open-source tool by [Codygo](https://codygo.com) that validates JSON schemas for use with LLM structured outputs. Pick one or more providers (OpenAI GPT-4+, Google Gemini 2.5+, Anthropic Claude 3.5+), paste or load a schema, and see whether each provider’s min-cost model accepts it.
+**Structured Schema Validator** is an open-source tool by [Codygo](https://codygo.com) that validates JSON schemas for use with LLM structured outputs. Pick one or more providers (OpenAI, Google, Anthropic), paste or load a schema, and see whether each provider’s model accepts it. Default models: **gpt-4.1-mini**, **gemini-2.5-flash**, **claude-3-5-haiku**.
 
 ## Monorepo
 
@@ -16,9 +16,7 @@ This repo uses two package roots: **packages/** and **devops/**.
 
 - **tsconfig** – Shared TypeScript config
 - **eslint-config** – Shared ESLint flat config
-- **compatibility-runner** – CLI to run schema corpus against providers and write compatibility data
-- **compatibility-data** – Generated compatibility JSON (output of the runner)
-- **schema-corpus** – Curated JSON Schema test cases for compatibility runs
+- **compatibility-runner** – Test schemas + CLI to run them against each provider/model and write compatibility data (output: `data/compatibility.json`)
 
 The site is **static only**. All validation requests are sent to the Lambda. Set `NEXT_PUBLIC_VALIDATE_API_URL` to your Lambda Function URL or API Gateway base URL when building the site.
 
@@ -53,10 +51,9 @@ The site is **static only**. All validation requests are sent to the Lambda. Set
 
 ## How it works
 
-1. You choose which providers to validate against (OpenAI, Google, Anthropic).
-2. You provide a JSON schema (paste, type in the editor, or load from a file).
-3. You click **Validate**.
-4. The app calls each selected provider’s min-cost model with your schema (e.g. `response_format` / `responseSchema` / `output_config`) and a minimal prompt.
-5. Results show per provider: success/failure, model used, latency, and any error message.
+1. **Model groups**: The compatibility runner tests all configured models; models with identical schema support are grouped. The validator shows one option per group and uses the **minimal-cost model** in that group at runtime (e.g. nano/mini/lite).
+2. You pick which groups to validate against, then paste or load a JSON schema.
+3. You click **Validate**. The API is called with the representative (min-cost) model for each selected group.
+4. Results show per group: success/failure, model used, latency, and any error message.
 
 Open source by Codygo.

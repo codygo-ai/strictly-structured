@@ -101,7 +101,10 @@ export async function runAnthropic(
         {
           name: "output",
           description: "Return the JSON output",
-          input_schema: schema as Record<string, unknown>,
+          input_schema: { type: "object" as const, ...schema } as {
+            type: "object";
+            [key: string]: unknown;
+          },
         },
       ],
       tool_choice: { type: "tool", name: "output" },
