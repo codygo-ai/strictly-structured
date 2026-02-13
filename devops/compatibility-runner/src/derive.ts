@@ -11,10 +11,17 @@ export interface ModelResult {
   supported_keywords: string[];
 }
 
+/** Errors we do not record in compatibility data (no API key, rate limit, etc.). */
+export function isTechnicalError(error: string | undefined): boolean {
+  if (!error) return true;
+  if (error === "No API key") return true;
+  if (error.includes("429") || /rate limit/i.test(error)) return true;
+  return false;
+}
+
 /**
  * Derive per-model supported schema ids and supported keywords from raw results.
- * A keyword is considered supported for a model if at least one schema that
- * has that keyword in its features passed for that model.
+ * Technical errors (no API key, 429) are ignored — not recorded in supported or failed.
  */
 export function deriveModelResults(
   schemaIds: string[],
@@ -37,7 +44,10 @@ export function deriveModelResults(
         keywordPassed.set(f, true);
       }
     } else {
-      failed[id] = result?.error ?? "failed";
+      const err = result?.error ?? "failed";
+      if (!isTechnicalError(err)) {
+        failed[id] = err;
+      }
     }
   }
 

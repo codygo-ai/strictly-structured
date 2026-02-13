@@ -5,7 +5,7 @@
   "description": "Test schemas + CLI to run them against each provider/model and write compatibility data",
   "type": "module",
   "scripts": {
-    "run": "tsx src/run.ts",
+    "start": "tsx --env-file-if-exists=.env src/run.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

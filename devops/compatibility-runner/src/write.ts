@@ -1,5 +1,5 @@
-import { writeFile, mkdir, readFile } from "node:fs/promises";
-import { join, dirname } from "node:path";
+import { writeFile, mkdir, readFile, rename } from "node:fs/promises";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { CorpusSchema } from "~/loadCorpus.js";
 import type { ModelResult } from "~/derive.js";
@@ -26,19 +26,37 @@ export interface CompatibilityData {
   groups: CompatibilityGroup[];
 }
 
+/** True if no model has any real result (all technical errors). Don't overwrite good data. */
+function hasNoRealResults(models: Record<string, ModelResult>): boolean {
+  for (const r of Object.values(models)) {
+    if (r.supported.length > 0 || Object.keys(r.failed).length > 0) return false;
+  }
+  return true;
+}
+
+/** Returns true if data was written, false if skipped (no-keys run). */
 export async function writeCompatibility(
   models: Record<string, ModelResult>,
   schemas: CorpusSchema[],
   modelConfigs: Array<{ id: string; provider: string; model: string }>,
   costOrder: string[]
-): Promise<void> {
+): Promise<boolean> {
+  if (hasNoRealResults(models)) {
+    console.warn(
+      "No real results (all technical errors). Not overwriting compatibility.json."
+    );
+    return false;
+  }
+
   const modelToProvider = new Map(
     modelConfigs.map((c) => [c.id, c.provider])
   );
   const modelsWithMeta: Record<string, ModelResultWithMeta> = {};
   for (const c of modelConfigs) {
     const r = models[c.id];
-    if (r) {
+    const hasRealResults =
+      r && (r.supported.length > 0 || Object.keys(r.failed).length > 0);
+    if (hasRealResults && r) {
       modelsWithMeta[c.id] = {
         ...r,
         provider: c.provider,
@@ -47,8 +65,8 @@ export async function writeCompatibility(
     }
   }
   const groups = deriveGroups(
-    modelConfigs.map((c) => c.id),
-    models,
+    Object.keys(modelsWithMeta),
+    modelsWithMeta,
     modelToProvider,
     costOrder
   );
@@ -61,9 +79,14 @@ export async function writeCompatibility(
     ),
     groups,
   };
-  const outPath = join(__dirname, "../data/compatibility.json");
-  await mkdir(dirname(outPath), { recursive: true });
-  await writeFile(outPath, JSON.stringify(data, null, 2), "utf-8");
+  const outDir = join(__dirname, "../data");
+  const outPath = join(outDir, "compatibility.json");
+  const tmpPath = join(outDir, "compatibility.json.tmp");
+  await mkdir(outDir, { recursive: true });
+  await writeFile(tmpPath, JSON.stringify(data, null, 2), "utf-8");
+  await rename(tmpPath, outPath);
+  console.log("Wrote", resolve(outPath));
+  return true;
 }
 
 export async function loadCostOrder(): Promise<string[]> {

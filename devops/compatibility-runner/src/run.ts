@@ -26,6 +26,44 @@ const API_KEYS: Record<ProviderId, string | undefined> = {
   anthropic: process.env.ANTHROPIC_API_KEY,
 };
 
+const MAX_429_RETRIES = 3;
+const INITIAL_429_BACKOFF_MS = 2000;
+
+function isRateLimitError(error: string | undefined): boolean {
+  if (!error) return false;
+  return error.includes("429") || /rate limit/i.test(error);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function runProviderWith429Retry(
+  provider: ProviderId,
+  schema: object,
+  model: string,
+  apiKey: string
+): Promise<{ ok: boolean; error?: string }> {
+  type R = Awaited<ReturnType<typeof runProvider>>;
+  let last: R | undefined;
+  let backoffMs = INITIAL_429_BACKOFF_MS;
+  for (let attempt = 0; attempt <= MAX_429_RETRIES; attempt++) {
+    try {
+      last = await runProvider(provider, schema, model, apiKey);
+    } catch (e) {
+      const err = e instanceof Error ? e.message : String(e);
+      last = { ok: false, error: err, latencyMs: 0 };
+    }
+    if (last.ok || !isRateLimitError(last.error)) return last;
+    if (attempt < MAX_429_RETRIES) {
+      console.log(`  rate limit, retry in ${backoffMs / 1000}s (${attempt + 1}/${MAX_429_RETRIES})`);
+      await sleep(backoffMs);
+      backoffMs *= 2;
+    }
+  }
+  return last!;
+}
+
 async function loadModels(): Promise<ModelConfig[]> {
   const path = join(__dirname, "../config/models.json");
   const raw = await readFile(path, "utf-8");
@@ -55,23 +93,17 @@ async function main(): Promise<void> {
         continue;
       }
       process.stdout.write(`  ${schemaId} × ${key} ... `);
-      try {
-        const result = await runProvider(
-          modelConfig.provider,
-          schema,
-          modelConfig.model,
-          apiKey
-        );
-        modelResults.get(key)?.set(schemaId, {
-          ok: result.ok,
-          error: result.error,
-        });
-        console.log(result.ok ? "OK" : result.error?.slice(0, 60) ?? "fail");
-      } catch (e) {
-        const err = e instanceof Error ? e.message : String(e);
-        modelResults.get(key)?.set(schemaId, { ok: false, error: err });
-        console.log("error:", err.slice(0, 60));
-      }
+      const result = await runProviderWith429Retry(
+        modelConfig.provider,
+        schema,
+        modelConfig.model,
+        apiKey
+      );
+      modelResults.get(key)?.set(schemaId, {
+        ok: result.ok,
+        error: result.error,
+      });
+      console.log(result.ok ? "OK" : result.error?.slice(0, 60) ?? "fail");
     }
   }
 
@@ -86,8 +118,10 @@ async function main(): Promise<void> {
   }
 
   const costOrder = await loadCostOrder();
-  await writeCompatibility(derived, corpus, models, costOrder);
-  console.log("Wrote devops/compatibility-runner/data/compatibility.json");
+  const written = await writeCompatibility(derived, corpus, models, costOrder);
+  if (!written) {
+    console.log("Skipped writing (no API keys). Existing file unchanged.");
+  }
 }
 
 main().catch((e) => {
