@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { FirebaseAnalytics } from "~/components/FirebaseAnalytics";
 
 export const metadata: Metadata = {
   title: "LLM Structured Output Validators | Codygo",
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen antialiased">
+        <FirebaseAnalytics />
         {children}
       </body>
     </html>

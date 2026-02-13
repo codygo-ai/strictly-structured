@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor } from "~/components/SchemaEditor";
 import { ValidationResults } from "~/components/ValidationResults";
@@ -14,6 +14,12 @@ import {
   getValidationIssuesForSelection,
   validateJsonSchema,
 } from "@ssv/schema-utils";
+import { useAuth } from "~/lib/useAuth";
+
+const DiffEditor = dynamic(
+  () => import("@monaco-editor/react").then((m) => m.DiffEditor),
+  { ssr: false }
+);
 
 const DEFAULT_SCHEMA = `{
   "type": "object",
@@ -119,12 +125,15 @@ function groupTooltip(g: CompatibilityGroup): string {
 }
 
 export default function Home() {
+  const { ensureAuth } = useAuth();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [selectedRepresentative, setSelectedRepresentative] = useState<
     string | null
   >(null);
   const [results, setResults] = useState<ValidationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fixLoading, setFixLoading] = useState(false);
+  const [suggestedSchema, setSuggestedSchema] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [compatibilityData, setCompatibilityData] =
     useState<CompatibilityData | null>(null);
@@ -255,15 +264,15 @@ export default function Home() {
 
     const apiUrl =
       process.env.NEXT_PUBLIC_VALIDATE_API_URL?.replace(/\/$/, "") ?? "";
-    if (!apiUrl) {
-      setError("NEXT_PUBLIC_VALIDATE_API_URL is not set.");
-      return;
-    }
     setLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/validate`, {
+      const token = await ensureAuth();
+      const res = await fetch(`${apiUrl ? apiUrl + "/" : ""}api/validate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ schema: trimmed, modelIds: selectedModelIds }),
       });
       const data = await res.json();
@@ -277,7 +286,75 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [schema, selectedModelIds, selectedRepresentative]);
+  }, [schema, selectedModelIds, selectedRepresentative, ensureAuth]);
+
+  const hasIssues =
+    schemaValidityErrors.length > 0 || selectionIssues.length > 0;
+
+  const handleFix = useCallback(async () => {
+    setError(null);
+    setSuggestedSchema(null);
+    const trimmed = schema.trim();
+    if (!trimmed || !hasIssues) return;
+
+    const apiUrl =
+      process.env.NEXT_PUBLIC_VALIDATE_API_URL?.replace(/\/$/, "") ?? "";
+    setFixLoading(true);
+    try {
+      const token = await ensureAuth();
+      const res = await fetch(`${apiUrl ? apiUrl + "/" : ""}api/fix`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          schema: trimmed,
+          modelIds: selectedModelIds,
+          issues: selectionIssues.map(({ path, keyword, message, suggestion }) => ({
+            path,
+            keyword,
+            message,
+            suggestion,
+          })),
+          schemaValidityErrors:
+            schemaValidityErrors.length > 0 ? schemaValidityErrors : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Auto-fix request failed");
+        return;
+      }
+      if (typeof data.suggestedSchema === "string") {
+        setSuggestedSchema(data.suggestedSchema);
+      } else {
+        setError("Invalid fix response");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error");
+    } finally {
+      setFixLoading(false);
+    }
+  }, [
+    schema,
+    hasIssues,
+    selectedModelIds,
+    selectionIssues,
+    schemaValidityErrors,
+    ensureAuth,
+  ]);
+
+  const handleAcceptSuggestion = useCallback(() => {
+    if (suggestedSchema != null) {
+      setSchema(suggestedSchema);
+      setSuggestedSchema(null);
+    }
+  }, [suggestedSchema]);
+
+  const handleRejectSuggestion = useCallback(() => {
+    setSuggestedSchema(null);
+  }, []);
 
   const handlePaste = useCallback(async () => {
     try {
@@ -446,29 +523,80 @@ export default function Home() {
               className="hidden"
               onChange={handleFileChange}
             />
-            <SchemaEditor
-              value={schema}
-              onChange={setSchema}
-              onPaste={handlePaste}
-              selectedModelIds={selectedModelIds}
-              compatibilityData={compatibilityData}
-              fillHeight
-              noHeader
-              editorTheme="light"
-            />
-            <button
-              type="button"
-              className="validate-btn"
-              onClick={handleValidate}
-              disabled={
-                loading ||
-                !selectedRepresentative ||
-                !isSchemaValid ||
-                !process.env.NEXT_PUBLIC_VALIDATE_API_URL
-              }
-            >
-              {loading ? "Validating…" : "Server Validation"}
-            </button>
+            {suggestedSchema != null ? (
+              <>
+                <div className="flex-1 min-h-0 rounded-lg overflow-hidden flex flex-col border border-border bg-surface relative">
+                  <DiffEditor
+                    height="100%"
+                    language="json"
+                    original={schema}
+                    modified={suggestedSchema}
+                    theme="vs"
+                    options={{
+                      readOnly: true,
+                      renderSideBySide: true,
+                      enableSplitViewResizing: true,
+                    }}
+                  />
+                  <div className="absolute bottom-3 right-3 flex gap-2 z-10">
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded-md bg-accent text-surface font-medium shadow hover:opacity-90"
+                      onClick={handleAcceptSuggestion}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded-md bg-secondary text-primary font-medium shadow hover:opacity-90"
+                      onClick={handleRejectSuggestion}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <SchemaEditor
+                  value={schema}
+                  onChange={setSchema}
+                  onPaste={handlePaste}
+                  selectedModelIds={selectedModelIds}
+                  compatibilityData={compatibilityData}
+                  fillHeight
+                  noHeader
+                  editorTheme="light"
+                />
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    className="validate-btn"
+                    onClick={handleValidate}
+                    disabled={
+                      loading ||
+                      fixLoading ||
+                      !selectedRepresentative ||
+                      !isSchemaValid
+                    }
+                  >
+                    {loading ? "Validating…" : "Server Validation"}
+                  </button>
+                  <button
+                    type="button"
+                    className="validate-btn"
+                    onClick={handleFix}
+                    disabled={
+                      loading ||
+                      fixLoading ||
+                      !hasIssues
+                    }
+                  >
+                    {fixLoading ? "Fixing…" : "Auto-fix"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </section>
 

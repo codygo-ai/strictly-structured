@@ -10,7 +10,8 @@
     "typecheck": "turbo run typecheck",
     "start": "pnpm --filter @ssv/site start",
     "dev:lambda": "pnpm --filter @ssv/lambdas dev",
-    "deploy": "bash sam/deploy.sh"
+    "deploy": "bash scripts/firebase-deploy.sh",
+    "deploy:aws": "bash sam/deploy.sh"
   },
   "engines": {
     "node": ">=22.15.0",

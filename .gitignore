@@ -20,4 +20,11 @@ next-env.d.ts
 .aws-sam
 .DS_Store
 
+firebase-debug.log
+firebase-debug.*.log
+.firebase/
+
+functions/.env
+functions/.env.*
+
 packages/web/public/compatibility.json

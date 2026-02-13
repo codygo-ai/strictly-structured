@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "structured-output",
+    "public": "packages/site/out",
+    "rewrites": [
+      { "source": "/api/validate", "function": "validate" },
+      { "source": "/api/fix", "function": "fix" }
+    ]
+  },
+  "functions": {
+    "source": "functions",
+    "predeploy": [
+      "pnpm --filter @ssv/lambdas build",
+      "pnpm --filter functions build"
+    ]
+  }
+}

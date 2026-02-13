@@ -6,6 +6,12 @@ import { validateWithAnthropic } from "~/providers/anthropic";
 import type { ProviderId } from "~/types";
 import { MODEL_MAP } from "~/model-map";
 
+export type ValidateBody = {
+  schema?: string;
+  providers?: string[];
+  modelIds?: string[];
+};
+
 type ValidateFn = (
   schema: object,
   apiKey: string,
@@ -18,66 +24,33 @@ const RUNNERS: Record<ProviderId, ValidateFn> = {
   anthropic: validateWithAnthropic,
 };
 
-const API_KEYS: Record<ProviderId, string | undefined> = {
-  openai: process.env.OPENAI_API_KEY,
-  google: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? process.env.GEMINI_API_KEY,
-  anthropic: process.env.ANTHROPIC_API_KEY,
-};
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-function jsonResponse(
-  statusCode: number,
-  body: unknown,
-  headers: Record<string, string> = {}
-): APIGatewayProxyResultV2 {
+function getApiKeys(): Record<ProviderId, string | undefined> {
   return {
-    statusCode,
-    headers: { "Content-Type": "application/json", ...CORS_HEADERS, ...headers },
-    body: JSON.stringify(body),
+    openai: process.env.OPENAI_API_KEY,
+    google: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? process.env.GEMINI_API_KEY,
+    anthropic: process.env.ANTHROPIC_API_KEY,
   };
 }
 
-export async function handler(
-  event: APIGatewayProxyEventV2
-): Promise<APIGatewayProxyResultV2> {
-  if (event.requestContext?.http?.method === "OPTIONS") {
-    return { statusCode: 204, headers: CORS_HEADERS, body: "" };
-  }
-
-  if (event.requestContext?.http?.method !== "POST") {
-    return jsonResponse(405, { error: "Method not allowed" });
-  }
-
-  let body: { schema?: string; providers?: string[]; modelIds?: string[] };
-  try {
-    const raw = event.body;
-    const str =
-      typeof raw === "string"
-        ? event.isBase64Encoded
-          ? Buffer.from(raw, "base64").toString("utf-8")
-          : raw
-        : "";
-    body = str ? JSON.parse(str) : {};
-  } catch {
-    return jsonResponse(400, { error: "Invalid JSON body" });
-  }
-
+/**
+ * Framework-agnostic validate: parses body, runs schema validation against providers.
+ * Used by both the Lambda handler and the Firebase HTTP function.
+ */
+export async function runValidate(
+  body: ValidateBody
+): Promise<{ results: Array<{ provider: string; model: string; ok: boolean; latencyMs: number; error?: string }> } | { error: string }> {
   const { schema: raw, providers: providerIds, modelIds } = body;
   if (typeof raw !== "string") {
-    return jsonResponse(400, { error: "Missing or invalid 'schema' (string)" });
+    return { error: "Missing or invalid 'schema' (string)" };
   }
 
   const parsed = parseSchema(raw);
   if (!parsed.ok) {
-    return jsonResponse(400, { error: parsed.error });
+    return { error: parsed.error };
   }
   const schema = parsed.schema;
 
+  const API_KEYS = getApiKeys();
   const targets: Array<{ provider: ProviderId; model?: string }> = [];
   if (Array.isArray(modelIds) && modelIds.length > 0) {
     for (const id of modelIds) {
@@ -112,5 +85,58 @@ export async function handler(
     })
   );
 
-  return jsonResponse(200, { results });
+  return { results };
 }
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+function jsonResponse(
+  statusCode: number,
+  body: unknown,
+  headers: Record<string, string> = {}
+): APIGatewayProxyResultV2 {
+  return {
+    statusCode,
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS, ...headers },
+    body: JSON.stringify(body),
+  };
+}
+
+export async function handler(
+  event: APIGatewayProxyEventV2
+): Promise<APIGatewayProxyResultV2> {
+  if (event.requestContext?.http?.method === "OPTIONS") {
+    return { statusCode: 204, headers: CORS_HEADERS, body: "" };
+  }
+
+  if (event.requestContext?.http?.method !== "POST") {
+    return jsonResponse(405, { error: "Method not allowed" });
+  }
+
+  let body: ValidateBody;
+  try {
+    const raw = event.body;
+    const str =
+      typeof raw === "string"
+        ? event.isBase64Encoded
+          ? Buffer.from(raw, "base64").toString("utf-8")
+          : raw
+        : "";
+    body = str ? JSON.parse(str) : {};
+  } catch {
+    return jsonResponse(400, { error: "Invalid JSON body" });
+  }
+
+  const result = await runValidate(body);
+  if ("error" in result) {
+    return jsonResponse(400, { error: result.error });
+  }
+  return jsonResponse(200, { results: result.results });
+}
+
+export { runFix } from "~/fix";
+export type { FixBody, FixIssue, FixSchemaValidityError } from "~/fix";
