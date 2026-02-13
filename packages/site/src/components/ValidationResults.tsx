@@ -11,35 +11,35 @@ export function ValidationResults({ results }: ValidationResultsProps) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-white">Results</h3>
+      <h3 className="text-lg font-semibold text-primary">Results</h3>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((r) => (
           <div
             key={r.provider}
-            className="rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-4"
+            className="rounded-lg border border-border bg-surface p-4"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="font-medium capitalize text-white">
+              <span className="font-medium capitalize text-primary">
                 {r.provider}
               </span>
               <span
                 className={`rounded px-2 py-0.5 text-xs font-medium ${
                   r.ok
-                    ? "bg-[var(--success)]/20 text-[var(--success)]"
-                    : "bg-[var(--error)]/20 text-[var(--error)]"
+                    ? "bg-success/20 text-success"
+                    : "bg-error/20 text-error"
                 }`}
               >
                 {r.ok ? "OK" : "Failed"}
               </span>
             </div>
-            <p className="mt-1 text-xs text-zinc-400">{r.model}</p>
+            <p className="mt-1 text-xs text-secondary">{r.model}</p>
             {r.latencyMs > 0 && (
-              <p className="mt-0.5 text-xs text-zinc-500">
+              <p className="mt-0.5 text-xs text-muted">
                 {r.latencyMs} ms
               </p>
             )}
             {!r.ok && r.error && (
-              <p className="mt-2 text-sm text-[var(--error)] break-words">
+              <p className="mt-2 text-sm text-error wrap-break-word">
                 {r.error}
               </p>
             )}

@@ -63,6 +63,12 @@ interface SchemaEditorProps {
   onPaste: () => void;
   selectedModelIds?: string[];
   compatibilityData?: CompatibilityData | null;
+  /** When true, editor fills container height (use inside flex container). */
+  fillHeight?: boolean;
+  /** When true, do not render the top action bar (Load/Paste); parent renders header. */
+  noHeader?: boolean;
+  /** Editor theme: "light" for light UI (e.g. validator page), "dark" default. */
+  editorTheme?: "light" | "dark";
 }
 
 export function SchemaEditor({
@@ -71,7 +77,11 @@ export function SchemaEditor({
   onPaste,
   selectedModelIds = [],
   compatibilityData = null,
+  fillHeight = false,
+  noHeader = false,
+  editorTheme = "dark",
 }: SchemaEditorProps) {
+  const isLight = editorTheme === "light";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<unknown>(null);
   const monacoRef = useRef<unknown>(null);
@@ -194,6 +204,40 @@ export function SchemaEditor({
       monacoRef.current = monaco;
       setEditorReady(true);
 
+      // Cmd+P / Ctrl+P opens command palette
+      editor.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyP,
+        () => {
+          editor.trigger("keyboard", "editor.action.quickCommand", null);
+        }
+      );
+
+      // Context menu: Pretty print (format) JSON
+      editor.addAction({
+        id: "editor.action.formatDocument.json",
+        label: "Pretty print (format)",
+        contextMenuGroupId: "1_modification",
+        contextMenuOrder: 1.5,
+        run: () => {
+          const model = editor.getModel();
+          if (!model) return;
+          const text = model.getValue();
+          const trimmed = text.trim();
+          if (!trimmed) return;
+          try {
+            const parsed = JSON.parse(trimmed);
+            const formatted = JSON.stringify(parsed, null, 2);
+            editor.executeEdits("pretty-print", [
+              { range: model.getFullModelRange(), text: formatted },
+            ]);
+          } catch {
+            // Invalid JSON: try built-in format if available
+            const formatAction = editor.getAction?.("editor.action.formatDocument");
+            if (formatAction?.run) formatAction.run();
+          }
+        },
+      });
+
       // Always register: provider reads from keywordsForCompletionRef (updated when selection/data changes).
       monaco.languages.registerCompletionItemProvider("json", {
         triggerCharacters: ['"'],
@@ -229,53 +273,75 @@ export function SchemaEditor({
     []
   );
 
+  const editorContent = (
+    <div
+      className={
+        fillHeight
+          ? `flex-1 min-h-0 rounded-lg overflow-hidden flex flex-col ${
+              isLight
+                ? "border border-border bg-surface"
+                : "border border-(--card-border) bg-[#1e1e1e]"
+            }`
+          : `rounded-lg overflow-hidden min-h-[280px] ${
+              isLight
+                ? "border border-border bg-surface"
+                : "border border-(--card-border) bg-[#1e1e1e]"
+            }`
+      }
+    >
+      <Monaco
+        height={fillHeight ? "100%" : "280px"}
+        defaultLanguage="json"
+        value={value || DEFAULT_SCHEMA}
+        onChange={(v) => onChange(v ?? "")}
+        onMount={handleEditorMount}
+        theme={isLight ? "vs" : "vs-dark"}
+        options={{
+          minimap: { enabled: false },
+          fontSize: 13,
+          lineNumbers: "on",
+          scrollBeyondLastLine: false,
+          wordWrap: "on",
+          contextmenu: true,
+          copyWithSyntaxHighlighting: true,
+        }}
+      />
+    </div>
+  );
+
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <span className="text-sm font-medium text-zinc-300">
-          JSON Schema
-        </span>
-        <div className="flex gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json,application/json"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-          <button
-            type="button"
-            onClick={handleLoadFile}
-            className="px-3 py-1.5 text-sm rounded-md bg-zinc-700 text-zinc-200 hover:bg-zinc-600 transition-colors"
-          >
-            Load from file
-          </button>
-          <button
-            type="button"
-            onClick={onPaste}
-            className="px-3 py-1.5 text-sm rounded-md bg-zinc-700 text-zinc-200 hover:bg-zinc-600 transition-colors"
-          >
-            Paste
-          </button>
+    <div className={fillHeight ? "flex flex-col min-h-0 flex-1" : "space-y-2"}>
+      {!noHeader && (
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <span className="text-sm font-medium text-zinc-300">
+            JSON Schema
+          </span>
+          <div className="flex gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <button
+              type="button"
+              onClick={handleLoadFile}
+              className="px-3 py-1.5 text-sm rounded-md bg-zinc-700 text-zinc-200 hover:bg-zinc-600 transition-colors"
+            >
+              Load from file
+            </button>
+            <button
+              type="button"
+              onClick={onPaste}
+              className="px-3 py-1.5 text-sm rounded-md bg-zinc-700 text-zinc-200 hover:bg-zinc-600 transition-colors"
+            >
+              Paste
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="rounded-lg border border-[var(--card-border)] overflow-hidden bg-[#1e1e1e] min-h-[280px]">
-        <Monaco
-          height="280px"
-          defaultLanguage="json"
-          value={value || DEFAULT_SCHEMA}
-          onChange={(v) => onChange(v ?? "")}
-          onMount={handleEditorMount}
-          theme="vs-dark"
-          options={{
-            minimap: { enabled: false },
-            fontSize: 13,
-            lineNumbers: "on",
-            scrollBeyondLastLine: false,
-            wordWrap: "on",
-          }}
-        />
-      </div>
+      )}
+      {editorContent}
     </div>
   );
 }
