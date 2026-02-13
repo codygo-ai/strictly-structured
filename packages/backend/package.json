@@ -2,7 +2,11 @@
   "name": "@ssv/backend",
   "version": "0.0.0",
   "private": true,
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "dist/index.js.map"
+  ],
   "engines": {
     "node": "22"
   },
@@ -10,7 +14,10 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "strip-dev": "node -e \"const f='./.deployed/package.json';const j=JSON.parse(require('fs').readFileSync(f));delete j.devDependencies;require('fs').writeFileSync(f,JSON.stringify(j,null,2))\""
   },
   "dependencies": {
     "firebase-admin": "^13.6.0",

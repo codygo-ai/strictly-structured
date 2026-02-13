@@ -25,6 +25,20 @@ const DiffEditor = dynamic(
   { ssr: false }
 );
 
+const FUNCTIONS_EMULATOR_BASE =
+  "http://127.0.0.1:5001/codygo-website/us-central1";
+
+function getApiUrl(path: "validate" | "fix"): string {
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1")
+  ) {
+    return `${FUNCTIONS_EMULATOR_BASE}/${path}`;
+  }
+  return `/api/${path}`;
+}
+
 const DEFAULT_SCHEMA = `{
   "type": "object",
   "properties": {
@@ -267,7 +281,7 @@ export default function Home() {
     setLoading(true);
     try {
       const token = await ensureAuth();
-      const res = await fetch("/api/validate", {
+      const res = await fetch(getApiUrl("validate"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -307,7 +321,7 @@ export default function Home() {
     setFixLoading(true);
     try {
       const token = await ensureAuth();
-      const res = await fetch("/api/fix", {
+      const res = await fetch(getApiUrl("fix"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -491,7 +505,7 @@ export default function Home() {
   }, [schema, selectedGroup]);
 
   return (
-    <div className="validator-page flex flex-col min-h-screen">
+    <div className="validator-page flex flex-col h-screen min-h-0">
       <SiteHeader subtitle current="validator" />
 
       <div className="model-bar">
@@ -518,7 +532,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="upload-hint hover:text-accent cursor-pointer"
+              className="upload-hint hover:text-accent hover:underline cursor-pointer"
             >
               Drop or upload file, paste or edit JSON
             </button>

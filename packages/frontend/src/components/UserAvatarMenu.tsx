@@ -43,7 +43,7 @@ export function UserAvatarMenu() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-[var(--ds-border)] bg-[var(--ds-surface-subtle)] text-sm font-medium text-primary ring-offset-[var(--ds-surface)] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+        className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-[var(--ds-border)] bg-[var(--ds-surface-subtle)] text-sm font-medium text-primary ring-offset-[var(--ds-surface)] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="User menu"
