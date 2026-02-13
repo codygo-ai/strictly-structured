@@ -96,6 +96,9 @@ importers:
       '@ssv/tsconfig':
         specifier: workspace:*
         version: link:../../devops/tsconfig
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.19.11
       eslint:
         specifier: ^9.39.0
         version: 9.39.2(jiti@2.6.1)
