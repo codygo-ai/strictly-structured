@@ -9,6 +9,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 function groupLabel(g: CompatibilityGroup): string {
+  if (g.displayName) return g.displayName;
   const provider = PROVIDER_LABELS[g.provider] ?? g.provider;
   if (g.modelIds.length === 1) {
     return `${provider} (${g.representative.split(":")[1]})`;
@@ -18,23 +19,15 @@ function groupLabel(g: CompatibilityGroup): string {
 
 interface ModelSelectorProps {
   groups: CompatibilityGroup[];
-  selectedRepresentatives: string[];
-  onChange: (representatives: string[]) => void;
+  selectedRepresentative: string | null;
+  onChange: (representative: string) => void;
 }
 
 export function ModelSelector({
   groups,
-  selectedRepresentatives,
+  selectedRepresentative,
   onChange,
 }: ModelSelectorProps) {
-  const toggle = (rep: string) => {
-    if (selectedRepresentatives.includes(rep)) {
-      onChange(selectedRepresentatives.filter((r) => r !== rep));
-    } else {
-      onChange([...selectedRepresentatives, rep]);
-    }
-  };
-
   if (groups.length === 0) return null;
 
   return (
@@ -45,10 +38,11 @@ export function ModelSelector({
           className="flex items-center gap-2 cursor-pointer text-sm"
         >
           <input
-            type="checkbox"
-            checked={selectedRepresentatives.includes(g.representative)}
-            onChange={() => toggle(g.representative)}
-            className="rounded border-[var(--card-border)] bg-[var(--card)] text-[var(--accent)] focus:ring-[var(--accent)]"
+            type="radio"
+            name="model-group"
+            checked={selectedRepresentative === g.representative}
+            onChange={() => onChange(g.representative)}
+            className="border-[var(--card-border)] bg-[var(--card)] text-[var(--accent)] focus:ring-[var(--accent)]"
           />
           <span>{groupLabel(g)}</span>
         </label>

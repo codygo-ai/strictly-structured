@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { SchemaEditor } from "~/components/SchemaEditor";
 import { ModelSelector } from "~/components/ModelSelector";
 import { ValidationResults } from "~/components/ValidationResults";
 import type { ValidationResult } from "~/lib/providers/types";
-import type { CompatibilityData } from "@ssv/schema-utils";
-import { validateSchemaForModel } from "@ssv/schema-utils";
+import type { CompatibilityData, CompatibilityGroup } from "@ssv/schema-utils";
+import {
+  getValidationIssuesForSelection,
+  validateJsonSchema,
+} from "@ssv/schema-utils";
 import { PROVIDER_TO_MODEL_ID } from "~/lib/modelIds";
 
 const DEFAULT_SCHEMA = `{
@@ -37,23 +40,27 @@ function defaultGroupsFromLegacy(): Array<{
   });
 }
 
+function getSampleForGroup(
+  representative: string,
+  groups: CompatibilityGroup[]
+): string {
+  const g = groups.find(
+    (x) => x.representative === representative || x.modelIds.includes(representative)
+  );
+  return (g?.sampleSchema ?? DEFAULT_SCHEMA).trim();
+}
+
 export default function Home() {
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
-  const [selectedRepresentatives, setSelectedRepresentatives] = useState<
-    string[]
-  >([
-    PROVIDER_TO_MODEL_ID.openai,
-    PROVIDER_TO_MODEL_ID.google,
-    PROVIDER_TO_MODEL_ID.anthropic,
-  ]);
+  const [selectedRepresentative, setSelectedRepresentative] = useState<
+    string | null
+  >(null);
   const [results, setResults] = useState<ValidationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [compatibilityData, setCompatibilityData] =
     useState<CompatibilityData | null>(null);
-  const [compatibilityIssues, setCompatibilityIssues] = useState<
-    Array<{ modelId: string; message: string; path: string }>
-  >([]);
+  const hasInitializedFromGroups = useRef(false);
 
   const groups = useMemo(() => {
     if (compatibilityData?.groups && compatibilityData.groups.length > 0) {
@@ -61,6 +68,11 @@ export default function Home() {
     }
     return defaultGroupsFromLegacy();
   }, [compatibilityData]);
+
+  const selectedModelIds = useMemo(
+    () => (selectedRepresentative ? [selectedRepresentative] : []),
+    [selectedRepresentative]
+  );
 
   useEffect(() => {
     fetch("/compatibility.json")
@@ -71,48 +83,83 @@ export default function Home() {
       );
   }, []);
 
+  // Once we have compatibility data and groups: select first group and set schema to its sample (or default).
+  useEffect(() => {
+    if (compatibilityData == null || groups.length === 0 || hasInitializedFromGroups.current)
+      return;
+    hasInitializedFromGroups.current = true;
+    const first = groups[0];
+    if (first) {
+      setSelectedRepresentative(first.representative);
+      setSchema((first as CompatibilityGroup).sampleSchema?.trim() ?? DEFAULT_SCHEMA);
+    }
+  }, [compatibilityData, groups]);
+
+  const handleGroupChange = useCallback(
+    (newRep: string) => {
+      const prevRep = selectedRepresentative;
+      const prevSample =
+        prevRep && groups.length > 0 ? getSampleForGroup(prevRep, groups) : null;
+      const currentTrimmed = schema.trim();
+      if (
+        prevSample != null &&
+        currentTrimmed === prevSample
+      ) {
+        setSchema(getSampleForGroup(newRep, groups));
+      }
+      setSelectedRepresentative(newRep);
+    },
+    [selectedRepresentative, groups, schema]
+  );
+
+  const { schemaValidityErrors, selectionIssues } = useMemo(() => {
+    const trimmed = schema.trim();
+    const validityErrors: Array<{ path: string; message: string }> = [];
+    const selection: Array<{ path: string; keyword: string; message: string }> = [];
+
+    if (!trimmed) return { schemaValidityErrors: validityErrors, selectionIssues: selection };
+
+    let parsed: object;
+    try {
+      parsed = JSON.parse(trimmed) as object;
+    } catch {
+      return { schemaValidityErrors: validityErrors, selectionIssues: selection };
+    }
+
+    const validity = validateJsonSchema(parsed);
+    if (!validity.valid) {
+      return { schemaValidityErrors: validity.errors, selectionIssues: selection };
+    }
+
+    if (compatibilityData && selectedRepresentative) {
+      selection.push(
+        ...getValidationIssuesForSelection(
+          parsed,
+          [selectedRepresentative],
+          compatibilityData
+        )
+      );
+    }
+    return { schemaValidityErrors: validity.errors, selectionIssues: selection };
+  }, [schema, selectedRepresentative, compatibilityData]);
+
   const handleValidate = useCallback(async () => {
     setError(null);
     setResults(null);
-    setCompatibilityIssues([]);
     const trimmed = schema.trim();
     if (!trimmed) {
       setError("Please enter a JSON schema.");
       return;
     }
-    let parsed: object;
     try {
-      parsed = JSON.parse(trimmed) as object;
+      JSON.parse(trimmed);
     } catch {
       setError("Schema is not valid JSON.");
       return;
     }
-    if (selectedRepresentatives.length === 0) {
-      setError("Select at least one model group.");
+    if (!selectedRepresentative) {
+      setError("Select a model group.");
       return;
-    }
-
-    if (compatibilityData && Object.keys(compatibilityData.models).length > 0) {
-      const issues: Array<{
-        modelId: string;
-        message: string;
-        path: string;
-      }> = [];
-      for (const modelId of selectedRepresentatives) {
-        const modelIssues = validateSchemaForModel(
-          parsed,
-          modelId,
-          compatibilityData
-        );
-        for (const i of modelIssues) {
-          issues.push({
-            modelId,
-            message: i.message,
-            path: i.path,
-          });
-        }
-      }
-      setCompatibilityIssues(issues);
     }
 
     const apiUrl =
@@ -126,7 +173,7 @@ export default function Home() {
       const res = await fetch(`${apiUrl}/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schema: trimmed, modelIds: selectedRepresentatives }),
+        body: JSON.stringify({ schema: trimmed, modelIds: selectedModelIds }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -139,7 +186,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [schema, selectedRepresentatives, compatibilityData]);
+  }, [schema, selectedRepresentative, compatibilityData]);
 
   const handlePaste = useCallback(async () => {
     try {
@@ -157,8 +204,7 @@ export default function Home() {
           Validate JSON schemas for LLM structured outputs
         </h1>
         <p className="text-zinc-400 max-w-xl mx-auto">
-          Pick model groups (same validation behavior), paste or load a schema,
-          then validate. We use the minimal-cost model in each selected group.
+          Select a model group, paste or load a schema, then validate.
         </p>
         <p className="text-sm text-zinc-500">
           Structured Schema Validator by Codygo · Open source
@@ -168,14 +214,14 @@ export default function Home() {
       <section className="rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-6 space-y-6">
         <ModelSelector
           groups={groups}
-          selectedRepresentatives={selectedRepresentatives}
-          onChange={setSelectedRepresentatives}
+          selectedRepresentative={selectedRepresentative}
+          onChange={handleGroupChange}
         />
         <SchemaEditor
           value={schema}
           onChange={setSchema}
           onPaste={handlePaste}
-          selectedModelIds={selectedRepresentatives}
+          selectedModelIds={selectedModelIds}
           compatibilityData={compatibilityData}
         />
         {error && (
@@ -188,7 +234,7 @@ export default function Home() {
           onClick={handleValidate}
           disabled={
             loading ||
-            selectedRepresentatives.length === 0 ||
+            !selectedRepresentative ||
             !process.env.NEXT_PUBLIC_VALIDATE_API_URL
           }
           className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
@@ -197,16 +243,34 @@ export default function Home() {
         </button>
       </section>
 
-      {compatibilityIssues.length > 0 && (
-        <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          <p className="font-medium">Model compatibility</p>
-          <ul className="mt-2 list-disc list-inside space-y-1">
-            {compatibilityIssues.map((i, idx) => (
-              <li key={idx}>
-                {i.message} {i.path && `(${i.path})`}
-              </li>
-            ))}
-          </ul>
+      {(schemaValidityErrors.length > 0 || selectionIssues.length > 0) && (
+        <div className="space-y-4">
+          {schemaValidityErrors.length > 0 && (
+            <div className="rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              <p className="font-medium">Invalid JSON Schema</p>
+              <ul className="mt-2 list-disc list-inside space-y-1">
+                {schemaValidityErrors.map((i, idx) => (
+                  <li key={idx}>
+                    {i.path ? `${i.path}: ` : ""}
+                    {i.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {selectionIssues.length > 0 && (
+            <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              <p className="font-medium">Not supported for your selection</p>
+              <ul className="mt-2 list-disc list-inside space-y-1">
+                {selectionIssues.map((i, idx) => (
+                  <li key={idx}>
+                    {i.keyword}
+                    {i.path && ` (${i.path})`}: {i.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

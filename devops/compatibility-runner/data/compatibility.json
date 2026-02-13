@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "models": {
     "openai:gpt-4.1-mini": {
       "supported": [],
@@ -1075,7 +1075,28 @@
         "openai:gpt-5.2",
         "openai:gpt-5.2-pro"
       ],
-      "representative": "openai:gpt-5-nano"
+      "representative": "openai:gpt-5-nano",
+      "displayName": "OpenAI (GPT-4.1 / GPT-5)",
+      "note": "Strict mode: set strict: true in response_format for guaranteed schema compliance.",
+      "keywordRules": {
+        "nullable": {
+          "allowed": false,
+          "severity": "error",
+          "requirement": "Use anyOf with {type: 'null'} instead",
+          "errorMessage": "nullable is not supported. Use anyOf with {type: 'null'} for optional values.",
+          "suggestion": "Use anyOf: [{type: 'string'}, {type: 'null'}]",
+          "note": "nullable is not part of JSON Schema standard for this API."
+        },
+        "additionalProperties": {
+          "requirement": "Recommended: false for strict validation",
+          "severity": "warning"
+        },
+        "description": {
+          "requirement": "Highly recommended for better accuracy",
+          "severity": "info"
+        }
+      },
+      "sampleSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"string\",\n      \"description\": \"Short task title\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\"low\", \"medium\", \"high\"],\n      \"description\": \"Task priority\"\n    },\n    \"dueDate\": {\n      \"anyOf\": [{ \"type\": \"string\", \"format\": \"date\" }, { \"type\": \"null\" }],\n      \"description\": \"Optional due date\"\n    },\n    \"completed\": {\n      \"type\": \"boolean\",\n      \"description\": \"Whether the task is done\"\n    }\n  },\n  \"required\": [\"task\", \"priority\", \"completed\"],\n  \"additionalProperties\": false\n}"
     },
     {
       "id": "google:gemini-2.5-flash-lite",
@@ -1083,7 +1104,21 @@
       "modelIds": [
         "google:gemini-2.5-flash-lite"
       ],
-      "representative": "google:gemini-2.5-flash-lite"
+      "representative": "google:gemini-2.5-flash-lite",
+      "displayName": "Google (Gemini 2.5 Flash Lite)",
+      "keywordRules": {
+        "nullable": {
+          "allowed": true,
+          "note": "Gemini supports nullable in schema."
+        },
+        "type": {
+          "requirement": "Required on all properties",
+          "severity": "error",
+          "errorMessage": "type is required on every property for this model.",
+          "suggestion": "Add \"type\": \"string\" (or the correct type) to each property."
+        }
+      },
+      "sampleSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"string\",\n      \"description\": \"Short task title\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\"low\", \"medium\", \"high\"],\n      \"description\": \"Task priority\"\n    },\n    \"dueDate\": {\n      \"type\": \"string\",\n      \"nullable\": true,\n      \"description\": \"Optional due date\"\n    },\n    \"completed\": {\n      \"type\": \"boolean\",\n      \"description\": \"Whether the task is done\"\n    }\n  },\n  \"required\": [\"task\", \"priority\", \"completed\"]\n}"
     },
     {
       "id": "google:gemini-2.5-flash",
@@ -1094,7 +1129,22 @@
         "google:gemini-3-flash-preview",
         "google:gemini-3-pro-preview"
       ],
-      "representative": "google:gemini-2.5-flash"
+      "representative": "google:gemini-2.5-flash",
+      "displayName": "Google (Gemini 2.5 / 3)",
+      "note": "Gemini 3 supports anyOf, $ref, $defs; key order can be preserved.",
+      "keywordRules": {
+        "nullable": {
+          "allowed": true,
+          "note": "Gemini supports nullable in schema."
+        },
+        "type": {
+          "requirement": "Required on all properties",
+          "severity": "error",
+          "errorMessage": "type is required on every property for this model.",
+          "suggestion": "Add \"type\": \"string\" (or the correct type) to each property."
+        }
+      },
+      "sampleSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"string\",\n      \"description\": \"Short task title\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\"low\", \"medium\", \"high\"],\n      \"description\": \"Task priority\"\n    },\n    \"dueDate\": {\n      \"type\": \"string\",\n      \"nullable\": true,\n      \"description\": \"Optional due date\"\n    },\n    \"completed\": {\n      \"type\": \"boolean\",\n      \"description\": \"Whether the task is done\"\n    }\n  },\n  \"required\": [\"task\", \"priority\", \"completed\"]\n}"
     },
     {
       "id": "anthropic:claude-3-5-haiku",
@@ -1105,7 +1155,27 @@
         "anthropic:claude-opus-4-6",
         "anthropic:claude-sonnet-4-5"
       ],
-      "representative": "anthropic:claude-3-5-haiku"
+      "representative": "anthropic:claude-3-5-haiku",
+      "displayName": "Anthropic (Claude 3.5 / 4.5)",
+      "keywordRules": {
+        "nullable": {
+          "allowed": false,
+          "severity": "error",
+          "requirement": "Use anyOf with {type: 'null'} instead",
+          "errorMessage": "nullable is not supported. Use anyOf with {type: 'null'} for optional values.",
+          "suggestion": "Use anyOf: [{type: 'string'}, {type: 'null'}]",
+          "note": "nullable is not part of JSON Schema standard."
+        },
+        "additionalProperties": {
+          "requirement": "Recommended: false for strict validation",
+          "severity": "warning"
+        },
+        "description": {
+          "requirement": "Highly recommended for all fields",
+          "severity": "warning"
+        }
+      },
+      "sampleSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"string\",\n      \"description\": \"Short task title\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\"low\", \"medium\", \"high\"],\n      \"description\": \"Task priority\"\n    },\n    \"dueDate\": {\n      \"anyOf\": [{ \"type\": \"string\", \"format\": \"date\" }, { \"type\": \"null\" }],\n      \"description\": \"Optional due date\"\n    },\n    \"completed\": {\n      \"type\": \"boolean\",\n      \"description\": \"Whether the task is done\"\n    }\n  },\n  \"required\": [\"task\", \"priority\", \"completed\"],\n  \"additionalProperties\": false\n}"
     }
   ]
 }

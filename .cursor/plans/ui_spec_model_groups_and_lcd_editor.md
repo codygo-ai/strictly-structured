@@ -86,3 +86,25 @@ If we later remove the editor checks or change Validate to not call an API, the 
 | **Editor** | Autocomplete and inline hints reflect "what works for your selection"; messages are neutral (e.g. "May not be supported for your selected models"). |
 | **Validate** | Button runs a check and shows results per group; we do not expose whether that's an API call or something else. |
 | **Principle** | Do not expose *how* we determine support; keep room to change or remove checks later. |
+
+---
+
+## 6. Single source of truth (technical + user-facing)
+
+**One artifact** carries both technical data and user-facing copy:
+
+- **Technical**: `models` (supported/failed, `supported_keywords`), `groups` (id, modelIds, representative), `schemas`.
+- **User-facing**: Per group: `displayName`, `note`, and `keywordRules` — each rule has `requirement`, `errorMessage`, `suggestion`, `severity`, and optional `allowed` override.
+
+**Build**: The compatibility runner writes model results and derives groups; it then merges in **display-config.json** (curated copy keyed by group representative). Output is **compatibility.json** (v3). One file at runtime = single source of truth.
+
+**Consumption**: Model selector uses `displayName` when present. Editor squiggles use `errorMessage` and `suggestion` from the group’s `keywordRules` for the reported keyword. A future “Special requirements” panel can show `requirement` / `note` per selected group.
+
+---
+
+## 7. Special requirements per model group (optional section)
+
+A **read-only section** can show per–model-group guidance using the **same single source**: `groups[].displayName`, `note`, and `keywordRules[].requirement` / `note`.
+
+- **Placement**: e.g. collapsible panel, tab, or sidebar; visible when one or more groups are selected.
+- **Copy**: Neutral; show "For [displayName]: …" and the requirement/note from the data.

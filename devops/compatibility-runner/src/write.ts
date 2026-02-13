@@ -7,11 +7,36 @@ import { deriveGroups } from "~/group.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/** Per-keyword user-facing rule (single source of truth: technical + display). */
+export interface KeywordRule {
+  allowed?: boolean;
+  severity?: "error" | "warning" | "info";
+  requirement?: string;
+  errorMessage?: string;
+  suggestion?: string;
+  note?: string;
+}
+
 export interface CompatibilityGroup {
   id: string;
   provider: string;
   modelIds: string[];
   representative: string;
+  displayName?: string;
+  note?: string;
+  keywordRules?: Record<string, KeywordRule>;
+  sampleSchema?: string;
+}
+
+interface DisplayGroupConfig {
+  displayName?: string;
+  note?: string;
+  keywordRules?: Record<string, KeywordRule>;
+  sampleSchema?: string;
+}
+
+interface DisplayConfig {
+  groups?: Record<string, DisplayGroupConfig>;
 }
 
 export interface ModelResultWithMeta extends ModelResult {
@@ -64,15 +89,40 @@ export async function writeCompatibility(
       };
     }
   }
-  const groups = deriveGroups(
+  let groups = deriveGroups(
     Object.keys(modelsWithMeta),
     modelsWithMeta,
     modelToProvider,
     costOrder
   );
 
+  // Merge display config (user-facing copy) into groups → single source of truth
+  const displayPath = join(__dirname, "../config/display-config.json");
+  try {
+    const displayRaw = await readFile(displayPath, "utf-8");
+    const displayConfig: DisplayConfig = JSON.parse(displayRaw);
+    if (displayConfig.groups) {
+      groups = groups.map((g) => {
+        const display = displayConfig.groups![g.representative];
+        if (!display) return g;
+        return {
+          ...g,
+          displayName: display.displayName ?? g.displayName,
+          note: display.note ?? g.note,
+          keywordRules:
+            display.keywordRules != null
+              ? { ...g.keywordRules, ...display.keywordRules }
+              : g.keywordRules,
+          sampleSchema: display.sampleSchema ?? g.sampleSchema,
+        };
+      });
+    }
+  } catch (e) {
+    // display-config optional: no merge if missing or invalid
+  }
+
   const data: CompatibilityData = {
-    version: 2,
+    version: 3,
     models: modelsWithMeta,
     schemas: Object.fromEntries(
       schemas.map((s) => [s.id, { features: s.features }])
