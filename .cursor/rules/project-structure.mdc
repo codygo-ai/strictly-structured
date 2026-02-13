@@ -1,0 +1,47 @@
+---
+description: 'Monorepo structure, package organization, and pnpm workspace commands'
+alwaysApply: true
+---
+
+## Use pnpm monorepo commands
+
+- Use `pnpm run`, `pnpm exec`, `pnpx` and `pnpm --filter <package> <command>`. Not `npm`, `npx` and the likes.
+- Use workspace protocol: `workspace:^` for internal dependencies.
+
+## Package namespaces
+
+This monorepo uses **`@ssv/*`** for all packages:
+
+- **`@ssv/frontend`**: Next.js app (packages/frontend)
+- **`@ssv/backend`**: Firebase functions / server (packages/backend)
+- **`@ssv/schema-utils`**: Shared schema validation and types (packages/schema-utils)
+- **`@ssv/tsconfig`**: Shared TypeScript configs (devops/tsconfig)
+- **`@ssv/eslint-config`**: Shared ESLint config
+
+## Build patterns
+
+- **Libraries** (e.g. `@ssv/schema-utils`): Build with `tsc` or source imports; `typecheck` with `tsc --noEmit`.
+- **Applications** (e.g. `@ssv/frontend`, `@ssv/backend`): Use Next.js or tsup as appropriate; run `build` before deploy.
+
+## Package imports only
+
+Use package imports, not direct file paths across packages:
+
+```typescript
+// ✅ CORRECT
+import { validateSchema } from '@ssv/schema-utils';
+
+// ❌ WRONG
+import { validateSchema } from '../../schema-utils/src/validate';
+```
+
+## Relative paths
+
+- Never use relative paths to other packages. Use workspace protocol (`workspace:^`) in dependencies and import by package name.
+- Within a package, use relative paths for same-package imports.
+
+## Dependency management
+
+- Common tooling (TypeScript, ESLint, turbo) is at repo root. Use same major versions across packages.
+- Internal deps: `"@ssv/schema-utils": "workspace:*"` etc.
+- Run `pnpm i` at root after any package.json change.

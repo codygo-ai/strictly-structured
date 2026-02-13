@@ -1,0 +1,29 @@
+{
+  "name": "@ssv/backend",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0",
+    "openai": "^6.21.0",
+    "@anthropic-ai/sdk": "^0.74.0",
+    "@google/generative-ai": "^0.24.0"
+  },
+  "devDependencies": {
+    "@ssv/eslint-config": "workspace:*",
+    "@ssv/tsconfig": "workspace:*",
+    "eslint": "^9.39.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0"
+  }
+}

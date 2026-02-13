@@ -4,25 +4,29 @@
   "private": true,
   "description": "Structured Schema Validator monorepo",
   "scripts": {
-    "dev": "pnpm --filter @ssv/site dev",
+    "dev": "concurrently -n fe,be,em -c blue,green,magenta \"pnpm --filter @ssv/frontend dev\" \"pnpm --filter @ssv/backend dev\" \"pnpm exec firebase emulators:start --only functions,hosting\"",
+    "dev:frontend": "pnpm --filter @ssv/frontend dev",
+    "dev:backend": "pnpm --filter @ssv/backend dev",
+    "dev:emulator": "pnpm exec firebase emulators:start --only functions,hosting",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "start": "pnpm --filter @ssv/site start",
-    "dev:lambda": "pnpm --filter @ssv/lambdas dev",
-    "deploy": "bash scripts/firebase-deploy.sh",
-    "deploy:aws": "bash sam/deploy.sh"
+    "validate": "turbo run lint typecheck",
+    "start": "pnpm --filter @ssv/frontend start",
+    "deploy": "pnpm run build && pnpm exec firebase deploy"
   },
   "engines": {
     "node": ">=22.15.0",
     "pnpm": ">=9"
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "@ssv/eslint-config": "workspace:*",
     "@ssv/tsconfig": "workspace:*",
     "eslint": "^9.39.1",
     "turbo": "^2.3.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "firebase-tools": "^14.0.0"
   },
   "packageManager": "pnpm@9.0.0"
 }

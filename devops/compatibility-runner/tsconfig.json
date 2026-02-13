@@ -1,13 +1,1 @@
-{
-  "extends": "@ssv/tsconfig/base-src.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "~/*": ["src/*"] },
-    "outDir": "dist",
-    "rootDir": "src",
-    "moduleResolution": "node",
-    "types": ["node"]
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
-}
+{"extends":"@ssv/tsconfig/base.json","compilerOptions":{"baseUrl":".","paths":{"~/*":["src/*"]},"rootDir":"src","outDir":"dist","moduleResolution":"node","types":["node"]},"include":["src/**/*"],"exclude":["node_modules"]}

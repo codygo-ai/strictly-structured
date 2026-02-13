@@ -1,32 +1,12 @@
 import { writeFile, mkdir, readFile, rename } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { CompatibilityGroup, KeywordRule } from "@ssv/schema-utils";
 import type { CorpusSchema } from "~/loadCorpus.js";
 import type { ModelResult } from "~/derive.js";
 import { deriveGroups } from "~/group.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-/** Per-keyword user-facing rule (single source of truth: technical + display). */
-export interface KeywordRule {
-  allowed?: boolean;
-  severity?: "error" | "warning" | "info";
-  requirement?: string;
-  errorMessage?: string;
-  suggestion?: string;
-  note?: string;
-}
-
-export interface CompatibilityGroup {
-  id: string;
-  provider: string;
-  modelIds: string[];
-  representative: string;
-  displayName?: string;
-  note?: string;
-  keywordRules?: Record<string, KeywordRule>;
-  sampleSchema?: string;
-}
 
 interface DisplayGroupConfig {
   displayName?: string;

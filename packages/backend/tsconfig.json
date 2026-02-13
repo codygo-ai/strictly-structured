@@ -1,0 +1,1 @@
+{"extends":"@ssv/tsconfig/base.json","compilerOptions":{"baseUrl":".","paths":{"~/*":["src/*"]},"rootDir":"src","outDir":"dist","noEmit":true},"include":["src/**/*.ts"],"exclude":["node_modules","dist"]}

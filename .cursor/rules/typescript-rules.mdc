@@ -1,0 +1,72 @@
+---
+description: 'TypeScript type safety rules including satisfies, undefined vs null, and unknown vs any'
+globs: ['**/*.ts', '**/*.tsx']
+---
+
+- DO NOT @ts-expect-error nor @eslint-disable at any level without trying hard to avoid and getting explicit confirmation on that.
+
+- Prefer type inference whenever its is applicable. Use explicit types when inference is unclear.
+- Use `satisfies` to check types without widening
+- Use discriminated unions, `never`, `infer`, utility types
+- All function parameters must be typed
+- Use `unknown` for truly unknown types, then narrow
+- Prefer `satisfies` Over `as` Casting
+- Use explicit types or `satisfies` when preserving literal types. Try to avoid `as` casting
+- An exception where as is OK - a minimal inline cast of untyped data wth `?` guards:
+
+```typescript
+const describeResult = await this.client.DOM.describeNode({ nodeId });
+return (describeResult as { node?: { nodeValue?: string } }).node?.nodeValue ?? '';
+```
+
+- Always Use `undefined` Instead of `null` unless null imposed by external lib.
+- Always Use `unknown` Instead of `any`
+- Prefer Functional Array Methods Over Loops - Use `map`, `reduce`, `filter`, etc. instead of loops.
+- Prefer Type-Safe String Unions Over Enums
+- Use `function` declarations, not arrow functions. Exception: Arrow functions OK for inline callbacks.
+- Use `const` over `let`
+- `let` acceptable only for loop counters or truly mutable state
+- export from files modern style: `export function build` NOT `export { build };`
+- export the minimum required! encapsulation and decoupling is important.
+- Use const arrays or const objects with `as const` and derive types:
+
+```typescript
+const STATUSES = ['active', 'inactive', 'pending'] as const;
+type Status = (typeof STATUSES)[number];
+
+// Or with objects:
+const STATUS_CONFIG = { active: { label: 'Active' }, inactive: { label: 'Inactive' } } as const;
+type Status = keyof typeof STATUS_CONFIG;
+```
+
+- Avoid unreadable narrowing. Prefer casting with .? support
+
+**Avoid:**
+
+```typescript
+if (
+  typeof error === 'object' &&
+  error !== null &&
+  'context' in error &&
+  typeof error.context === 'object' &&
+  error.context !== null &&
+  'response' in error.context
+) {
+  return error.context.response;
+}
+
+return undefined;
+```
+
+**Prefer:**
+
+```typescript
+return (error as { context?: { response?: string } })?.context?.response;
+```
+
+```typescript
+const err = error as { context?: { response?: string } };
+return err?.context?.response;
+```
+
+- Do not use `.js` suffix for imports, even in ESM.

@@ -1,0 +1,388 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design system tokens – single source of truth for the site (light theme)
+   ========================================================================== */
+:root {
+  /* Surfaces */
+  --ds-page: #fafafa;
+  --ds-surface: #ffffff;
+  --ds-surface-subtle: #fafafa;
+  --ds-surface-hover: #f5f5f5;
+  --ds-surface-active: #f8fbfd;
+
+  /* Text */
+  --ds-primary: #1a1a1a;
+  --ds-secondary: #666666;
+  --ds-muted: #999999;
+
+  /* Borders */
+  --ds-border: #e5e5e5;
+  --ds-border-focus: #d0e4f2;
+
+  /* Codygo brand (logo, brand wordmark) */
+  --ds-codygo: #0d9488;
+
+  /* Accent (links, primary actions, code) */
+  --ds-accent: #5b8fc7;
+  --ds-accent-hover: #4a7db0;
+  --ds-accent-muted: #d0e4f2;
+  --ds-accent-bg: #f8fbfd;
+
+  /* Semantic */
+  --ds-success: #5cb85c;
+  --ds-warning: #f0ad4e;
+  --ds-error: #dc3545;
+  --ds-disabled: #cccccc;
+
+  /* Code / inline */
+  --ds-code-bg: #f5f5f5;
+
+  /* Layout & shape */
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-sidebar-width: 380px;
+  --ds-content-x: 2.5rem;
+  --ds-content-y: 1.5rem;
+
+  /* Motion */
+  --ds-duration: 0.2s;
+
+  /* Shadows */
+  --ds-shadow-button: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(91, 143, 199, 0.3);
+  --ds-shadow-button-hover: 0 6px 20px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(91, 143, 199, 0.4);
+  --ds-shadow-button-disabled: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Legacy (dark theme – Header/Footer if used elsewhere) */
+  --background: #0a0a0f;
+  --foreground: #e4e4e7;
+  --card: #18181b;
+  --card-border: #27272a;
+  --accent: #3b82f6;
+  --success: #22c55e;
+  --error: #ef4444;
+}
+
+@theme {
+  --font-sans: system-ui, sans-serif;
+
+  /* Design system → Tailwind utilities */
+  --color-page: var(--ds-page);
+  --color-surface: var(--ds-surface);
+  --color-surface-subtle: var(--ds-surface-subtle);
+  --color-surface-hover: var(--ds-surface-hover);
+  --color-surface-active: var(--ds-surface-active);
+  --color-primary: var(--ds-primary);
+  --color-secondary: var(--ds-secondary);
+  --color-muted: var(--ds-muted);
+  --color-border: var(--ds-border);
+  --color-border-focus: var(--ds-border-focus);
+  --color-codygo: var(--ds-codygo);
+  --color-accent: var(--ds-accent);
+  --color-accent-hover: var(--ds-accent-hover);
+  --color-accent-muted: var(--ds-accent-muted);
+  --color-accent-bg: var(--ds-accent-bg);
+  --color-success: var(--ds-success);
+  --color-warning: var(--ds-warning);
+  --color-error: var(--ds-error);
+  --color-disabled: var(--ds-disabled);
+  --color-code-bg: var(--ds-code-bg);
+
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* ==========================================================================
+   Validator / site pages – light theme using design tokens
+   ========================================================================== */
+.validator-page {
+  background: var(--ds-page);
+  color: var(--ds-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.validator-page .validator-header {
+  background: var(--ds-surface);
+  border-bottom: 1px solid var(--ds-border);
+  padding: 2rem var(--ds-content-x);
+}
+
+.validator-page .validator-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ds-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.375rem;
+}
+
+.validator-page .validator-subtitle {
+  color: var(--ds-secondary);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.validator-page .model-bar {
+  background: var(--ds-surface);
+  border-bottom: 1px solid var(--ds-border);
+  padding: 0.75rem var(--ds-content-x);
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.validator-page .model-btn {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: var(--ds-secondary);
+  font-weight: 500;
+  transition: background-color var(--ds-duration), color var(--ds-duration), border-color var(--ds-duration);
+  border-radius: var(--ds-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.validator-page .model-btn:hover {
+  background: var(--ds-surface-hover);
+  color: var(--ds-primary);
+}
+
+.validator-page .model-btn.selected {
+  color: var(--ds-primary);
+  font-weight: 600;
+  background: var(--ds-surface-active);
+  border-color: var(--ds-border-focus);
+}
+
+.validator-page .model-btn .model-btn-icon {
+  color: var(--ds-muted);
+}
+
+.validator-page .model-btn:hover .model-btn-icon {
+  color: var(--ds-secondary);
+}
+
+.validator-page .model-btn.selected .model-btn-icon {
+  color: var(--ds-accent);
+}
+
+.validator-page .editor-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-page);
+  min-width: 0;
+}
+
+.validator-page .editor-header {
+  padding: var(--ds-content-y) var(--ds-content-x) 1rem;
+  background: var(--ds-page);
+  border-bottom: 1px solid var(--ds-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.validator-page .editor-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-muted);
+  font-weight: 600;
+}
+
+.validator-page .upload-hint {
+  font-size: 0.8rem;
+  color: var(--ds-muted);
+}
+
+.validator-page .editor-container {
+  flex: 1;
+  padding: var(--ds-content-y) var(--ds-content-x) var(--ds-content-x);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.validator-page .validate-btn {
+  position: absolute;
+  bottom: calc(var(--ds-content-x) + 16px);
+  right: calc(var(--ds-content-x) + 32px);
+  padding: 0.75rem 1.5rem;
+  background: var(--ds-accent);
+  color: white;
+  border: none;
+  border-radius: var(--ds-radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--ds-shadow-button);
+  transition: background-color var(--ds-duration), box-shadow var(--ds-duration), transform var(--ds-duration);
+}
+
+.validator-page .validate-btn:hover:not(:disabled) {
+  background: var(--ds-accent-hover);
+  box-shadow: var(--ds-shadow-button-hover);
+  transform: translateY(-1px);
+}
+
+.validator-page .validate-btn:disabled {
+  background: var(--ds-disabled);
+  cursor: not-allowed;
+  box-shadow: var(--ds-shadow-button-disabled);
+}
+
+/* Auto-fix: original blue + AI glow, sparkle */
+.validator-page .auto-fix-btn {
+  background: var(--ds-accent);
+  box-shadow: 0 0 20px rgba(91, 143, 199, 0.4), var(--ds-shadow-button);
+}
+
+.validator-page .auto-fix-btn:hover:not(:disabled) {
+  background: var(--ds-accent-hover);
+  box-shadow: 0 0 28px rgba(91, 143, 199, 0.5), var(--ds-shadow-button-hover);
+}
+
+.validator-page .auto-fix-btn:disabled {
+  background: var(--ds-disabled);
+  box-shadow: var(--ds-shadow-button-disabled);
+}
+
+.validator-page .auto-fix-btn .auto-fix-btn-sparkle {
+  display: inline-block;
+  margin-right: 0.35em;
+  animation: auto-fix-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes auto-fix-sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.1); }
+}
+
+.validator-page .sidebar {
+  background: var(--ds-surface);
+  border-left: 1px solid var(--ds-border);
+  width: var(--ds-sidebar-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.validator-page .model-info {
+  padding: var(--ds-content-y);
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.validator-page .model-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ds-primary);
+  margin-bottom: 0.5rem;
+}
+
+.validator-page .model-desc {
+  font-size: 0.8rem;
+  color: var(--ds-secondary);
+  line-height: 1.5;
+}
+
+.validator-page .requirements-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--ds-content-y);
+  background: var(--ds-page);
+}
+
+.validator-page .section-header {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-muted);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.validator-page .req-item {
+  padding: 0.625rem 0;
+  font-size: 0.8rem;
+  color: var(--ds-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  line-height: 1.5;
+}
+
+.validator-page .req-icon.success { color: var(--ds-success); }
+.validator-page .req-icon.warning { color: var(--ds-warning); }
+.validator-page .req-icon.error { color: var(--ds-error); }
+
+.validator-page .issue-card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.validator-page .issue-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--ds-primary);
+}
+
+.validator-page .issue-icon.error { color: var(--ds-error); }
+.validator-page .issue-icon.warning { color: var(--ds-warning); }
+
+.validator-page .issue-body {
+  color: var(--ds-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.validator-page .issue-fix {
+  padding: 0.5rem 0.75rem;
+  background: var(--ds-surface-hover);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-sm);
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--ds-accent);
+  cursor: pointer;
+  transition: border-color var(--ds-duration), background-color var(--ds-duration);
+}
+
+.validator-page .issue-fix:hover {
+  border-color: var(--ds-accent);
+  background: var(--ds-accent-bg);
+}
+
+.validator-page code {
+  background: var(--ds-code-bg);
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: var(--ds-accent);
+}

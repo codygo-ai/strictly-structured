@@ -8,9 +8,12 @@
   "exports": {
     ".": "./base.mjs"
   },
-  "files": ["base.mjs"],
+  "files": [
+    "base.mjs"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "typescript-eslint": "^8.0.0"
   }
 }

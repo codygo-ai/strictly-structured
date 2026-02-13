@@ -4,15 +4,13 @@
 
 ## Monorepo
 
-This repo uses **packages/**, **devops/**, and **functions/**.
+This repo uses **packages/** and **devops/**.
 
 **packages/** (apps and shared libs):
 
-- **site** – Next.js app (static export): validator UI; Firebase client + Analytics when configured
-- **lambdas** – Shared validate logic; used by the Firebase Cloud Function and by local dev / optional AWS Lambda
-- **schema-utils** – Shared types and helpers for compatibility and validation
-
-**functions/** – Firebase Cloud Functions: HTTP `validate` (POST `/api/validate`) and `fix` (POST `/api/fix`), both require auth; deployed with Hosting.
+- **frontend** – Next.js app (static export): validator UI; Firebase client + Analytics when configured
+- **backend** – Firebase Cloud Functions: HTTP `validate` (POST `/api/validate`) and `fix` (POST `/api/fix`), both require auth; contains server-only logic that calls OpenAI/Google/Anthropic APIs
+- **schema-utils** – Shared types and helpers for **compatibility data and schema validation**; used by the **frontend** only (client-safe, no API keys). Different from backend: schema-utils does not call LLM APIs; it parses schemas, validates structure, and provides types for the UI
 
 **devops/** (tooling and data):
 
@@ -20,7 +18,7 @@ This repo uses **packages/**, **devops/**, and **functions/**.
 - **eslint-config** – Shared ESLint flat config
 - **compatibility-runner** – Test schemas + CLI; output: `data/compatibility.json`
 
-The site is **static only**. Validation requests go to the validate API. On Firebase Hosting, leave `NEXT_PUBLIC_VALIDATE_API_URL` empty for same-origin `/api/validate` and `/api/fix`; otherwise set it to your API base URL.
+The site is **static only**. API calls use the same origin: on localhost the dev server proxies to the emulator; when deployed, Hosting rewrites to Cloud Functions.
 
 ## Run the app
 
@@ -30,19 +28,17 @@ The site is **static only**. Validation requests go to the validate API. On Fire
    pnpm install
    ```
 
-2. **Static site (packages/site)**  
-   See `packages/site/.env.example`. For same-origin validate (e.g. after Firebase deploy), leave `NEXT_PUBLIC_VALIDATE_API_URL` empty. For local dev, point it at a local Lambda (`pnpm dev:lambda`) or a deployed URL.
-
-3. From the repo root:
+2. **Local dev (recommended)**  
+   From the repo root, `pnpm dev` runs in parallel: Next.js (with hot reload), backend build in watch mode, and Firebase emulators (functions + hosting). Open **http://localhost:3000**; the app proxies `/api/validate` and `/api/fix` to the emulator. Put API keys in `packages/backend/.env` for the emulator.
 
    ```bash
    pnpm dev
    ```
 
-   This runs the Next.js app (e.g. http://localhost:3000). Use **Validate** with a reachable API (local Lambda or deployed).
+   Then open http://localhost:3000.
 
-4. **Local validate API**  
-   Run `pnpm dev:lambda` for a local server at http://localhost:3001 (POST `/validate`). Set `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` (or `GEMINI_API_KEY`), and `ANTHROPIC_API_KEY` in `.env` at project root.
+3. **Emulator or frontend only**  
+   `pnpm dev:emulator` runs only Firebase emulators (hosting at http://localhost:5050, functions at 5001). `pnpm dev:frontend` runs only the Next.js dev server.
 
 ## Deploy (Firebase)
 
@@ -50,7 +46,7 @@ Default deploy target is **Firebase** (Hosting + Functions).
 
 1. Ensure **Firebase CLI** is installed and you're logged in (`firebase login`). Project is set in `.firebaserc` (e.g. `codygo-website`); Hosting site is `structured-output` in `firebase.json`.
 
-2. Put API keys in **`.env`** at project root: `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` (or `GEMINI_API_KEY`), `ANTHROPIC_API_KEY`. The deploy script copies `.env` into `functions/.env` so the validate Cloud Function receives them.
+2. Set API keys for the deployed Cloud Functions via Firebase config or secrets (e.g. in Firebase Console or CI). For local emulator, use `packages/backend/.env` with `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` (or `GEMINI_API_KEY`), and `ANTHROPIC_API_KEY`.
 
 3. From the repo root:
 
@@ -58,20 +54,18 @@ Default deploy target is **Firebase** (Hosting + Functions).
    pnpm run deploy
    ```
 
-   This builds all packages, copies `.env` to `functions/.env`, and runs `firebase deploy` (hosting + functions). The site is served from `packages/site/out`; `/api/validate` and `/api/fix` are rewritten to Cloud Functions (auth required) so the same origin is used.
-
-**Optional: deploy to AWS**  
-Use `pnpm run deploy:aws` to deploy with SAM (Lambda + S3 + CloudFront) instead.
+   This runs `pnpm run build` then `firebase deploy` (hosting + functions). The site is served from `packages/frontend/out`; `/api/validate` and `/api/fix` are rewritten to Cloud Functions (auth required) so the same origin is used.
 
 ## Scripts (root)
 
-- `pnpm dev` – Start the web app in development
-- `pnpm build` – Build all packages (Turbo): site → `packages/site/out`, lambdas → `packages/lambdas/dist`, functions → `functions/lib`
+- `pnpm dev` – Run frontend (Next.js HMR), backend (tsup watch), and Firebase emulators in parallel; open http://localhost:3000 (API proxied automatically)
+- `pnpm dev:frontend` – Next.js dev server only
+- `pnpm dev:backend` – Backend build in watch mode only
+- `pnpm dev:emulator` – Firebase emulators (functions + hosting) at http://localhost:5050
+- `pnpm build` – Build all packages (Turbo): frontend → `packages/frontend/out`, backend → `packages/backend/lib`, schema-utils → `packages/schema-utils/dist`
 - `pnpm lint` – Lint all packages
 - `pnpm typecheck` – Type-check all packages
-- `pnpm dev:lambda` – Local validate API (http://localhost:3001)
-- `pnpm run deploy` – Deploy to Firebase (hosting + functions)
-- `pnpm run deploy:aws` – Deploy to AWS (SAM)
+- `pnpm run deploy` – Build and deploy to Firebase (hosting + functions)
 
 ## How it works
 

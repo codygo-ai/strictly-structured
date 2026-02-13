@@ -9,6 +9,7 @@ dist
 *.tsbuildinfo
 
 .eslintcache
+coverage
 
 next-env.d.ts
 
@@ -20,11 +21,9 @@ next-env.d.ts
 .aws-sam
 .DS_Store
 
-firebase-debug.log
-firebase-debug.*.log
-.firebase/
+*.log
+.firebase
 
-functions/.env
-functions/.env.*
-
+packages/backend/.env
+packages/backend/.env.*
 packages/web/public/compatibility.json

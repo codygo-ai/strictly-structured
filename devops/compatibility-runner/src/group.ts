@@ -1,11 +1,5 @@
 import type { ModelResult } from "~/derive.js";
-
-export interface CompatibilityGroup {
-  id: string;
-  provider: string;
-  modelIds: string[];
-  representative: string;
-}
+import type { CompatibilityGroup } from "@ssv/schema-utils";
 
 /**
  * Group models (per provider) that have identical supported_keywords (same validation behavior).

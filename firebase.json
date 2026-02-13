@@ -1,17 +1,22 @@
 {
   "hosting": {
     "site": "structured-output",
-    "public": "packages/site/out",
+    "public": "packages/frontend/out",
     "rewrites": [
       { "source": "/api/validate", "function": "validate" },
       { "source": "/api/fix", "function": "fix" }
     ]
   },
   "functions": {
-    "source": "functions",
+    "source": "packages/backend/dist",
+    "runtime": "nodejs22",
     "predeploy": [
-      "pnpm --filter @ssv/lambdas build",
-      "pnpm --filter functions build"
+      "pnpm --filter @ssv/backend build",
+      "cd packages/backend/dist && pnpm install --ignore-workspace --no-lockfile"
     ]
+  },
+  "emulators": {
+    "functions": { "port": 5001 },
+    "hosting": { "port": 5050 }
   }
 }

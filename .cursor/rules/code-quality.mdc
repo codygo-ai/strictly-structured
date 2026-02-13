@@ -1,0 +1,94 @@
+---
+description: 'Code style and most important principles to apply to any solution'
+alwaysApply: true
+---
+
+# Code Style Rules
+
+## Core Principles - MANDATORY and IMPORTANT
+
+- Do not hide/swallow or compensate errors. Let them surface.
+- Throw error in unexpected state or values. Do not hide or use default.
+- Be Minimalistic, elegant, simple
+- Functional approach (never OOP unless absolutely required)
+- Immutable by default
+- Ensure Encapsulation and layering with directed access and import graph.
+- Check for straightforward solutions before complex ones!!!!
+
+## Minimum Comments
+
+- Only when explaining "why" not "what"
+- Document non-obvious business logic
+- No excessive commenting
+- Improve code to be more readable if needed (names, extractions etc)
+
+## Code Organization
+
+- Always ensure Single responsibility: one function = one purpose, one file = one main export
+- Keep related things close to each other
+- Ensure all code adheres to DRY principle - never repeat yourself
+
+## Environment Variables
+
+- Keep all `process.env.XXX` at top of files as `const XXX = process.env.XXX ?? [default_value]` and use the const - do not scatter around
+- If not default provided, ensure `XXX_missing` is the default even for non-string values.
+- Use node `--env-file-if-exists` not dotenv.
+- All external config should be via environment variables
+- Use `.env.sample` to show which env a project uses. Do NOT use `.env.prod` or `.env.dev` as we set them via ci/cd and not want to use in git.
+
+## Directory with Index.ts Rule
+
+- If `index.ts` exists in directory, you MUST use it and not import from files in that dir at any level. If it doesn't exist, import directly from files.
+- **Uppercase dirs** (like `ComponentName/`) → Always have `index.ts`, always import from it
+- **Lowercase dirs** → Usually NO `index.ts`, import directly
+- **Lowercase dirs with `index.ts`** → Import from index (acts as sentinel)
+
+### Index.ts Content Rule
+
+`index.ts` files MUST only contain exports. Any other code must be minimal, trivial, and directly related to exporting.
+
+```typescript
+// ✅ CORRECT
+export type { PlanRequestEvent } from './agentEvents';
+export { default } from './Component';
+
+// ❌ WRONG - Implementation code doesn't belong here
+function processEvent(event: PlanRequestEvent) {
+  /* ... */
+}
+```
+
+If you need implementation code, put it in a separate file and export from index.ts.
+
+### Export Patterns
+
+- **Components**: Default exports
+- **Utilities**: Named exports
+- **Types**: Named type exports
+
+## Naming Conventions
+
+- **PascalCase**: Components and their files
+- **camelCase**: All other files, functions, variables
+- **UPPER_CASE**: Environment variables, constants
+- One name per concept
+
+## Avoid defensive code
+
+- Prefer clarity and simplicity over defensive, long validation, logging and defensive programming.
+- Rely on robust central, single place error reporting and catching and avoid over protecting
+
+## Errors and logging
+
+1. When using a custom error type (e.g. AppError), fill max values in context which can be logged later and always pass the original error as cause when available.
+
+2. Take advantage of structured logging (`{ error }`) without ruining it.
+3. Use log msg to help quickly understand logs w/o having to look at context. Use context to ensure log has the max info to help solve.
+4. Extract error message only to add to text message of logs and only when helpful.
+5. Pass as much as you can information in the context.
+
+GOOD:
+
+```typescript
+log.warn({ error, tabId }, 'Failed to detach tab ${tabId} ${(error as Error)?.message}');
+```

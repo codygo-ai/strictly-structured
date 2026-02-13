@@ -1,0 +1,31 @@
+---
+description: 'Mandatory validation steps for every code change'
+alwaysApply: true
+---
+
+# Mandatory checklist
+
+## Code-driven attitude
+
+Even when in plan mode or writing docs — add code snippets and examples so the plan/docs are correct and can be executed.
+
+**After EVERY code change:**
+
+1. **IMMEDIATELY** run lint + typecheck on affected package(s):
+
+   `turbo run lint typecheck --filter=<package-name>`
+
+   - Example: `turbo run lint typecheck --filter=@ssv/schema-utils`
+   - Lint uses `--max-warnings 0` where applicable. If it fails, fix all errors.
+
+2. **If tests exist**: `turbo run test --filter=<package-name>`. If tests fail, fix them.
+
+3. **If app needs building**: `turbo run build --filter=<package-name>` (or build dependency chain).
+
+4. Do not mark tasks complete until these checks pass.
+
+## Commands (from repo root)
+
+- Single package: `turbo run lint typecheck --filter=@ssv/<package>`
+- Whole monorepo: `pnpm run lint`, `pnpm run typecheck`, `pnpm run build`
+- After any package.json change: `pnpm i` at root.
