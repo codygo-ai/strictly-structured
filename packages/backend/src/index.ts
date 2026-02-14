@@ -99,7 +99,8 @@ export const validate = onRequest(
     const apiKeys = getApiKeys();
     const result = await runValidate(body, apiKeys);
     if ("error" in result) {
-      res.status(400).set("Content-Type", "application/json").json({ error: result.error });
+      const status = result.error === "Not implemented" ? 501 : 400;
+      res.status(status).set("Content-Type", "application/json").json({ error: result.error });
       return;
     }
     res.status(200).set("Content-Type", "application/json").json({ results: result.results });
@@ -154,7 +155,8 @@ export const fix = onRequest(
     const apiKeys = getApiKeys();
     const result = await runFix(body, apiKeys.openai);
     if ("error" in result) {
-      res.status(400).set("Content-Type", "application/json").json({ error: result.error });
+      const status = result.error === "Not implemented" ? 501 : 400;
+      res.status(status).set("Content-Type", "application/json").json({ error: result.error });
       return;
     }
     res.status(200).set("Content-Type", "application/json").json({ suggestedSchema: result.suggestedSchema });

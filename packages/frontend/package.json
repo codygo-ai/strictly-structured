@@ -5,7 +5,7 @@
   "description": "Structured Schema Validator – Next.js app",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/copy-compatibility.js && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -15,8 +15,6 @@
     "@anthropic-ai/sdk": "^0.32.1",
     "@google/generative-ai": "^0.21.0",
     "@monaco-editor/react": "^4.6.0",
-    "@ssv/compatibility-runner": "workspace:*",
-    "@ssv/schema-utils": "workspace:*",
     "json-source-map": "^0.6.1",
     "next": "^15.0.0",
     "openai": "^4.73.0",

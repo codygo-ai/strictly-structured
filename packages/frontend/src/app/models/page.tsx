@@ -1,69 +1,77 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import type { CompatibilityData } from "@ssv/schema-utils";
+import type { StructuredOutputGroupsData } from "~/types/structuredOutputGroups";
+import groupsDataJson from "~/data/structured_output_groups.json";
+import { ComparisonTable } from "~/components/ComparisonTable";
+import { GroupCard } from "~/components/GroupCard";
+import { UniversalRules } from "~/components/UniversalRules";
+
+const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
+
+if (
+  !groupsData.meta?.comparison_columns ||
+  !Array.isArray(groupsData.meta.comparison_columns) ||
+  groupsData.meta.comparison_columns.length === 0
+) {
+  throw new Error(
+    "structured_output_groups.json: meta.comparison_columns is required and must be a non-empty array."
+  );
+}
+if (
+  !groupsData.meta?.comparison_rows ||
+  !Array.isArray(groupsData.meta.comparison_rows) ||
+  groupsData.meta.comparison_rows.length === 0
+) {
+  throw new Error(
+    "structured_output_groups.json: meta.comparison_rows is required and must be a non-empty array."
+  );
+}
+if (typeof groupsData.meta?.sources_display !== "string") {
+  throw new Error(
+    "structured_output_groups.json: meta.sources_display is required."
+  );
+}
+if (
+  !groupsData.meta?.provider_badge_classes ||
+  typeof groupsData.meta.provider_badge_classes !== "object"
+) {
+  throw new Error(
+    "structured_output_groups.json: meta.provider_badge_classes is required."
+  );
+}
+if (
+  !groupsData.meta?.comparison_legend ||
+  typeof groupsData.meta.comparison_legend !== "object"
+) {
+  throw new Error(
+    "structured_output_groups.json: meta.comparison_legend is required."
+  );
+}
+if (
+  !groupsData.meta?.universal ||
+  !Array.isArray(groupsData.meta.universal.alwaysSupported) ||
+  !Array.isArray(groupsData.meta.universal.neverSupported)
+) {
+  throw new Error(
+    "structured_output_groups.json: meta.universal with alwaysSupported and neverSupported arrays is required."
+  );
+}
+
+const GROUPS = groupsData.groups;
+const META = groupsData.meta;
 
 export default function ModelSupportPage() {
-  const [data, setData] = useState<CompatibilityData | null>(null);
-
-  useEffect(() => {
-    fetch("/compatibility.json")
-      .then(async (r) => {
-        const text = await r.text();
-        if (!r.ok) return { version: 1, models: {}, schemas: {} };
-        try {
-          return JSON.parse(text) as CompatibilityData;
-        } catch {
-          return { version: 1, models: {}, schemas: {} };
-        }
-      })
-      .then(setData)
-      .catch(() => setData({ version: 1, models: {}, schemas: {} }));
-  }, []);
-
-  if (!data) {
-    return (
-      <div className="py-8 text-secondary">
-        Loading model support data…
-      </div>
-    );
-  }
-
-  const modelIds = Object.keys(data.models);
-  if (modelIds.length === 0) {
-    return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold text-primary">Model support</h1>
-        <p className="text-secondary">
-          No compatibility data yet. Run the compatibility runner to generate
-          per-model supported JSON Schema features:{" "}
-          <code className="rounded bg-code-bg px-1.5 py-0.5 text-sm text-accent">
-            pnpm --filter @ssv/compatibility-runner run
-          </code>
-        </p>
-        <Link
-          href="/"
-          className="text-accent hover:underline"
-        >
-          Back to validator
-        </Link>
-      </div>
-    );
-  }
-
-  const groups = data.groups ?? [];
-
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-primary tracking-tight">
-          Model support
+          Model Support
         </h1>
-        <p className="mt-2 text-secondary">
-          JSON Schema features that each model accepted in our compatibility
-          runs. Models with identical support are grouped; the validator uses
-          the minimal-cost model in each group at runtime.
+        <p className="mt-2 text-secondary leading-snug">
+          JSON Schema support across LLM structured output providers. Each
+          group shares identical schema semantics — models within a group
+          differ only in performance and pricing.
         </p>
         <Link
           href="/"
@@ -73,61 +81,27 @@ export default function ModelSupportPage() {
         </Link>
       </div>
 
-      {groups.length > 0 && (
-        <section className="rounded-lg border border-border bg-surface p-6">
-          <h2 className="text-lg font-semibold text-primary mb-4 section-header">
-            Validation groups (used in validator)
-          </h2>
-          <ul className="space-y-3 text-sm text-secondary">
-            {groups.map((g) => (
-              <li key={g.id}>
-                <span className="font-medium text-primary capitalize">
-                  {g.provider}
-                </span>
-                : {g.modelIds.join(", ")} → use{" "}
-                <code className="rounded bg-code-bg px-1 text-accent">{g.representative}</code>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <section className="rounded-lg border border-border bg-surface p-6">
+        <h2 className="text-[15px] font-bold text-primary mb-4">
+          Quick Comparison
+        </h2>
+        <ComparisonTable
+        columns={META.comparison_columns}
+        rows={META.comparison_rows}
+        legend={META.comparison_legend}
+        groups={GROUPS}
+      />
+      </section>
 
-      <div className="space-y-8">
-        {modelIds.map((modelId) => {
-          const model = data.models[modelId];
-          const supported = model.supported_keywords ?? [];
-          return (
-            <section
-              key={modelId}
-              className="rounded-lg border border-border bg-surface p-6"
-            >
-              <h2 className="text-lg font-semibold text-primary font-mono">
-                {modelId}
-              </h2>
-              <div className="mt-4 grid gap-6 sm:grid-cols-2">
-                <div>
-                  <h3 className="text-sm font-medium text-muted mb-2">
-                    Supported ({supported.length})
-                  </h3>
-                  <p className="text-sm text-secondary">
-                    {supported.length > 0
-                      ? supported.join(", ")
-                      : "None recorded"}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted mb-2">
-                    Passing schemas
-                  </h3>
-                  <p className="text-sm text-secondary">
-                    {model.supported?.length ?? 0} of{" "}
-                    {Object.keys(data.schemas).length} corpus schemas
-                  </p>
-                </div>
-              </div>
-            </section>
-          );
-        })}
+      {GROUPS.map((group) => (
+        <GroupCard key={group.group_id} group={group} meta={META} />
+      ))}
+
+      <UniversalRules data={META.universal} />
+
+      <div className="mt-6 text-[11px] text-[#bbb] text-center">
+        Last verified: {META.last_updated} · Sources: {META.sources_display}
+        official documentation
       </div>
     </div>
   );

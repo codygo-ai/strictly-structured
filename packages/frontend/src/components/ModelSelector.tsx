@@ -1,6 +1,12 @@
 "use client";
 
-import type { CompatibilityGroup } from "@ssv/schema-utils";
+interface ModelGroup {
+  id: string;
+  provider: string;
+  modelIds: string[];
+  representative: string;
+  displayName?: string;
+}
 
 const PROVIDER_LABELS: Record<string, string> = {
   openai: "OpenAI",
@@ -8,7 +14,7 @@ const PROVIDER_LABELS: Record<string, string> = {
   anthropic: "Anthropic",
 };
 
-function groupLabel(g: CompatibilityGroup): string {
+function groupLabel(g: ModelGroup): string {
   if (g.displayName) return g.displayName;
   const provider = PROVIDER_LABELS[g.provider] ?? g.provider;
   if (g.modelIds.length === 1) {
@@ -18,7 +24,7 @@ function groupLabel(g: CompatibilityGroup): string {
 }
 
 interface ModelSelectorProps {
-  groups: CompatibilityGroup[];
+  groups: ModelGroup[];
   selectedRepresentative: string | null;
   onChange: (representative: string) => void;
 }
