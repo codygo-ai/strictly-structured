@@ -1,5 +1,5 @@
 import type { ModelResult } from "~/derive.js";
-import type { CompatibilityGroup } from "@ssv/schema-utils";
+import type { CompatibilityGroup } from "~/compat-types.js";
 
 /**
  * Group models (per provider) that have identical supported_keywords (same validation behavior).

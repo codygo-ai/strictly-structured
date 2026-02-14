@@ -12,6 +12,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "validate": "turbo run lint typecheck",
+    "generate:groups": "pnpm --filter @ssv/schemas run generate -- --out-dir packages/frontend/src",
     "start": "pnpm --filter @ssv/frontend start",
     "deploy": "pnpm run build && pnpm exec firebase deploy"
   },

@@ -1,7 +1,5 @@
 /**
- * Reads rule-matrix + fragments, resolves each schema (fragment + optional variant),
- * runs validate per group, writes schemas/*.json and manifest.json.
- * Run from repo root: pnpm exec tsx schema-samples/generate.ts
+ * Reads rule-matrix + fragments, validates per group from local data, writes schemas/*.json and manifest.json.
  */
 
 import * as fs from "fs";
@@ -14,12 +12,13 @@ import {
 } from "./validate.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(__dirname, "..");
-const GROUPS_PATH = path.join(REPO_ROOT, "packages/frontend/src/data/structured_output_groups.json");
-const FRAGMENTS_PATH = path.join(__dirname, "fragments.json");
-const RULE_MATRIX_PATH = path.join(__dirname, "rule-matrix.json");
-const SCHEMAS_DIR = path.join(__dirname, "schemas");
-const MANIFEST_PATH = path.join(__dirname, "manifest.json");
+const PACKAGE_ROOT = path.resolve(__dirname, "..");
+const GROUPS_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const SAMPLES_DIR = path.join(PACKAGE_ROOT, "samples");
+const FRAGMENTS_PATH = path.join(SAMPLES_DIR, "fragments.json");
+const RULE_MATRIX_PATH = path.join(SAMPLES_DIR, "rule-matrix.json");
+const SCHEMAS_DIR = path.join(SAMPLES_DIR, "schemas");
+const MANIFEST_PATH = path.join(SAMPLES_DIR, "manifest.json");
 
 interface RuleRow {
   rule_id: string;
@@ -114,7 +113,7 @@ function main(): void {
     }
 
     if (!written.has(relPath)) {
-      const absPath = path.join(__dirname, relPath);
+      const absPath = path.join(SCHEMAS_DIR, path.basename(relPath));
       const dir = path.dirname(absPath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(absPath, JSON.stringify(schema, null, 2) + "\n", "utf-8");

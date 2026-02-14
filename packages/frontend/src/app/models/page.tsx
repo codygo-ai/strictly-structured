@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { StructuredOutputGroupsData } from "~/types/structuredOutputGroups";
-import groupsDataJson from "~/data/structured_output_groups.json";
+import groupsDataJson from "~/data/structured_output_groups.generated.json";
 import { ComparisonTable } from "~/components/ComparisonTable";
 import { GroupCard } from "~/components/GroupCard";
 import { UniversalRules } from "~/components/UniversalRules";

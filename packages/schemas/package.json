@@ -1,11 +1,15 @@
 {
-  "name": "@ssv/schema-samples",
+  "name": "@ssv/schemas",
   "version": "0.0.0",
   "private": true,
-  "description": "Structured output schema samples suite: fragments, rule-matrix, validator, generator",
+  "description": "Canonical structured_output_groups data and CLI to generate artifacts for consumers",
   "type": "module",
+  "exports": {
+    "./compat-types": "./src/compat-types.ts"
+  },
   "scripts": {
-    "generate": "tsx generate.ts",
+    "generate": "tsx src/cli.ts",
+    "generate:samples": "tsx src/samples-generate.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0"
   },

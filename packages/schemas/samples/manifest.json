@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "source_groups": "packages/frontend/src/data/structured_output_groups.json",
+  "source_groups": "packages/schemas/data/structured_output_groups.json",
   "group_ids": [
     "openai_strict",
     "anthropic_structured",
     "gemini_json_schema"
   ],
-  "generated_at": "2026-02-14T07:29:16.017Z",
+  "generated_at": "2026-02-14T08:50:54.526Z",
   "samples": [
     {
       "path": "schemas/rootObject.json",

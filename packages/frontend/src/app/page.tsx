@@ -15,7 +15,7 @@ import type {
   StructuredOutputGroup,
   StructuredOutputGroupsData,
 } from "~/types/structuredOutputGroups";
-import groupsDataJson from "~/data/structured_output_groups.json";
+import groupsDataJson from "~/data/structured_output_groups.generated.json";
 
 const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
 import { useAuth } from "~/lib/useAuth";

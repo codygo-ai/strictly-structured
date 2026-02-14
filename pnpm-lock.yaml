@@ -38,9 +38,6 @@ importers:
       '@google/generative-ai':
         specifier: ^0.21.0
         version: 0.21.0
-      '@ssv/schema-utils':
-        specifier: workspace:*
-        version: link:../../packages/schema-utils
       openai:
         specifier: ^4.73.0
         version: 4.104.0(encoding@0.1.13)(zod@3.25.76)
@@ -173,11 +170,7 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
-  packages/schema-utils:
-    dependencies:
-      ajv:
-        specifier: ^8.17.1
-        version: 8.17.1
+  packages/schemas:
     devDependencies:
       '@ssv/eslint-config':
         specifier: workspace:*
@@ -185,21 +178,6 @@ importers:
       '@ssv/tsconfig':
         specifier: workspace:*
         version: link:../../devops/tsconfig
-      eslint:
-        specifier: ^9.39.1
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-
-  schema-samples:
-    devDependencies:
-      '@ssv/eslint-config':
-        specifier: workspace:*
-        version: link:../devops/eslint-config
-      '@ssv/tsconfig':
-        specifier: workspace:*
-        version: link:../devops/tsconfig
       '@types/node':
         specifier: ^22.15.0
         version: 22.19.11

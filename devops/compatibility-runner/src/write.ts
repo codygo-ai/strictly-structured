@@ -1,7 +1,7 @@
 import { writeFile, mkdir, readFile, rename } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { CompatibilityGroup, KeywordRule } from "@ssv/schema-utils";
+import type { CompatibilityGroup, KeywordRule } from "~/compat-types.js";
 import type { CorpusSchema } from "~/loadCorpus.js";
 import type { ModelResult } from "~/derive.js";
 import { deriveGroups } from "~/group.js";

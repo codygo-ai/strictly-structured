@@ -18,7 +18,7 @@ interface MachineSection {
   validationRules?: ValidationRule[];
 }
 
-interface GroupsData {
+export interface GroupsData {
   groups: Array<{ groupId: string; machine?: MachineSection }>;
 }
 
@@ -225,5 +225,3 @@ export function validateSchemaForGroup(
 export function getGroupIds(groupsData: GroupsData): string[] {
   return groupsData.groups.map((g) => g.groupId);
 }
-
-export type { GroupsData };
