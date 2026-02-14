@@ -138,6 +138,7 @@ export function SchemaEditor({
           wordWrap: "on",
           contextmenu: true,
           copyWithSyntaxHighlighting: true,
+          fixedOverflowWidgets: true,
         }}
       />
     </div>

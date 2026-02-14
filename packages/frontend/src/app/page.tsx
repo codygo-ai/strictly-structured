@@ -218,6 +218,7 @@ export default function Home() {
                       readOnly: true,
                       renderSideBySide: true,
                       enableSplitViewResizing: true,
+                      fixedOverflowWidgets: true,
                     }}
                   />
                   <div className="absolute bottom-3 right-3 flex gap-2 z-10">
