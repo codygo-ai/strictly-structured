@@ -2,6 +2,10 @@ import { onRequest } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { runValidate, runFix, type ValidateBody, type FixBody, type ProviderId } from "./core/index.js";
+import { createAuditRequestContext } from "./audit/index.js";
+import { createFirestoreEmitter } from "./audit/emitter.js";
+import type { AuditEvent } from "@ssv/audit";
+import { INGEST_MAX_EVENTS } from "@ssv/audit";
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -30,7 +34,7 @@ function getApiKeys(): Record<ProviderId, string | undefined> {
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, x-audit-session-id",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -58,7 +62,6 @@ function send401(res: { set: (h: Record<string, string>) => void; status: (n: nu
 
 /**
  * Validate JSON schema against LLM providers. Requires Firebase Auth.
- * invoker: "public" so Cloud Run does not require IAM; we verify Firebase ID token in requireAuth().
  */
 export const validate = onRequest(
   {
@@ -96,8 +99,11 @@ export const validate = onRequest(
       return;
     }
 
+    const auditCtx = createAuditRequestContext(req);
     const apiKeys = getApiKeys();
-    const result = await runValidate(body, apiKeys);
+    const result = await runValidate(body, apiKeys, auditCtx);
+    await auditCtx.emitter.flush();
+
     if ("error" in result) {
       const status = result.error === "Not implemented" ? 501 : 400;
       res.status(status).set("Content-Type", "application/json").json({ error: result.error });
@@ -108,8 +114,7 @@ export const validate = onRequest(
 );
 
 /**
- * Auto-fix schema: send issues + model context to a cheap model, return suggested schema. Requires Firebase Auth.
- * invoker: "public" so Cloud Run does not require IAM; we verify Firebase ID token in requireAuth().
+ * Auto-fix schema. Requires Firebase Auth.
  */
 export const fix = onRequest(
   {
@@ -152,13 +157,68 @@ export const fix = onRequest(
       return;
     }
 
+    const auditCtx = createAuditRequestContext(req);
     const apiKeys = getApiKeys();
-    const result = await runFix(body, apiKeys.openai);
+    const result = await runFix(body, apiKeys.openai, auditCtx);
+    await auditCtx.emitter.flush();
+
     if ("error" in result) {
       const status = result.error === "Not implemented" ? 501 : 400;
       res.status(status).set("Content-Type", "application/json").json({ error: result.error });
       return;
     }
     res.status(200).set("Content-Type", "application/json").json({ suggestedSchema: result.suggestedSchema });
+  }
+);
+
+/**
+ * Ingest anonymous audit events from the frontend.
+ * No auth required — events contain no PII.
+ */
+export const evaluate = onRequest(
+  {
+    cors: IS_EMULATOR,
+    invoker: "public",
+  },
+  async (req, res) => {
+    setCors(res);
+    if (req.method === "OPTIONS") {
+      res.status(204).end();
+      return;
+    }
+    if (req.method !== "POST") {
+      res.status(405).set("Content-Type", "application/json").json({ error: "Method not allowed" });
+      return;
+    }
+
+    let parsed: { events?: unknown };
+    try {
+      const raw =
+        req.body != null
+          ? typeof req.body === "string"
+            ? req.body
+            : JSON.stringify(req.body)
+          : "{}";
+      parsed = JSON.parse(raw) as { events?: unknown };
+    } catch {
+      res.status(400).set("Content-Type", "application/json").json({ error: "Invalid JSON body" });
+      return;
+    }
+
+    const events = parsed.events;
+    if (!Array.isArray(events) || events.length === 0 || events.length > INGEST_MAX_EVENTS) {
+      res.status(400).set("Content-Type", "application/json").json({
+        error: `Expected events array with 1-${INGEST_MAX_EVENTS} items`,
+      });
+      return;
+    }
+
+    const emitter = createFirestoreEmitter();
+    for (const event of events) {
+      emitter.emit(event as AuditEvent);
+    }
+    await emitter.flush();
+
+    res.status(202).set("Content-Type", "application/json").json({ accepted: events.length });
   }
 );

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
 import { validateSchemaForGroup } from "~/lib/groupSchemaValidator";
+import type { AuditEventKind } from "@ssv/audit/browser";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -18,6 +19,7 @@ interface SchemaEditorProps {
   selectedGroup: StructuredOutputGroup | null;
   fillHeight?: boolean;
   editorTheme?: "light" | "dark";
+  onAuditEvent?: (kind: AuditEventKind, data: Record<string, unknown>) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,12 +34,15 @@ function toMonacoSeverity(monaco: any, severity: string): number {
   }
 }
 
+const SCHEMA_EDIT_THROTTLE_MS = 2000;
+
 export function SchemaEditor({
   value,
   onChange,
   selectedGroup,
   fillHeight = false,
   editorTheme = "dark",
+  onAuditEvent,
 }: SchemaEditorProps) {
   const isLight = editorTheme === "light";
   const [mounted, setMounted] = useState(false);
@@ -45,6 +50,7 @@ export function SchemaEditor({
   const monacoRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null);
+  const lastAuditEmitRef = useRef(0);
 
   const handleBeforeMount = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,10 +106,40 @@ export function SchemaEditor({
           source: CUSTOM_MARKER_OWNER,
         }))
       );
+
+      // Emit audit events (throttled)
+      if (onAuditEvent) {
+        const now = Date.now();
+        if (now - lastAuditEmitRef.current >= SCHEMA_EDIT_THROTTLE_MS) {
+          lastAuditEmitRef.current = now;
+          let isValidJson = false;
+          try { JSON.parse(value); isValidJson = true; } catch { /* noop */ }
+          onAuditEvent("schema.edited", {
+            schemaHash: "", // populated by caller if needed
+            schemaSizeBytes: new Blob([value]).size,
+            isValidJson,
+          });
+        }
+
+        if (markers.length > 0 && selectedGroup) {
+          const errorCount = markers.filter((m) => m.severity === "error").length;
+          const warningCount = markers.filter((m) => m.severity === "warning").length;
+          const infoCount = markers.length - errorCount - warningCount;
+          onAuditEvent("client.validation", {
+            groupId: selectedGroup.groupId,
+            schemaHash: "",
+            markerCount: markers.length,
+            errorCount,
+            warningCount,
+            infoCount,
+            markerSample: markers.slice(0, 5).map((m) => m.message),
+          });
+        }
+      }
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [value, selectedGroup, mounted]);
+  }, [value, selectedGroup, mounted, onAuditEvent]);
 
   return (
     <div

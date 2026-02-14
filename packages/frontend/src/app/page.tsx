@@ -17,6 +17,7 @@ import type {
 } from "~/types/structuredOutputGroups";
 import groupsDataJson from "~/data/structured_output_groups.generated.json";
 import { useAuth } from "~/lib/useAuth";
+import { useAudit, hashSchema } from "~/lib/audit";
 
 const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
 
@@ -58,6 +59,7 @@ function groupTooltip(group: StructuredOutputGroup): string {
 
 export default function Home() {
   useAuth();
+  const { emit } = useAudit();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(
     () => GROUPS[0]?.groupId ?? null
@@ -75,26 +77,43 @@ export default function Home() {
 
   const handleGroupChange = useCallback((groupId: string) => {
     setSelectedGroupId(groupId);
-  }, []);
+    const group = GROUPS.find((g) => g.groupId === groupId);
+    if (group) {
+      emit("group.selected", { groupId, providerId: group.providerId });
+    }
+  }, [emit]);
 
   const handleValidate = useCallback(async () => {
+    const hash = await hashSchema(schema);
+    emit("server.validate.requested", {
+      schemaHash: hash,
+      schemaSizeBytes: new Blob([schema]).size,
+      modelIds: [],
+    });
     setError("Not implemented");
-  }, []);
+  }, [schema, emit]);
 
   const handleFix = useCallback(async () => {
+    const hash = await hashSchema(schema);
+    emit("fix.requested", { schemaHash: hash, issueCount: 0 });
     setError("Not implemented");
-  }, []);
+  }, [schema, emit]);
 
-  const handleAcceptSuggestion = useCallback(() => {
+  const handleAcceptSuggestion = useCallback(async () => {
     if (suggestedSchema != null) {
+      const hash = await hashSchema(schema);
+      const suggestedHash = await hashSchema(suggestedSchema);
+      emit("fix.accepted", { schemaHash: hash, suggestedSchemaHash: suggestedHash });
       setSchema(suggestedSchema);
       setSuggestedSchema(null);
     }
-  }, [suggestedSchema]);
+  }, [suggestedSchema, schema, emit]);
 
-  const handleRejectSuggestion = useCallback(() => {
+  const handleRejectSuggestion = useCallback(async () => {
+    const hash = await hashSchema(schema);
+    emit("fix.rejected", { schemaHash: hash });
     setSuggestedSchema(null);
-  }, []);
+  }, [schema, emit]);
 
   const normalizedDiffOriginal = useMemo(() => {
     if (suggestedSchema == null) return schema;
@@ -132,12 +151,15 @@ export default function Home() {
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result;
-        if (typeof text === "string") applyLoadedJson(text);
+        if (typeof text === "string") {
+          emit("schema.loaded", { method: "file_upload", schemaSizeBytes: new Blob([text]).size });
+          applyLoadedJson(text);
+        }
       };
       reader.readAsText(file);
       e.target.value = "";
     },
-    [applyLoadedJson]
+    [applyLoadedJson, emit]
   );
 
   const handleDrop = useCallback(
@@ -148,11 +170,14 @@ export default function Home() {
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result;
-        if (typeof text === "string") applyLoadedJson(text);
+        if (typeof text === "string") {
+          emit("schema.loaded", { method: "drag_drop", schemaSizeBytes: new Blob([text]).size });
+          applyLoadedJson(text);
+        }
       };
       reader.readAsText(file);
     },
-    [applyLoadedJson]
+    [applyLoadedJson, emit]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -247,6 +272,7 @@ export default function Home() {
                   selectedGroup={selectedGroup}
                   fillHeight
                   editorTheme="light"
+                  onAuditEvent={emit}
                 />
                 <div className="flex gap-2 flex-wrap">
                   <button

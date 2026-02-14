@@ -29,6 +29,7 @@
     "@google/generative-ai": "^0.24.0"
   },
   "devDependencies": {
+    "@ssv/audit": "workspace:*",
     "@ssv/eslint-config": "workspace:*",
     "@ssv/tsconfig": "workspace:*",
     "@types/node": "^22.0.0",

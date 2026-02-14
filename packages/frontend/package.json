@@ -22,6 +22,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@ssv/audit": "workspace:*",
     "@ssv/eslint-config": "workspace:*",
     "@ssv/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "^4.0.0",

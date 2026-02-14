@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Audit collections are server-only (firebase-admin bypasses rules).
+    // Deny all client-side access.
+    match /audit_events/{document=**} {
+      allow read, write: if false;
+    }
+    match /audit_traces/{document=**} {
+      allow read, write: if false;
+    }
+    match /audit_schemas/{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
