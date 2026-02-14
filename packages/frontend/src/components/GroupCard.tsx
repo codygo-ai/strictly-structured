@@ -73,7 +73,7 @@ export function GroupCard({
         <div
           className={`text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded ${badgeClass}`}
         >
-          {group.shortName}
+          {group.groupName}
         </div>
       </div>
       <div className="text-[13px] text-[#7a7f88] mb-2.5 leading-snug">

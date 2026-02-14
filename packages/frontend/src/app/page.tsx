@@ -167,7 +167,7 @@ export default function Home() {
             onClick={() => handleGroupChange(g.groupId)}
           >
             <ModelIcon provider={g.providerId} />
-            <span>{g.shortName}</span>
+            <span>{g.groupName}</span>
           </button>
         ))}
       </div>

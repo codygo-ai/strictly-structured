@@ -57,7 +57,7 @@ function cellStyle(ok: boolean | "warn" | "partial"): {
 }
 
 function columnLabel(columnId: ProviderId, groups: StructuredOutputGroup[]): string {
-  return groups.find((g) => g.providerId === columnId)?.shortName ?? columnId;
+  return groups.find((g) => g.providerId === columnId)?.groupName ?? columnId;
 }
 
 export function ComparisonTable({

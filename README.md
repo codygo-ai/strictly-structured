@@ -1,6 +1,6 @@
 # Structured Schema Validator
 
-**Structured Schema Validator** is an open-source tool by [Codygo](https://codygo.com) that validates JSON schemas for use with LLM structured outputs. Pick one or more providers (OpenAI, Google, Anthropic), paste or load a schema, and see whether each provider’s model accepts it. Default models: **gpt-4.1-mini**, **gemini-2.5-flash**, **claude-3-5-haiku**.
+**Structured Schema Validator** is an open-source tool by [Codygo](https://codygo.com) that validates JSON schemas for use with LLM structured outputs. Pick a group (e.g. GPT 4+, Claude 4.5+, Gemini 2.5+), paste or load a schema, and see whether that provider’s model accepts it. Default models: **gpt-4.1-mini**, **gemini-2.5-flash**, **claude-3-5-haiku**.
 
 ## Monorepo
 

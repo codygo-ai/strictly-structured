@@ -2,9 +2,9 @@
   "version": "1.0",
   "source_groups": "packages/schemas/data/structured_output_groups.json",
   "group_ids": [
-    "openai_strict",
-    "anthropic_structured",
-    "gemini_json_schema"
+    "gpt-4-o1",
+    "claude-4-5",
+    "gemini-2-5"
   ],
   "generated_at": "2026-02-14T08:50:54.526Z",
   "samples": [
@@ -16,9 +16,9 @@
       "fragment_id": "rootObject",
       "description": "Root type object; valid for all groups",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -29,9 +29,9 @@
       "fragment_id": "rootArray",
       "description": "Root type array; valid Gemini only",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -42,9 +42,9 @@
       "fragment_id": "rootAnyOf",
       "description": "anyOf at root; invalid for all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -55,9 +55,9 @@
       "fragment_id": "rootObject",
       "description": "All properties in required; valid OpenAI",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -68,9 +68,9 @@
       "fragment_id": "optionalNotInRequired",
       "description": "Optional property not in required; invalid OpenAI",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -81,9 +81,9 @@
       "fragment_id": "rootObject",
       "description": "additionalProperties false; valid all",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -94,9 +94,9 @@
       "fragment_id": "additionalPropertiesTrue",
       "description": "additionalProperties true; invalid OpenAI",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -107,9 +107,9 @@
       "fragment_id": "additionalPropertiesOmitted",
       "description": "additionalProperties omitted; invalid OpenAI",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -120,9 +120,9 @@
       "fragment_id": "stringEnum",
       "description": "string enum; valid all",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -133,9 +133,9 @@
       "fragment_id": "stringConst",
       "description": "string const; valid OpenAI, Anthropic",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -146,9 +146,9 @@
       "fragment_id": "stringPattern",
       "description": "string pattern; valid OpenAI only",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -159,9 +159,9 @@
       "fragment_id": "stringFormatDateTime",
       "description": "format date-time; valid OpenAI, Gemini",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -172,9 +172,9 @@
       "fragment_id": "stringFormatDate",
       "description": "format date; valid OpenAI, Gemini",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -185,9 +185,9 @@
       "fragment_id": "stringFormatTime",
       "description": "format time; valid OpenAI, Gemini",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -198,9 +198,9 @@
       "fragment_id": "stringFormatUuid",
       "description": "format uuid; valid OpenAI only",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -211,9 +211,9 @@
       "fragment_id": "stringMinLength",
       "description": "minLength; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -224,9 +224,9 @@
       "fragment_id": "stringMaxLength",
       "description": "maxLength; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -237,9 +237,9 @@
       "fragment_id": "numberMinMax",
       "description": "number minimum/maximum; valid OpenAI, Gemini",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -250,9 +250,9 @@
       "fragment_id": "numberMultipleOf",
       "description": "multipleOf; valid OpenAI only",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -263,9 +263,9 @@
       "fragment_id": "numberExclusiveMinMax",
       "description": "exclusiveMin/Max; valid OpenAI only",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -276,9 +276,9 @@
       "fragment_id": "integerMinMax",
       "description": "integer min/max; valid OpenAI, Gemini",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -289,9 +289,9 @@
       "fragment_id": "arrayItemsOnly",
       "description": "array items only; valid all",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -302,9 +302,9 @@
       "fragment_id": "arrayMinMaxItems",
       "description": "minItems/maxItems; valid OpenAI, Gemini",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -315,9 +315,9 @@
       "fragment_id": "arrayPrefixItems",
       "description": "prefixItems; valid Gemini only",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -328,9 +328,9 @@
       "fragment_id": "arrayUniqueItems",
       "description": "uniqueItems; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -341,9 +341,9 @@
       "fragment_id": "arrayContains",
       "description": "contains; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -354,9 +354,9 @@
       "fragment_id": "objectPatternProperties",
       "description": "patternProperties; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -367,9 +367,9 @@
       "fragment_id": "objectMinProperties",
       "description": "minProperties; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -380,9 +380,9 @@
       "fragment_id": "anyOfNested",
       "description": "anyOf nested; valid all",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -393,9 +393,9 @@
       "fragment_id": "allOf",
       "description": "allOf; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -406,9 +406,9 @@
       "fragment_id": "oneOf",
       "description": "oneOf; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -419,9 +419,9 @@
       "fragment_id": "not",
       "description": "not; invalid all",
       "expected": {
-        "openai_strict": "invalid",
-        "anthropic_structured": "invalid",
-        "gemini_json_schema": "invalid"
+        "gpt-4-o1": "invalid",
+        "claude-4-5": "invalid",
+        "gemini-2-5": "invalid"
       }
     },
     {
@@ -432,9 +432,9 @@
       "fragment_id": "refDefs",
       "description": "$ref and $defs; valid OpenAI, Anthropic; Gemini $ref",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -445,9 +445,9 @@
       "fragment_id": "nullableTypeArray",
       "description": "nullable via type array; valid all",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     },
     {
@@ -458,9 +458,9 @@
       "fragment_id": "titleOnProperties",
       "description": "title field; valid Gemini only",
       "expected": {
-        "openai_strict": "valid",
-        "anthropic_structured": "valid",
-        "gemini_json_schema": "valid"
+        "gpt-4-o1": "valid",
+        "claude-4-5": "valid",
+        "gemini-2-5": "valid"
       }
     }
   ]

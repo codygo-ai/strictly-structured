@@ -11,7 +11,8 @@
     "generate": "tsx src/cli.ts",
     "generate:samples": "tsx src/samples-generate.ts",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@ssv/eslint-config": "workspace:*",
@@ -19,6 +20,7 @@
     "@types/node": "^22.15.0",
     "eslint": "^9.39.1",
     "tsx": "^4.19.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
   }
 }

@@ -6,6 +6,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { buildGroupMetaSchemaFromGroup } from "./groupMetaSchema.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
@@ -32,6 +33,7 @@ Usage: generate --out-dir <path>   (or --to <path>)
 Writes under the given path:
   - data/structured_output_groups.generated.json
   - types/structuredOutputGroups.generated.ts
+  - data/group-meta-schemas/<groupId>.generated.json   (one valid draft-07 JSON Schema file per group)
 `;
 
 function parseArgs(): string | null {
@@ -57,6 +59,7 @@ function main(): void {
   }
 
   const groupsJson = fs.readFileSync(DATA_PATH, "utf-8");
+  const data = JSON.parse(groupsJson) as { groups: Array<{ groupId: string; display?: unknown; machine?: unknown }> };
   const typesPath = path.join(__dirname, "types-template.ts");
   const typesContent = fs.readFileSync(typesPath, "utf-8");
   const generatedTypesContent = typesContent.replace(
@@ -77,6 +80,15 @@ function main(): void {
 
   console.log(`Wrote ${jsonOutPath}`);
   console.log(`Wrote ${tsOutPath}`);
+
+  const metaSchemasDir = path.join(dataDir, "group-meta-schemas");
+  fs.mkdirSync(metaSchemasDir, { recursive: true });
+  for (const group of data.groups) {
+    const schema = buildGroupMetaSchemaFromGroup(group);
+    const schemaPath = path.join(metaSchemasDir, `${group.groupId}.generated.json`);
+    fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2), "utf-8");
+    console.log(`Wrote ${schemaPath}`);
+  }
 }
 
 main();

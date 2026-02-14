@@ -39,7 +39,6 @@ export interface StructuredOutputGroup {
   groupName: string;
   provider: string;
   providerId: ProviderId;
-  shortName: string;
   docUrl: string;
   description: string;
   models: string[];

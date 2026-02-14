@@ -250,11 +250,10 @@
   },
   "groups": [
     {
-      "groupId": "openai_strict",
+      "groupId": "gpt-4-o1",
       "groupName": "GPT (4+, o1+)",
       "provider": "OpenAI",
       "providerId": "openai",
-      "shortName": "GPT (4+, o1+)",
       "docUrl": "https://platform.openai.com/docs/guides/structured-outputs",
       "description": "All OpenAI models with strict:true structured outputs via response_format or tool calling. Uses constrained decoding (CFG-based) to guarantee 100% schema compliance. All models share identical schema semantics.",
       "models": [
@@ -648,11 +647,10 @@
       }
     },
     {
-      "groupId": "anthropic_structured",
+      "groupId": "claude-4-5",
       "groupName": "Claude (4.5+)",
       "provider": "Anthropic",
       "providerId": "anthropic",
-      "shortName": "Claude (4.5+)",
       "docUrl": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
       "description": "Claude models with native structured output via constrained decoding. More lenient than OpenAI: fields don't all need to be required, additionalProperties:false is recommended but not mandatory. SDK auto-transforms unsupported keywords into description hints.",
       "models": [
@@ -1008,11 +1006,10 @@
       }
     },
     {
-      "groupId": "gemini_json_schema",
+      "groupId": "gemini-2-5",
       "groupName": "Gemini (2.5+)",
       "provider": "Google",
       "providerId": "gemini",
-      "shortName": "Gemini (2.5+)",
       "docUrl": "https://ai.google.dev/gemini-api/docs/structured-output",
       "description": "Gemini 2.5+ models using responseJsonSchema field for standard JSON Schema. Most permissive: root can be object or array, fields can be optional, supports min/max on numbers, prefixItems for tuples, title field. Gemini 3 preview models additionally support combining structured outputs with built-in tools (Google Search, URL Context, Code Execution).",
       "models": [
