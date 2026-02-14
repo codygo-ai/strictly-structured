@@ -10,14 +10,6 @@ interface ValidationRule {
   keywords?: string[];
 }
 
-interface GroupFields {
-  rootType: string | string[];
-  rootAnyOfAllowed?: boolean;
-  allFieldsRequired?: boolean;
-  additionalPropertiesMustBeFalse?: boolean;
-  validationRules?: ValidationRule[];
-}
-
 export interface GroupsData {
   groups: Array<{
     groupId: string;
@@ -168,21 +160,20 @@ export function validateSchemaForGroup(
   const group = groupsData.groups.find((g) => g.groupId === groupId);
   if (!group) return { valid: false };
 
-  const fields = group as unknown as GroupFields;
-  const rootType = fields.rootType;
+  const rootType = group.rootType;
   if (!rootType) return { valid: false };
 
   const rootTypeArr = Array.isArray(rootType) ? rootType : [rootType];
   const rootT = getRootType(schema);
   if (!rootT || !rootTypeArr.includes(rootT)) return { valid: false };
 
-  if (fields.rootAnyOfAllowed === false && isRootAnyOf(schema)) return { valid: false };
+  if (group.rootAnyOfAllowed === false && isRootAnyOf(schema)) return { valid: false };
 
   const nodes: Array<{ node: SchemaNode; path: string; schemaType: string | undefined }> = [];
   collectNodes(schema, "", nodes);
   const rootNode = nodes.find((n) => n.path === "" || !n.path)?.node ?? schema;
 
-  const rules = fields.validationRules ?? [];
+  const rules = group.validationRules ?? [];
   for (const rule of rules) {
     if (rule.check === "recommend_additional_properties_false") continue;
 

@@ -134,12 +134,12 @@ export function validateSchemaForGroup(
     additionalPropertiesMustBeFalse: group.additionalPropertiesMustBeFalse,
     additionalPropertiesFalseRecommended: group.additionalPropertiesFalseRecommended,
     supportedStringFormats: group.stringFormats ?? [],
-    limits: group.limits ? {
+    limits: {
       maxProperties: group.limits.maxProperties,
       maxNestingDepth: group.limits.maxNestingDepth,
       maxStringLengthNamesEnums: group.limits.maxStringLengthNamesEnums ?? null,
       maxEnumValues: group.limits.maxEnumValues ?? null,
-    } : undefined,
+    },
   };
 
   const ctx: WalkContext = {
