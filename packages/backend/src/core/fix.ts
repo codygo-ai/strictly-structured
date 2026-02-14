@@ -62,9 +62,10 @@ function buildFixPrompt(body: FixBody): string {
 }
 
 export async function runFix(
-  body: FixBody
+  body: FixBody,
+  openaiApiKey?: string
 ): Promise<{ suggestedSchema: string } | { error: string }> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = openaiApiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return { error: "OPENAI_API_KEY not configured" };
   }

@@ -1,12 +1,32 @@
 import { onRequest } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
-import { runValidate, runFix, type ValidateBody, type FixBody } from "./core/index.js";
+import { runValidate, runFix, type ValidateBody, type FixBody, type ProviderId } from "./core/index.js";
 
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const IS_EMULATOR = process.env.FUNCTIONS_EMULATOR === "true";
+
+const OPENAI_API_KEY_SECRET = defineSecret("OPENAI_API_KEY");
+const GOOGLE_GENERATIVE_AI_API_KEY_SECRET = defineSecret("GOOGLE_GENERATIVE_AI_API_KEY");
+const ANTHROPIC_API_KEY_SECRET = defineSecret("ANTHROPIC_API_KEY");
+
+function getApiKeys(): Record<ProviderId, string | undefined> {
+  if (IS_EMULATOR) {
+    return {
+      openai: process.env.OPENAI_API_KEY,
+      google: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? process.env.GEMINI_API_KEY,
+      anthropic: process.env.ANTHROPIC_API_KEY,
+    };
+  }
+  return {
+    openai: OPENAI_API_KEY_SECRET.value(),
+    google: GOOGLE_GENERATIVE_AI_API_KEY_SECRET.value(),
+    anthropic: ANTHROPIC_API_KEY_SECRET.value(),
+  };
+}
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -41,7 +61,11 @@ function send401(res: { set: (h: Record<string, string>) => void; status: (n: nu
  * invoker: "public" so Cloud Run does not require IAM; we verify Firebase ID token in requireAuth().
  */
 export const validate = onRequest(
-  { cors: IS_EMULATOR, invoker: "public" },
+  {
+    cors: IS_EMULATOR,
+    invoker: "public",
+    secrets: IS_EMULATOR ? [] : [OPENAI_API_KEY_SECRET, GOOGLE_GENERATIVE_AI_API_KEY_SECRET, ANTHROPIC_API_KEY_SECRET],
+  },
   async (req, res) => {
     setCors(res);
     if (req.method === "OPTIONS") {
@@ -72,7 +96,8 @@ export const validate = onRequest(
       return;
     }
 
-    const result = await runValidate(body);
+    const apiKeys = getApiKeys();
+    const result = await runValidate(body, apiKeys);
     if ("error" in result) {
       res.status(400).set("Content-Type", "application/json").json({ error: result.error });
       return;
@@ -86,7 +111,11 @@ export const validate = onRequest(
  * invoker: "public" so Cloud Run does not require IAM; we verify Firebase ID token in requireAuth().
  */
 export const fix = onRequest(
-  { cors: IS_EMULATOR, invoker: "public" },
+  {
+    cors: IS_EMULATOR,
+    invoker: "public",
+    secrets: IS_EMULATOR ? [] : [OPENAI_API_KEY_SECRET, GOOGLE_GENERATIVE_AI_API_KEY_SECRET, ANTHROPIC_API_KEY_SECRET],
+  },
   async (req, res) => {
     setCors(res);
     if (req.method === "OPTIONS") {
@@ -122,7 +151,8 @@ export const fix = onRequest(
       return;
     }
 
-    const result = await runFix(body);
+    const apiKeys = getApiKeys();
+    const result = await runFix(body, apiKeys.openai);
     if ("error" in result) {
       res.status(400).set("Content-Type", "application/json").json({ error: result.error });
       return;

@@ -23,7 +23,7 @@ const RUNNERS: Record<ProviderId, ValidateFn> = {
   anthropic: validateWithAnthropic,
 };
 
-function getApiKeys(): Record<ProviderId, string | undefined> {
+function getApiKeysFromEnv(): Record<ProviderId, string | undefined> {
   return {
     openai: process.env.OPENAI_API_KEY,
     google: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? process.env.GEMINI_API_KEY,
@@ -32,7 +32,8 @@ function getApiKeys(): Record<ProviderId, string | undefined> {
 }
 
 export async function runValidate(
-  body: ValidateBody
+  body: ValidateBody,
+  apiKeys?: Record<ProviderId, string | undefined>
 ): Promise<{ results: Array<{ provider: string; model: string; ok: boolean; latencyMs: number; error?: string }> } | { error: string }> {
   const { schema: raw, providers: providerIds, modelIds } = body;
   if (typeof raw !== "string") {
@@ -45,7 +46,7 @@ export async function runValidate(
   }
   const schema = parsed.schema;
 
-  const API_KEYS = getApiKeys();
+  const API_KEYS = apiKeys ?? getApiKeysFromEnv();
   const targets: Array<{ provider: ProviderId; model?: string }> = [];
   if (Array.isArray(modelIds) && modelIds.length > 0) {
     for (const id of modelIds) {

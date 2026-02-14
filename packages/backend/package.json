@@ -17,6 +17,8 @@
     "typecheck": "tsc --noEmit",
     "serve": "firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
+    "set-secrets": "node scripts/set-secrets-from-env.mjs",
+    "prepare-emulator": "node scripts/prepare-emulator-env.mjs",
     "strip-dev": "node -e \"const f='./.deployed/package.json';const j=JSON.parse(require('fs').readFileSync(f));delete j.devDependencies;require('fs').writeFileSync(f,JSON.stringify(j,null,2))\""
   },
   "dependencies": {

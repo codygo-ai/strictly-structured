@@ -29,7 +29,7 @@ The site is **static only**. API calls use the same origin: on localhost the dev
    ```
 
 2. **Local dev (recommended)**  
-   From the repo root, `pnpm dev` runs in parallel: Next.js (with hot reload), backend build in watch mode, and Firebase emulators (functions + hosting). Open **http://localhost:3000**; the app proxies `/api/validate` and `/api/fix` to the emulator. Put API keys in `packages/backend/.env` for the emulator.
+   From the repo root, `pnpm dev` runs in parallel: Next.js (with hot reload), backend build in watch mode, and Firebase emulators (functions + hosting). Open **http://localhost:3000**; the app proxies `/api/validate` and `/api/fix` to the emulator. Put API keys in `packages/backend/.env` (see `packages/backend/.env.sample`). Before starting, the emulator step copies `.env` into `packages/backend/.deployed` so the functions load them.
 
    ```bash
    pnpm dev
@@ -46,7 +46,7 @@ Default deploy target is **Firebase** (Hosting + Functions).
 
 1. Ensure **Firebase CLI** is installed and you're logged in (`firebase login`). Project is set in `.firebaserc` (e.g. `codygo-website`); Hosting site is `structured-output` in `firebase.json`.
 
-2. Set API keys for the deployed Cloud Functions via Firebase config or secrets (e.g. in Firebase Console or CI). For local emulator, use `packages/backend/.env` with `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` (or `GEMINI_API_KEY`), and `ANTHROPIC_API_KEY`.
+2. Put API keys in `packages/backend/.env` (see `packages/backend/.env.sample`): `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `ANTHROPIC_API_KEY`. The predeploy script reads this file and creates/updates these three secrets in Google Secret Manager; the Cloud Functions use them at runtime. For local emulator, the same `.env` is copied into `.deployed` before the emulator starts.
 
 3. From the repo root:
 
