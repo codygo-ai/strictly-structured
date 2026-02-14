@@ -1,0 +1,20 @@
+{
+  "name": "@ssv/skill",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Claude Code skill plugin for validating JSON schemas against LLM provider rules",
+  "type": "module",
+  "scripts": {
+    "build": "tsx build.ts",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "echo 'No TypeScript to check (skill uses plain .mjs)'"
+  },
+  "devDependencies": {
+    "@ssv/eslint-config": "workspace:*",
+    "@ssv/tsconfig": "workspace:*",
+    "@types/node": "^22.15.0",
+    "eslint": "^9.39.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.2"
+  }
+}
