@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
 import { BetaBadge } from "~/components/BetaBadge";
+import { FeedbackLink } from "~/components/FeedbackLink";
 
 export function SiteHeader({
   subtitle = true,
@@ -9,8 +10,8 @@ export function SiteHeader({
   subtitle?: boolean;
   current?: "validator" | "why" | "models";
 }) {
-  const linkClass = "text-sm text-accent hover:underline";
-  const activeClass = "text-primary font-medium hover:no-underline";
+  const linkClass = "text-sm text-primary hover:underline";
+  const activeClass = "text-sm text-accent font-medium hover:no-underline";
 
   return (
     <header className="validator-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -19,7 +20,7 @@ export function SiteHeader({
           <Link href="/" className="font-bold text-primary hover:underline">
             Strictly Structured
           </Link>
-          <BetaBadge />
+
           <span className="text-sm text-secondary">
             {" "}
             by{" "}
@@ -43,9 +44,10 @@ export function SiteHeader({
         <nav className="flex items-center gap-4">
           <Link
             href="/"
-            className={current === "validator" ? activeClass : linkClass}
+            className={`relative ${current === "validator" ? activeClass : linkClass}`}
           >
-            Validator
+            <span className="relative z-10">Validator</span>
+            <BetaBadge />
           </Link>
           <Link
             href="/why"
@@ -59,6 +61,7 @@ export function SiteHeader({
           >
             Model support
           </Link>
+          <FeedbackLink />
         </nav>
         <UserAvatarMenu />
       </div>

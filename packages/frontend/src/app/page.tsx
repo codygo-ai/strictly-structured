@@ -57,13 +57,13 @@ function groupTooltip(group: StructuredOutputGroup): string {
 }
 
 export default function Home() {
-  useAuth();
+  const { ensureAuth } = useAuth();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(
     () => GROUPS[0]?.groupId ?? null
   );
   const [results, setResults] = useState<ValidationResult[] | null>(null);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [suggestedSchema, setSuggestedSchema] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,12 +78,63 @@ export default function Home() {
   }, []);
 
   const handleValidate = useCallback(async () => {
-    setError("Not implemented");
-  }, []);
+    setError(null);
+    setLoading(true);
+    try {
+      const token = await ensureAuth();
+      const res = await fetch("/api/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          schema,
+          modelIds: selectedGroup?.models,
+        }),
+      });
+      const data = (await res.json()) as { results?: ValidationResult[]; error?: string };
+      if (!res.ok) {
+        setError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      if (data.results) setResults(data.results);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [ensureAuth, schema, selectedGroup]);
 
   const handleFix = useCallback(async () => {
-    setError("Not implemented");
-  }, []);
+    setError(null);
+    setLoading(true);
+    try {
+      const token = await ensureAuth();
+      const res = await fetch("/api/fix", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          schema,
+          modelIds: selectedGroup?.models,
+          issues: [],
+        }),
+      });
+      const data = (await res.json()) as { suggestedSchema?: string; error?: string };
+      if (!res.ok) {
+        setError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      if (data.suggestedSchema) setSuggestedSchema(data.suggestedSchema);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [ensureAuth, schema, selectedGroup]);
 
   const handleAcceptSuggestion = useCallback(() => {
     if (suggestedSchema != null) {
@@ -254,7 +305,6 @@ export default function Home() {
                     className="validate-btn"
                     onClick={handleValidate}
                     disabled={loading}
-                    title="Not implemented"
                   >
                     {loading ? "Validating…" : "Server Validation"}
                   </button>
@@ -263,7 +313,6 @@ export default function Home() {
                     className="validate-btn"
                     onClick={handleFix}
                     disabled={loading}
-                    title="Not implemented"
                   >
                     Auto-fix
                   </button>
