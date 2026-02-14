@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "boolean with title",
+    "description": "valid: boolean with title",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "b": {
+      "type": "boolean",
+      "title": "Flag"
+    }
+  },
+  "additionalProperties": false
+}

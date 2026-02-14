@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "allOf inside property",
+    "description": "invalid: allOf inside property",
+    "expectation": "invalid: error must match additional propert|allOf",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|allOf"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "allOf": [
+        {
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v"
+  ]
+}

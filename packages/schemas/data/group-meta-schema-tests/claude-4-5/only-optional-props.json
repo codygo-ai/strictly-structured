@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "only optional props",
+    "description": "valid: only optional props",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "a": {
+      "type": "string"
+    },
+    "b": {
+      "type": "integer"
+    },
+    "c": {
+      "type": "boolean"
+    },
+    "d": {
+      "type": "array",
+      "items": {
+        "type": "null"
+      }
+    }
+  },
+  "additionalProperties": false
+}

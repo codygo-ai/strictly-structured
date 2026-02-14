@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "not inside property",
+    "description": "invalid: not inside property",
+    "expectation": "invalid: error must match additional propert|not",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|not"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "not": {
+        "type": "null"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v"
+  ]
+}

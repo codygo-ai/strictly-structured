@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "unevaluatedProperties",
+    "description": "invalid: unevaluatedProperties",
+    "expectation": "invalid: error must match additional propert|unevaluatedProperties",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|unevaluatedProperties"
+  },
+  "type": "object",
+  "properties": {
+    "o": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "o"
+  ]
+}

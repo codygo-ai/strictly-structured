@@ -1,354 +1,204 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "allOf": [
-    {
-      "type": "object",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "object",
-            "array"
-          ]
-        }
+  "$id": "http://json-schema.org/draft-07/schema#",
+  "title": "Core schema meta-schema",
+  "definitions": {
+    "schemaArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#"
       }
     },
-    {
-      "$ref": "#/$defs/groupSchemaObject"
-    }
-  ],
-  "$defs": {
-    "groupSchemaObject": {
-      "oneOf": [
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nonNegativeIntegerDefault0": {
+      "allOf": [
         {
-          "type": "object",
-          "required": [
-            "$ref"
-          ],
-          "properties": {
-            "$ref": {
-              "type": "string"
-            },
-            "$defs": {
-              "type": "object",
-              "additionalProperties": {
-                "$ref": "#/$defs/groupSchemaObject"
-              }
-            }
-          },
-          "additionalProperties": false
+          "$ref": "#/definitions/nonNegativeInteger"
         },
         {
-          "type": "object",
-          "required": [
-            "anyOf"
-          ],
-          "properties": {
-            "anyOf": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/groupSchemaObject"
-              }
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "string"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "string"
-                  }
-                }
-              ]
-            },
-            "enum": {
-              "type": "array"
-            },
-            "format": {
-              "type": "string",
-              "enum": [
-                "date-time",
-                "date",
-                "time"
-              ]
-            },
-            "description": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "object"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "object"
-                  }
-                }
-              ]
-            },
-            "properties": {
-              "type": "object",
-              "additionalProperties": {
-                "$ref": "#/$defs/groupSchemaObject"
-              }
-            },
-            "required": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": {
-              "oneOf": [
-                {
-                  "enum": [
-                    false
-                  ]
-                },
-                {
-                  "$ref": "#/$defs/groupSchemaObject"
-                }
-              ]
-            },
-            "description": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "array"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "array"
-                  }
-                }
-              ]
-            },
-            "items": {
-              "$ref": "#/$defs/groupSchemaObject"
-            },
-            "prefixItems": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/groupSchemaObject"
-              }
-            },
-            "minItems": {
-              "type": "integer"
-            },
-            "maxItems": {
-              "type": "integer"
-            },
-            "description": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "number"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "number"
-                  }
-                }
-              ]
-            },
-            "enum": {
-              "type": "array"
-            },
-            "minimum": {},
-            "maximum": {},
-            "description": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "integer"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "integer"
-                  }
-                }
-              ]
-            },
-            "enum": {
-              "type": "array"
-            },
-            "minimum": {},
-            "maximum": {},
-            "description": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "boolean"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "boolean"
-                  }
-                }
-              ]
-            },
-            "description": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "null"
-                  ]
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "contains": {
-                    "const": "null"
-                  }
-                }
-              ]
-            }
-          },
-          "additionalProperties": false
+          "default": 0
         }
       ]
+    },
+    "simpleTypes": {
+      "enum": [
+        "array",
+        "boolean",
+        "integer",
+        "null",
+        "number",
+        "object",
+        "string"
+      ]
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "default": []
     }
-  }
+  },
+  "type": [
+    "object",
+    "boolean"
+  ],
+  "properties": {
+    "$id": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$ref": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "$comment": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "default": true,
+    "readOnly": {
+      "type": "boolean",
+      "default": false
+    },
+    "writeOnly": {
+      "type": "boolean",
+      "default": false
+    },
+    "examples": {
+      "type": "array",
+      "items": true
+    },
+    "maximum": {
+      "type": "number"
+    },
+    "minimum": {
+      "type": "number"
+    },
+    "additionalItems": {
+      "$ref": "#"
+    },
+    "items": {
+      "anyOf": [
+        {
+          "$ref": "#"
+        },
+        {
+          "$ref": "#/definitions/schemaArray"
+        }
+      ],
+      "default": true
+    },
+    "maxItems": {
+      "$ref": "#/definitions/nonNegativeInteger"
+    },
+    "minItems": {
+      "$ref": "#/definitions/nonNegativeIntegerDefault0"
+    },
+    "maxProperties": {
+      "$ref": "#/definitions/nonNegativeInteger"
+    },
+    "minProperties": {
+      "$ref": "#/definitions/nonNegativeIntegerDefault0"
+    },
+    "required": {
+      "$ref": "#/definitions/stringArray"
+    },
+    "additionalProperties": {
+      "$ref": "#"
+    },
+    "definitions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#"
+      },
+      "default": {}
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#"
+      },
+      "default": {}
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#"
+          },
+          {
+            "$ref": "#/definitions/stringArray"
+          }
+        ]
+      }
+    },
+    "propertyNames": {
+      "$ref": "#"
+    },
+    "const": true,
+    "enum": {
+      "type": "array",
+      "items": true,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "type": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/simpleTypes"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/simpleTypes"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      ]
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "date-time",
+        "date",
+        "time"
+      ]
+    },
+    "contentMediaType": {
+      "type": "string"
+    },
+    "contentEncoding": {
+      "type": "string"
+    },
+    "if": {
+      "$ref": "#"
+    },
+    "then": {
+      "$ref": "#"
+    },
+    "else": {
+      "$ref": "#"
+    },
+    "anyOf": {
+      "$ref": "#/definitions/schemaArray"
+    }
+  },
+  "additionalProperties": false
 }

@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "format hostname",
+    "description": "invalid: format hostname",
+    "expectation": "invalid: error must match additional propert|format|enum|allowed values",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|format|enum|allowed values"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "format": "hostname"
+    }
+  },
+  "additionalProperties": false
+}

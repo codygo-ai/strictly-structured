@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "Base definitions",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o41082",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o41082"
+  },
+  "definitions": {
+    "JsonPath": {
+      "description": "JsonPath, see http://goessner.net/articles/JsonPath/",
+      "example": "products.book[2]",
+      "format": "jsonpath",
+      "type": "string"
+    }
+  },
+  "title": "Base definitions",
+  "properties": {
+    "JsonPath": {
+      "$ref": "#/definitions/JsonPath"
+    }
+  },
+  "required": [
+    "JsonPath"
+  ]
+}

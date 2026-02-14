@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "FieldType",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o10076",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o10076"
+  },
+  "description": "List of keys of fields",
+  "oneOf": [
+    {
+      "description": "Dot (.) indexed strings that specifies field keys",
+      "type": "string"
+    },
+    {
+      "description": "Array of keys that index a field",
+      "items": {
+        "pattern": "^[^\\.]*$",
+        "type": "string"
+      },
+      "type": "array"
+    }
+  ],
+  "title": "FieldType"
+}

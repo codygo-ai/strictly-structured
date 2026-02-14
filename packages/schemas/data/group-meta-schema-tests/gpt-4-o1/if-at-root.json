@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "if at root",
+    "description": "invalid: if at root",
+    "expectation": "invalid: error must match additional propert|if",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|if"
+  },
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "if": {
+    "type": "object"
+  },
+  "then": {}
+}

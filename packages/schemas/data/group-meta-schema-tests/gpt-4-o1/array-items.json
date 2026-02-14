@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "array items",
+    "description": "valid: array items",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "arr"
+  ]
+}

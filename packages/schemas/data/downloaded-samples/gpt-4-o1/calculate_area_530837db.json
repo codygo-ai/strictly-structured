@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "calculate_area_530837db",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_530837db",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_area_530837db"
+  },
+  "dependencies": {
+    "shape": {
+      "oneOf": [
+        {
+          "properties": {
+            "radius": {
+              "type": "number"
+            },
+            "shape": {
+              "const": "circle"
+            }
+          }
+        },
+        {
+          "properties": {
+            "length": {
+              "type": "number"
+            },
+            "shape": {
+              "const": "rectangle"
+            },
+            "width": {
+              "type": "number"
+            }
+          }
+        },
+        {
+          "properties": {
+            "base": {
+              "type": "number"
+            },
+            "height": {
+              "type": "number"
+            },
+            "shape": {
+              "const": "triangle"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "base": {
+      "description": "The base of the triangle (if shape is triangle)",
+      "type": "number"
+    },
+    "height": {
+      "description": "The height of the triangle (if shape is triangle)",
+      "type": "number"
+    },
+    "length": {
+      "description": "The length of the rectangle (if shape is rectangle)",
+      "type": "number"
+    },
+    "radius": {
+      "description": "The radius of the circle (if shape is circle)",
+      "type": "number"
+    },
+    "shape": {
+      "description": "The shape for which the area should be calculated",
+      "enum": [
+        "circle",
+        "rectangle",
+        "triangle"
+      ],
+      "type": "string"
+    },
+    "width": {
+      "description": "The width of the rectangle (if shape is rectangle)",
+      "type": "number"
+    }
+  },
+  "required": [
+    "shape"
+  ],
+  "type": "object"
+}

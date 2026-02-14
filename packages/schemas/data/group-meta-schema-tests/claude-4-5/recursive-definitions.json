@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "recursive definitions",
+    "description": "valid: recursive definitions",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "node": {
+      "$ref": "#/definitions/N"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "N": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "type": "string"
+        },
+        "next": {
+          "$ref": "#/definitions/N"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

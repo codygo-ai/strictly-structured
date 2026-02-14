@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "patternProperties",
+    "description": "invalid: patternProperties",
+    "expectation": "invalid: error must match additional propert|patternProperties",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|patternProperties"
+  },
+  "type": "object",
+  "properties": {
+    "o": {
+      "type": "object",
+      "patternProperties": {},
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

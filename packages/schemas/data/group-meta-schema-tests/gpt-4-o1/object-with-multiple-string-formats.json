@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "object with multiple string formats",
+    "description": "valid: object with multiple string formats",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "dt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "u": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "ip4": {
+      "type": "string",
+      "format": "ipv4"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "dt",
+    "u",
+    "ip4"
+  ]
+}

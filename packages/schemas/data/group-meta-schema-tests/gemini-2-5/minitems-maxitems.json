@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "minItems maxItems",
+    "description": "valid: minItems maxItems",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "boolean"
+      },
+      "minItems": 0,
+      "maxItems": 10
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "deep nesting 3 levels",
+    "description": "valid: deep nesting 3 levels",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "l1": {
+      "type": "object",
+      "properties": {
+        "l2": {
+          "type": "object",
+          "properties": {
+            "l3": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "l3"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "l2"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "l1"
+  ]
+}

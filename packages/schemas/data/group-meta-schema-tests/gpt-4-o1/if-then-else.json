@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "if then else",
+    "description": "invalid: if then else",
+    "expectation": "invalid: error must match additional propert|if|then|else",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|if|then|else"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "if": {
+        "type": "string"
+      },
+      "then": {
+        "minLength": 1
+      },
+      "else": {
+        "type": "number"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v"
+  ]
+}

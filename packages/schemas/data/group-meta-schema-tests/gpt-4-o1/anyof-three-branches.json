@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "anyOf three branches",
+    "description": "valid: anyOf three branches",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v"
+  ]
+}

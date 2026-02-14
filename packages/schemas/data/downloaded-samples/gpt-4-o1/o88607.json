@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "o88607",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o88607",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o88607"
+  },
+  "description": "schema for a ISO8061 date used in statements in the xAPI, version 1.0.*",
+  "pattern": "^[+-]?(\\d\\d\\d\\d)(-)?(\\d\\d)(-)?(\\d\\d)(T)?(\\d\\d)(:)?(\\d\\d)(:)?(\\d\\d)(\\.\\d+)?(Z|([+-])(\\d\\d)(:)?(\\d\\d))?$",
+  "type": "string"
+}

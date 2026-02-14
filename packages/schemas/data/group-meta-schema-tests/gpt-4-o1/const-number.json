@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "const number",
+    "description": "valid: const number",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "const": 42
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "n"
+  ]
+}

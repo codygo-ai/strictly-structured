@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "uniqueItems",
+    "description": "invalid: uniqueItems",
+    "expectation": "invalid: error must match additional propert|uniqueItems",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|uniqueItems"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "arr"
+  ]
+}

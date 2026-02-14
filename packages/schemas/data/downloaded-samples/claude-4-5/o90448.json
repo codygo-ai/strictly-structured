@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "o90448",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o90448",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o90448"
+  },
+  "properties": {
+    "comment": {
+      "type": "string"
+    },
+    "onContentLoad": {
+      "min": -1,
+      "type": "number"
+    },
+    "onLoad": {
+      "min": -1,
+      "type": "number"
+    }
+  },
+  "type": "object"
+}

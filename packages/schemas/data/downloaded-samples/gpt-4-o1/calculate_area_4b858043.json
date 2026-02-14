@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "calculate_area_4b858043",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_4b858043",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_area_4b858043"
+  },
+  "properties": {
+    "dimensions": {
+      "properties": {
+        "length": {
+          "description": "The length of the rectangle",
+          "type": "number"
+        },
+        "radius": {
+          "description": "The radius of the circle",
+          "type": "number"
+        },
+        "width": {
+          "description": "The width of the rectangle",
+          "type": "number"
+        }
+      },
+      "required": [
+        "radius",
+        "length",
+        "width"
+      ],
+      "type": "object"
+    },
+    "shape": {
+      "description": "The shape type (e.g., circle, rectangle)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "shape",
+    "dimensions"
+  ],
+  "type": "object"
+}

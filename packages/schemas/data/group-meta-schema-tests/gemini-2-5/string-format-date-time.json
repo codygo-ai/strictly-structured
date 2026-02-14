@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "string format date-time",
+    "description": "valid: string format date-time",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "t": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

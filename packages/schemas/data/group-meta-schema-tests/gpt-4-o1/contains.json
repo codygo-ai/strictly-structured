@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "contains",
+    "description": "invalid: contains",
+    "expectation": "invalid: error must match additional propert|contains",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|contains"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "contains": {
+        "type": "number"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "arr"
+  ]
+}

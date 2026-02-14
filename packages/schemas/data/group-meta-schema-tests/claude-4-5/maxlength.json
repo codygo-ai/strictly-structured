@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "maxLength",
+    "description": "invalid: maxLength",
+    "expectation": "invalid: error must match additional propert|maxLength",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|maxLength"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "maxLength": 10
+    }
+  },
+  "additionalProperties": false
+}

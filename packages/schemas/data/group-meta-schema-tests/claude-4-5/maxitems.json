@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "maxItems",
+    "description": "invalid: maxItems",
+    "expectation": "invalid: error must match additional propert|maxItems",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|maxItems"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "title on multiple",
+    "description": "valid: title on multiple",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "title": "S"
+    },
+    "n": {
+      "type": "number",
+      "title": "N",
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "additionalProperties": false
+}

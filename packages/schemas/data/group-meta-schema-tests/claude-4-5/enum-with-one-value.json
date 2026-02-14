@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "enum with one value",
+    "description": "valid: enum with one value",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "e": {
+      "type": "string",
+      "enum": [
+        "only"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "e"
+  ]
+}

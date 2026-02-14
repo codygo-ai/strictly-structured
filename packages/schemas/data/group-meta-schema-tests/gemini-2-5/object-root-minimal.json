@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "object root minimal",
+    "description": "valid: object root minimal",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

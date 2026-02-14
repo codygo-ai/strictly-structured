@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "multiple properties all required",
+    "description": "valid: multiple properties all required",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "a": {
+      "type": "string"
+    },
+    "b": {
+      "type": "integer"
+    },
+    "c": {
+      "type": "array",
+      "items": {
+        "type": "boolean"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "a",
+    "b",
+    "c"
+  ]
+}

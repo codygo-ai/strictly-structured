@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "o9825",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o9825",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o9825"
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "time": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$date": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "$date"
+          ]
+        }
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "payload": {}
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false
+}

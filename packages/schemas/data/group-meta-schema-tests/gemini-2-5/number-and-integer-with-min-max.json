@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "number and integer with min max",
+    "description": "valid: number and integer with min max",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "i": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99
+    }
+  },
+  "additionalProperties": false
+}

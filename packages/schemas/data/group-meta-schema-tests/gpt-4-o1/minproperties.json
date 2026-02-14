@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "minProperties",
+    "description": "invalid: minProperties",
+    "expectation": "invalid: error must match additional propert|minProperties",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|minProperties"
+  },
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "x"
+  ]
+}

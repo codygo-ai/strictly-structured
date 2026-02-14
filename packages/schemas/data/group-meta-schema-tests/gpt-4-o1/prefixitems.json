@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "prefixItems",
+    "description": "invalid: prefixItems",
+    "expectation": "invalid: error must match additional propert|prefixItems",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|prefixItems"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "string"
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "arr"
+  ]
+}

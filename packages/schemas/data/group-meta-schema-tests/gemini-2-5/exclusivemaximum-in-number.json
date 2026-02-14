@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "exclusiveMaximum in number",
+    "description": "invalid: exclusiveMaximum in number",
+    "expectation": "invalid: error must match additional propert|exclusiveMaximum",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|exclusiveMaximum"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "exclusiveMaximum": 1
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "array of enums",
+    "description": "valid: array of enums",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "x",
+          "y"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "tags"
+  ]
+}

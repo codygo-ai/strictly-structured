@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "prefixItems",
+    "description": "invalid: prefixItems",
+    "expectation": "invalid: error must match additional propert|prefixItems",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|prefixItems"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "prefixItems": [],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

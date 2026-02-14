@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "$ref and definitions",
+    "description": "valid: $ref and definitions",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "p": {
+      "$ref": "#/definitions/S"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "S": {
+      "type": "string"
+    }
+  }
+}

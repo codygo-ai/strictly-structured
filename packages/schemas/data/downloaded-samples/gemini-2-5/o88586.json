@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "o88586",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o88586",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o88586"
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "categoryId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "amount": {
+      "type": "number",
+      "faker": "finance.amount"
+    },
+    "description": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "faker": "date.past"
+    },
+    "createdBy": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "id",
+    "categoryId",
+    "amount",
+    "description",
+    "createdAt",
+    "createdBy"
+  ]
+}

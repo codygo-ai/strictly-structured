@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "oneOf in nested",
+    "description": "invalid: oneOf in nested",
+    "expectation": "invalid: error must match additional propert|oneOf",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|oneOf"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "oneOf": [
+        {
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "format not allowed",
+    "description": "invalid: format not allowed",
+    "expectation": "invalid: error must match additional propert|format|enum|allowed values",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|format|enum|allowed values"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "propertyNames",
+    "description": "invalid: propertyNames",
+    "expectation": "invalid: error must match additional propert|propertyNames",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|propertyNames"
+  },
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^a"
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "x"
+  ]
+}

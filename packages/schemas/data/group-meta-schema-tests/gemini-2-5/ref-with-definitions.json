@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "$ref with definitions",
+    "description": "valid: $ref with definitions",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "p": {
+      "$ref": "#/definitions/X"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "X": {
+      "type": "string"
+    }
+  }
+}

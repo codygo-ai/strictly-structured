@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "recursive definitions",
+    "description": "valid: recursive definitions",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "node": {
+      "$ref": "#/definitions/Node"
+    }
+  },
+  "required": [
+    "node"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "Node": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "child": {
+          "$ref": "#/definitions/Node"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

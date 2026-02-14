@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "nested object with title",
+    "description": "valid: nested object with title",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "inner": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "title": "Inner"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "definitions with two refs",
+    "description": "valid: definitions with two refs",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "a": {
+      "$ref": "#/definitions/A"
+    },
+    "b": {
+      "$ref": "#/definitions/B"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "A": {
+      "type": "string"
+    },
+    "B": {
+      "type": "number"
+    }
+  }
+}

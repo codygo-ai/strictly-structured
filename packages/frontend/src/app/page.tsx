@@ -16,8 +16,17 @@ import type {
   StructuredOutputGroupsData,
 } from "~/types/structuredOutputGroups";
 import groupsDataJson from "~/data/structured_output_groups.generated.json";
+import metaSchemaGpt from "~/data/group-meta-schemas/gpt-4-o1.generated.json";
+import metaSchemaClaude from "~/data/group-meta-schemas/claude-4-5.generated.json";
+import metaSchemaGemini from "~/data/group-meta-schemas/gemini-2-5.generated.json";
 
 const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
+
+const GROUP_META_SCHEMAS: Record<string, object> = {
+  "gpt-4-o1": metaSchemaGpt as object,
+  "claude-4-5": metaSchemaClaude as object,
+  "gemini-2-5": metaSchemaGemini as object,
+};
 import { useAuth } from "~/lib/useAuth";
 
 const DiffEditor = dynamic(
@@ -238,6 +247,11 @@ export default function Home() {
                   fillHeight
                   noHeader
                   editorTheme="light"
+                  validationSchema={
+                    selectedGroupId
+                      ? GROUP_META_SCHEMAS[selectedGroupId] ?? undefined
+                      : undefined
+                  }
                 />
                 <div className="flex gap-2 flex-wrap">
                   <button

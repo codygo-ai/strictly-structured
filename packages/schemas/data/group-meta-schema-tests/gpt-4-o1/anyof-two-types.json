@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "anyOf two types",
+    "description": "valid: anyOf two types",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v"
+  ]
+}

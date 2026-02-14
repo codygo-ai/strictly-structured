@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "pattern in string",
+    "description": "invalid: pattern in string",
+    "expectation": "invalid: error must match additional propert|pattern",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|pattern"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "pattern": "^a"
+    }
+  },
+  "additionalProperties": false
+}

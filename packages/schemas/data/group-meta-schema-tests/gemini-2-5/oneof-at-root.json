@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "oneOf at root",
+    "description": "invalid: oneOf at root",
+    "expectation": "invalid: error must match additional propert|oneOf",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|oneOf"
+  },
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "type": "string"
+    }
+  ]
+}

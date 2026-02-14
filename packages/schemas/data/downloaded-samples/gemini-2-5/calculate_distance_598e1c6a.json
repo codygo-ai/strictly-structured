@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "calculate_distance_598e1c6a",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_distance_598e1c6a",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_distance_598e1c6a"
+  },
+  "properties": {
+    "end_location": {
+      "properties": {
+        "latitude": {
+          "description": "The latitude of the ending location",
+          "type": "number"
+        },
+        "longitude": {
+          "description": "The longitude of the ending location",
+          "type": "number"
+        }
+      },
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "type": "object"
+    },
+    "start_location": {
+      "properties": {
+        "latitude": {
+          "description": "The latitude of the starting location",
+          "type": "number"
+        },
+        "longitude": {
+          "description": "The longitude of the starting location",
+          "type": "number"
+        }
+      },
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "start_location",
+    "end_location"
+  ],
+  "type": "object"
+}

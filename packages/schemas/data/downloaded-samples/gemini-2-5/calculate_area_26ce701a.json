@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "calculate_area_26ce701a",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_26ce701a",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_area_26ce701a"
+  },
+  "properties": {
+    "dimensions": {
+      "properties": {
+        "base": {
+          "description": "The base of the shape",
+          "type": "number"
+        },
+        "height": {
+          "description": "The height of the shape",
+          "type": "number"
+        },
+        "length": {
+          "description": "The length of the shape",
+          "type": "number"
+        },
+        "radius": {
+          "description": "The radius of the shape",
+          "type": "number"
+        },
+        "width": {
+          "description": "The width of the shape",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "shape": {
+      "description": "The shape for which the area needs to be calculated",
+      "enum": [
+        "rectangle",
+        "circle",
+        "triangle"
+      ],
+      "type": "string"
+    }
+  },
+  "type": "object"
+}

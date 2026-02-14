@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "minimum in number",
+    "description": "invalid: minimum in number",
+    "expectation": "invalid: error must match additional propert|minimum",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|minimum"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

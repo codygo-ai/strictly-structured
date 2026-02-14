@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "anyOf with nested object",
+    "description": "valid: anyOf with nested object",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "a"
+          ]
+        },
+        {
+          "type": "integer"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "anyOf",
+    "description": "valid: anyOf",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

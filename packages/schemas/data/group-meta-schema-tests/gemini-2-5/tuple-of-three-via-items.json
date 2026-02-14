@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "tuple of three via items",
+    "description": "valid: tuple of three via items",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "t": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

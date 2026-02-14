@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "maxProperties",
+    "description": "invalid: maxProperties",
+    "expectation": "invalid: error must match additional propert|maxProperties",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|maxProperties"
+  },
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "object",
+      "maxProperties": 10,
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "x"
+  ]
+}

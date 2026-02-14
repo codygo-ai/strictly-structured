@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "boolean",
+    "description": "valid: boolean",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "b": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "b"
+  ]
+}

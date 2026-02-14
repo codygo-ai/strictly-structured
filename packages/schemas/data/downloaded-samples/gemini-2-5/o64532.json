@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "Service 001 : POST /users/create",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o64532",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o64532"
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "additionalProperties": false,
+  "description": "Create a new user",
+  "properties": {
+    "admin": {
+      "type": "boolean"
+    },
+    "callsign": {
+      "type": "string"
+    },
+    "email": {
+      "_format": "email",
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "passwordRepeat": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "callsign",
+    "email",
+    "admin",
+    "password",
+    "passwordRepeat"
+  ],
+  "title": "Service 001 : POST /users/create",
+  "type": "object"
+}

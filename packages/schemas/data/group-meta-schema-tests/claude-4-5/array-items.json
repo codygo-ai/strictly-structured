@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "array items",
+    "description": "valid: array items",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

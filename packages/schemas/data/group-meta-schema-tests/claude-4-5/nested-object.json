@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "nested object",
+    "description": "valid: nested object",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "inner": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

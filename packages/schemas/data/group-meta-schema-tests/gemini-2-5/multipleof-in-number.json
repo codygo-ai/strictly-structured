@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "multipleOf in number",
+    "description": "invalid: multipleOf in number",
+    "expectation": "invalid: error must match additional propert|multipleOf",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|multipleOf"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "multipleOf": 0.5
+    }
+  },
+  "additionalProperties": false
+}

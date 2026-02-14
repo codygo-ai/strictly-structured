@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "minLength in string",
+    "description": "invalid: minLength in string",
+    "expectation": "invalid: error must match additional propert|minLength",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|minLength"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "string format date-time",
+    "description": "valid: string format date-time",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "t": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "t"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "Invocation manifest for SciTran: DICOM MR Classifier",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o41459",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o41459"
+  },
+  "title": "Invocation manifest for SciTran: DICOM MR Classifier",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "object",
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "default": "UTC"
+        },
+        "force": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "timezone",
+        "force"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "dicom": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "enum": [
+                "dicom"
+              ]
+            }
+          }
+        },
+        "classifications": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "string"
+            },
+            "found": {
+              "type": "boolean"
+            },
+            "value": {}
+          },
+          "required": [
+            "base",
+            "found",
+            "value"
+          ]
+        }
+      },
+      "required": [
+        "dicom",
+        "classifications"
+      ]
+    }
+  },
+  "required": [
+    "config",
+    "inputs"
+  ]
+}

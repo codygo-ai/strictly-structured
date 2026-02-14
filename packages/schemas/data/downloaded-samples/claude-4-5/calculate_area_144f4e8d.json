@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "calculate_area_144f4e8d",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_144f4e8d",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_area_144f4e8d"
+  },
+  "properties": {
+    "dimensions": {
+      "properties": {
+        "base": {
+          "description": "The base length of the triangle (if applicable)",
+          "type": "number"
+        },
+        "height": {
+          "description": "The height of the triangle (if applicable)",
+          "type": "number"
+        },
+        "radius": {
+          "description": "The radius of the circle (if applicable)",
+          "type": "number"
+        },
+        "side": {
+          "description": "The side length of the square (if applicable)",
+          "type": "number"
+        }
+      },
+      "required": [
+        "radius",
+        "side",
+        "base",
+        "height"
+      ],
+      "type": "object"
+    },
+    "shape": {
+      "description": "The shape type (e.g., circle, square, triangle)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "shape",
+    "dimensions"
+  ],
+  "type": "object"
+}

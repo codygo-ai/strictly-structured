@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "string format ipv6",
+    "description": "valid: string format ipv6",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "ip": {
+      "type": "string",
+      "format": "ipv6"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ip"
+  ]
+}

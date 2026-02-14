@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "minLength",
+    "description": "invalid: minLength",
+    "expectation": "invalid: error must match additional propert|minLength",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|minLength"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "mixed types in object",
+    "description": "valid: mixed types in object",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string"
+    },
+    "n": {
+      "type": "number"
+    },
+    "i": {
+      "type": "integer"
+    },
+    "b": {
+      "type": "boolean"
+    },
+    "a": {
+      "type": "array",
+      "items": {
+        "type": "null"
+      }
+    },
+    "o": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "s",
+    "n",
+    "i",
+    "b",
+    "a",
+    "o"
+  ]
+}

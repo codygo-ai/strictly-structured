@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "unevaluatedProperties",
+    "description": "invalid: unevaluatedProperties",
+    "expectation": "invalid: error must match additional propert|unevaluatedProperties",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|unevaluatedProperties"
+  },
+  "type": "object",
+  "properties": {
+    "o": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

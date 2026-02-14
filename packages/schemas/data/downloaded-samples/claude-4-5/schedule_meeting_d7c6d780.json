@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "schedule_meeting_d7c6d780",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – schedule_meeting_d7c6d780",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "schedule_meeting_d7c6d780"
+  },
+  "properties": {
+    "end_time": {
+      "description": "The end time of the meeting",
+      "format": "date-time",
+      "type": "string"
+    },
+    "participants": {
+      "description": "Email addresses of the meeting participants",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "start_time": {
+      "description": "The start time of the meeting",
+      "format": "date-time",
+      "type": "string"
+    },
+    "title": {
+      "description": "The title of the meeting",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "start_time",
+    "end_time",
+    "participants"
+  ],
+  "type": "object"
+}

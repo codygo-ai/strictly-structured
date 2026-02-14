@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "calculate_discounted_price_f6d5b62c",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_discounted_price_f6d5b62c",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_discounted_price_f6d5b62c"
+  },
+  "properties": {
+    "base_price": {
+      "description": "The base price of an item",
+      "type": "number"
+    },
+    "discounts": {
+      "description": "The discounts applied to the item",
+      "items": {
+        "properties": {
+          "type": {
+            "description": "The type of discount (e.g., percentage, fixed)",
+            "type": "string"
+          },
+          "value": {
+            "description": "The value of the discount",
+            "type": "number"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "tax_rate": {
+      "description": "The tax rate for the item",
+      "type": "number"
+    }
+  },
+  "required": [
+    "base_price",
+    "discounts",
+    "tax_rate"
+  ],
+  "type": "object"
+}

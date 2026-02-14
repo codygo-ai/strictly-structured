@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "o41692",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o41692",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o41692"
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "pets": {
+      "type": "object",
+      "properties": {
+        "dog": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0,
+          "maxItems": 42
+        }
+      }
+    }
+  },
+  "properties": {
+    "pets": {
+      "$ref": "#/definitions/pets"
+    }
+  },
+  "required": [
+    "pets"
+  ]
+}

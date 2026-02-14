@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "const boolean",
+    "description": "valid: const boolean",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "b": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "b"
+  ]
+}

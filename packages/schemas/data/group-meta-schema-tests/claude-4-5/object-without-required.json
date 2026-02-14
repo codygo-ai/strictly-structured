@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "object without required",
+    "description": "valid: object without required",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

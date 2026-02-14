@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "string enum",
+    "description": "valid: string enum",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "k": {
+      "type": "string",
+      "enum": [
+        "a",
+        "b"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "k"
+  ]
+}

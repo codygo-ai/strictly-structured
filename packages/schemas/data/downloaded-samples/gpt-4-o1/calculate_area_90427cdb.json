@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "calculate_area_90427cdb",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_90427cdb",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_area_90427cdb"
+  },
+  "properties": {
+    "dimensions": {
+      "properties": {
+        "base": {
+          "description": "The base of the shape (for triangle)",
+          "type": "number"
+        },
+        "height": {
+          "description": "The height of the shape",
+          "type": "number"
+        },
+        "height_triangle": {
+          "description": "The height of the triangle (for triangle)",
+          "type": "number"
+        },
+        "radius": {
+          "description": "The radius of the shape (for circle)",
+          "type": "number"
+        },
+        "width": {
+          "description": "The width of the shape",
+          "type": "number"
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "shape": {
+      "description": "The shape for which to calculate the area (rectangle, circle, triangle)",
+      "enum": [
+        "rectangle",
+        "circle",
+        "triangle"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "shape",
+    "dimensions"
+  ],
+  "type": "object"
+}

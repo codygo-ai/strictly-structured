@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "string enum",
+    "description": "valid: string enum",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "k": {
+      "type": "string",
+      "enum": [
+        "x",
+        "y"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "k"
+  ]
+}

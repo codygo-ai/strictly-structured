@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "exclusiveMinimum in number",
+    "description": "invalid: exclusiveMinimum in number",
+    "expectation": "invalid: error must match additional propert|exclusiveMinimum",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|exclusiveMinimum"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "o36641",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o36641",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o36641"
+  },
+  "properties": {
+    "author": {
+      "anyOf": [
+        {
+          "properties": {
+            "email": {
+              "format": "email",
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "homepage": {
+      "type": "string"
+    },
+    "icon": {
+      "format": "uri",
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "type": "object"
+}

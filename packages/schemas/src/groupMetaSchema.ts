@@ -1,10 +1,11 @@
 /**
- * Builds a draft-07 JSON Schema meta-schema per group. Uses full group (display + machine);
- * errors if machine is missing. No I/O; pure functions.
+ * Builds a group meta-schema as a subset of the draft-07 JSON Schema meta-schema:
+ * start from the full draft-07 meta-schema and restrict by removing unsupported
+ * keywords and applying group-specific root rules. Uses full group (display + machine);
+ * errors if machine is missing. No I/O; pure functions (base schema passed in).
  */
 
 const DRAFT_07 = "http://json-schema.org/draft-07/schema#";
-const DEF_NAME = "groupSchemaObject";
 
 export interface GroupMetaSchemaInput {
   rootType: "object" | ["object", "array"];
@@ -20,6 +21,11 @@ export interface GroupMetaSchemaInput {
   supportedArrayKeywords: string[];
   supportedCompositionKeywords: string[];
   unsupportedCompositionKeywords: string[];
+  unsupportedStringKeywords: string[];
+  unsupportedNumberKeywords: string[];
+  unsupportedIntegerKeywords: string[];
+  unsupportedObjectKeywords: string[];
+  unsupportedArrayKeywords: string[];
 }
 
 interface MachineLike {
@@ -36,6 +42,11 @@ interface MachineLike {
   supportedArrayKeywords?: string[];
   supportedCompositionKeywords?: string[];
   unsupportedCompositionKeywords?: string[];
+  unsupportedStringKeywords?: string[];
+  unsupportedNumberKeywords?: string[];
+  unsupportedIntegerKeywords?: string[];
+  unsupportedObjectKeywords?: string[];
+  unsupportedArrayKeywords?: string[];
 }
 
 function arr(x: unknown): string[] {
@@ -71,263 +82,66 @@ export function normalizeGroupInput(group: {
     supportedArrayKeywords: arr(m.supportedArrayKeywords),
     supportedCompositionKeywords: arr(m.supportedCompositionKeywords),
     unsupportedCompositionKeywords: arr(m.unsupportedCompositionKeywords),
+    unsupportedStringKeywords: arr(m.unsupportedStringKeywords),
+    unsupportedNumberKeywords: arr(m.unsupportedNumberKeywords),
+    unsupportedIntegerKeywords: arr(m.unsupportedIntegerKeywords),
+    unsupportedObjectKeywords: arr(m.unsupportedObjectKeywords),
+    unsupportedArrayKeywords: arr(m.unsupportedArrayKeywords),
   };
 }
 
-function schemaRef(ref: string): { $ref: string } {
-  return { $ref: ref };
+function deepClone<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
 }
 
-function buildRoot(input: GroupMetaSchemaInput): Record<string, unknown> {
-  const rootTypeSchema =
-    input.rootType === "object"
-      ? { type: "string" as const, enum: ["object"] as const }
-      : { type: "string" as const, enum: ["object", "array"] as const };
-
-  const rootConstraints: Record<string, unknown> = {
-    type: "object",
-    required: ["type"],
-    properties: {
-      type: rootTypeSchema,
-    },
-  };
-
-  return {
-    $schema: DRAFT_07,
-    allOf: [rootConstraints, schemaRef(`#/$defs/${DEF_NAME}`)],
-  };
+function allUnsupportedKeywords(input: GroupMetaSchemaInput): Set<string> {
+  const set = new Set<string>();
+  for (const k of input.unsupportedCompositionKeywords) set.add(k);
+  for (const k of input.unsupportedStringKeywords) set.add(k);
+  for (const k of input.unsupportedNumberKeywords) set.add(k);
+  for (const k of input.unsupportedIntegerKeywords) set.add(k);
+  for (const k of input.unsupportedObjectKeywords) set.add(k);
+  for (const k of input.unsupportedArrayKeywords) set.add(k);
+  return set;
 }
 
-function stringBranch(input: GroupMetaSchemaInput, _ref: string): Record<string, unknown> {
-  const keywords = [...input.supportedStringKeywords];
-  const props: Record<string, unknown> = {
-    type: {
-      oneOf: [
-        { type: "string", enum: ["string"] },
-        { type: "array", items: { type: "string" }, contains: { const: "string" } },
-      ],
-    },
-  };
-  for (const kw of keywords) {
-    if (kw === "enum") props.enum = { type: "array" };
-    else if (kw === "const") props.const = {};
-    else if (kw === "description" || kw === "title") props[kw] = { type: "string" };
-    else if (kw === "pattern") props.pattern = { type: "string" };
-    else if (kw === "format") {
-      props.format =
-        input.supportedStringFormats.length > 0
-          ? { type: "string", enum: input.supportedStringFormats }
-          : { type: "string" };
-    } else props[kw] = {};
+/**
+ * Returns a group meta-schema that is a subset of the draft-07 meta-schema:
+ * same structure and size as the base, with unsupported keywords removed and
+ * group-specific root rules applied.
+ */
+export function buildGroupMetaSchema(
+  baseMetaSchema: Record<string, unknown>,
+  input: GroupMetaSchemaInput
+): Record<string, unknown> {
+  const base = deepClone(baseMetaSchema) as Record<string, unknown>;
+  const unsupported = allUnsupportedKeywords(input);
+  const properties = base.properties as Record<string, unknown> | undefined;
+  if (!properties || typeof properties !== "object") {
+    return base;
   }
-  return {
-    type: "object",
-    required: ["type"],
-    properties: props,
-    additionalProperties: false,
-  };
-}
 
-function objectBranch(input: GroupMetaSchemaInput, ref: string): Record<string, unknown> {
-  const keywords = input.supportedObjectKeywords;
-  const props: Record<string, unknown> = {
-    type: {
-      oneOf: [
-        { type: "string", enum: ["object"] },
-        { type: "array", items: { type: "string" }, contains: { const: "object" } },
-      ],
-    },
-  };
-  for (const kw of keywords) {
-    if (kw === "properties") props.properties = { type: "object", additionalProperties: schemaRef(ref) };
-    else if (kw === "additionalProperties") props.additionalProperties = { oneOf: [{ enum: [false] }, schemaRef(ref)] };
-    else if (kw === "required") props.required = { type: "array", items: { type: "string" } };
-    else if (kw === "description" || kw === "title") props[kw] = { type: "string" };
-    else props[kw] = {};
+  for (const key of Object.keys(properties)) {
+    if (unsupported.has(key)) {
+      delete properties[key];
+    }
   }
-  return {
-    type: "object",
-    required: ["type"],
-    properties: props,
-    additionalProperties: false,
-  };
-}
 
-function arrayBranch(input: GroupMetaSchemaInput, ref: string): Record<string, unknown> {
-  const keywords = input.supportedArrayKeywords;
-  const props: Record<string, unknown> = {
-    type: {
-      oneOf: [
-        { type: "string", enum: ["array"] },
-        { type: "array", items: { type: "string" }, contains: { const: "array" } },
-      ],
-    },
-  };
-  for (const kw of keywords) {
-    if (kw === "items") props.items = schemaRef(ref);
-    else if (kw === "prefixItems") props.prefixItems = { type: "array", items: schemaRef(ref) };
-    else if (kw === "description" || kw === "title") props[kw] = { type: "string" };
-    else if (kw === "minItems" || kw === "maxItems") props[kw] = { type: "integer" };
-    else props[kw] = {};
+  if (input.supportedStringFormats.length > 0 && "format" in properties) {
+    properties.format = { type: "string", enum: input.supportedStringFormats };
   }
-  return {
-    type: "object",
-    required: ["type"],
-    properties: props,
-    additionalProperties: false,
-  };
+
+  base.additionalProperties = false;
+  delete (base as Record<string, unknown>).default;
+
+  base.$schema = DRAFT_07;
+  return base;
 }
 
-function numberBranch(input: GroupMetaSchemaInput): Record<string, unknown> {
-  const keywords = input.supportedNumberKeywords;
-  const props: Record<string, unknown> = {
-    type: {
-      oneOf: [
-        { type: "string", enum: ["number"] },
-        { type: "array", items: { type: "string" }, contains: { const: "number" } },
-      ],
-    },
-  };
-  for (const kw of keywords) {
-    if (kw === "description" || kw === "title") props[kw] = { type: "string" };
-    else if (kw === "enum") props.enum = { type: "array" };
-    else props[kw] = {};
-  }
-  return {
-    type: "object",
-    required: ["type"],
-    properties: props,
-    additionalProperties: false,
-  };
-}
-
-function integerBranch(input: GroupMetaSchemaInput): Record<string, unknown> {
-  const keywords = input.supportedIntegerKeywords;
-  const props: Record<string, unknown> = {
-    type: {
-      oneOf: [
-        { type: "string", enum: ["integer"] },
-        { type: "array", items: { type: "string" }, contains: { const: "integer" } },
-      ],
-    },
-  };
-  for (const kw of keywords) {
-    if (kw === "description" || kw === "title") props[kw] = { type: "string" };
-    else if (kw === "enum") props.enum = { type: "array" };
-    else props[kw] = {};
-  }
-  return {
-    type: "object",
-    required: ["type"],
-    properties: props,
-    additionalProperties: false,
-  };
-}
-
-function booleanBranch(input: GroupMetaSchemaInput): Record<string, unknown> {
-  const keywords = input.supportedBooleanKeywords;
-  const props: Record<string, unknown> = {
-    type: {
-      oneOf: [
-        { type: "string", enum: ["boolean"] },
-        { type: "array", items: { type: "string" }, contains: { const: "boolean" } },
-      ],
-    },
-  };
-  for (const kw of keywords) {
-    if (kw === "description" || kw === "title") props[kw] = { type: "string" };
-    else props[kw] = {};
-  }
-  return {
-    type: "object",
-    required: ["type"],
-    properties: props,
-    additionalProperties: false,
-  };
-}
-
-function nullBranch(): Record<string, unknown> {
-  return {
-    type: "object",
-    required: ["type"],
-    properties: {
-      type: {
-        oneOf: [
-          { type: "string", enum: ["null"] },
-          { type: "array", items: { type: "string" }, contains: { const: "null" } },
-        ],
-      },
-    },
-    additionalProperties: false,
-  };
-}
-
-function refOnlyBranch(ref: string): Record<string, unknown> {
-  const supportsDefs = true;
-  const props: Record<string, unknown> = {
-    $ref: { type: "string" },
-  };
-  if (supportsDefs) {
-    props.$defs = { type: "object", additionalProperties: schemaRef(ref) };
-  }
-  return {
-    type: "object",
-    required: ["$ref"],
-    properties: props,
-    additionalProperties: false,
-  };
-}
-
-function anyOfBranch(input: GroupMetaSchemaInput, ref: string): Record<string, unknown> | null {
-  if (!input.supportedCompositionKeywords.includes("anyOf")) return null;
-  return {
-    type: "object",
-    required: ["anyOf"],
-    properties: {
-      anyOf: { type: "array", items: schemaRef(ref) },
-    },
-    additionalProperties: false,
-  };
-}
-
-function buildGroupSchemaObject(input: GroupMetaSchemaInput): Record<string, unknown> {
-  const ref = `#/$defs/${DEF_NAME}`;
-  const branches: Record<string, unknown>[] = [];
-
-  branches.push(refOnlyBranch(ref));
-
-  const anyOfB = anyOfBranch(input, ref);
-  if (anyOfB) branches.push(anyOfB);
-
-  branches.push(stringBranch(input, ref));
-  branches.push(objectBranch(input, ref));
-  branches.push(arrayBranch(input, ref));
-  branches.push(numberBranch(input));
-  branches.push(integerBranch(input));
-  branches.push(booleanBranch(input));
-  branches.push(nullBranch());
-
-  return {
-    oneOf: branches,
-  };
-}
-
-export function buildGroupMetaSchema(input: GroupMetaSchemaInput): Record<string, unknown> {
-  const root = buildRoot(input);
-  const defs = {
-    [DEF_NAME]: buildGroupSchemaObject(input),
-  };
-  return {
-    ...root,
-    $defs: defs,
-  };
-}
-
-export function buildGroupMetaSchemaFromGroup(group: {
-  groupId: string;
-  display?: unknown;
-  machine?: unknown;
-}): Record<string, unknown> {
+export function buildGroupMetaSchemaFromGroup(
+  baseMetaSchema: Record<string, unknown>,
+  group: { groupId: string; display?: unknown; machine?: unknown }
+): Record<string, unknown> {
   const input = normalizeGroupInput(group);
-  return buildGroupMetaSchema(input);
+  return buildGroupMetaSchema(baseMetaSchema, input);
 }

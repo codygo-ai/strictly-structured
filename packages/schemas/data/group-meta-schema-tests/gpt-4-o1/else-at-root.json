@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "else at root",
+    "description": "invalid: else at root",
+    "expectation": "invalid: error must match additional propert|else",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|else"
+  },
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false,
+  "else": {}
+}

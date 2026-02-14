@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "dependentRequired",
+    "description": "invalid: dependentRequired",
+    "expectation": "invalid: error must match additional propert|dependent",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|dependent"
+  },
+  "type": "object",
+  "properties": {
+    "o": {
+      "type": "object",
+      "dependentRequired": {
+        "a": [
+          "b"
+        ]
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "o"
+  ]
+}

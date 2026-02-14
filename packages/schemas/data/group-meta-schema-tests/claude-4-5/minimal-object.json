@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "minimal object",
+    "description": "valid: minimal object",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name"
+  ]
+}

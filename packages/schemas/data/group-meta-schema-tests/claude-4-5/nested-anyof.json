@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "nested anyOf",
+    "description": "valid: nested anyOf",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

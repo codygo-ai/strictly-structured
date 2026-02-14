@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -15,12 +15,6 @@ const DEFAULT_SCHEMA = `{
 }
 `;
 
-const JSON_SCHEMA_KEYWORDS = [
-  "type", "enum", "const", "properties", "required", "additionalProperties",
-  "items", "description", "title", "minimum", "maximum", "pattern", "format",
-  "oneOf", "anyOf", "allOf", "not", "$ref", "$defs",
-];
-
 interface SchemaEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -31,6 +25,8 @@ interface SchemaEditorProps {
   noHeader?: boolean;
   /** Editor theme: "light" for light UI (e.g. validator page), "dark" default. */
   editorTheme?: "light" | "dark";
+  /** Optional JSON Schema (e.g. group meta-schema) to validate the document. Applied when selected group changes. */
+  validationSchema?: object | null;
 }
 
 export function SchemaEditor({
@@ -40,9 +36,11 @@ export function SchemaEditor({
   fillHeight = false,
   noHeader = false,
   editorTheme = "dark",
+  validationSchema = null,
 }: SchemaEditorProps) {
   const isLight = editorTheme === "light";
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const monacoRef = useRef<unknown>(null);
 
   const handleLoadFile = useCallback(() => {
     fileInputRef.current?.click();
@@ -63,9 +61,41 @@ export function SchemaEditor({
     [onChange]
   );
 
+  const applyValidationSchema = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (monaco: any, schema: object | null | undefined) => {
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        allowComments: false,
+        schemas:
+          schema != null
+            ? [
+                {
+                  uri: "https://group-meta-schema",
+                  fileMatch: ["*"],
+                  schema,
+                },
+              ]
+            : [],
+      });
+    },
+    []
+  );
+
+  const handleBeforeMount = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (monaco: any) => {
+      monacoRef.current = monaco;
+      applyValidationSchema(monaco, validationSchema ?? null);
+    },
+    [validationSchema, applyValidationSchema]
+  );
+
   const handleEditorMount = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (editor: any, monaco: any) => {
+      applyValidationSchema(monaco, validationSchema ?? null);
+
       editor.addCommand(
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyP,
         () => {
@@ -96,32 +126,15 @@ export function SchemaEditor({
           }
         },
       });
-
-      monaco.languages.registerCompletionItemProvider("json", {
-        triggerCharacters: ['"'],
-        provideCompletionItems: (
-          model: { getWordUntilPosition: (p: { lineNumber: number; column: number }) => { startColumn: number; endColumn: number } },
-          position: { lineNumber: number; column: number }
-        ) => {
-          const word = model.getWordUntilPosition(position);
-          const range = {
-            startLineNumber: position.lineNumber,
-            endLineNumber: position.lineNumber,
-            startColumn: word.startColumn,
-            endColumn: word.endColumn,
-          };
-          const suggestions = JSON_SCHEMA_KEYWORDS.map((keyword) => ({
-            label: `"${keyword}"`,
-            kind: monaco.languages.CompletionItemKind.Keyword,
-            insertText: `"${keyword}"`,
-            range,
-          }));
-          return { suggestions };
-        },
-      });
     },
-    []
+    [validationSchema, applyValidationSchema]
   );
+
+  useEffect(() => {
+    const monaco = monacoRef.current;
+    if (!monaco) return;
+    applyValidationSchema(monaco, validationSchema ?? null);
+  }, [validationSchema, applyValidationSchema]);
 
   const editorContent = (
     <div
@@ -144,6 +157,7 @@ export function SchemaEditor({
         defaultLanguage="json"
         value={value || DEFAULT_SCHEMA}
         onChange={(v) => onChange(v ?? "")}
+        beforeMount={handleBeforeMount}
         onMount={handleEditorMount}
         theme={isLight ? "vs" : "vs-dark"}
         options={{

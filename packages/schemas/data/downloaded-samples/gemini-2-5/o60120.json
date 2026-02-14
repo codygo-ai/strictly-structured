@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "CouchDB GET of design document",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o60120",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o60120"
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A document returned by GET /{db}/_design/{ddoc}",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "_rev": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "options": {
+      "type": "object"
+    },
+    "filters": {
+      "type": "object"
+    },
+    "lists": {
+      "type": "object"
+    },
+    "rewrites": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "shows": {
+      "type": "object"
+    },
+    "updates": {
+      "type": "object"
+    },
+    "validate_doc_update": {
+      "type": "string"
+    },
+    "views": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "_id",
+    "_rev"
+  ],
+  "title": "CouchDB GET of design document",
+  "type": "object"
+}

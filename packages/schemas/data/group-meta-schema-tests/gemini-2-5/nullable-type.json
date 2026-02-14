@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "nullable type",
+    "description": "valid: nullable type",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

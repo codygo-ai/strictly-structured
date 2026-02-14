@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "generate_invoice_bb1762cc",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – generate_invoice_bb1762cc",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "generate_invoice_bb1762cc"
+  },
+  "properties": {
+    "customer_details": {
+      "properties": {
+        "email": {
+          "description": "The email address of the customer",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the customer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "email"
+      ],
+      "type": "object"
+    },
+    "items": {
+      "items": {
+        "properties": {
+          "name": {
+            "description": "The name of the item",
+            "type": "string"
+          },
+          "price": {
+            "description": "The price of the item",
+            "type": "number"
+          },
+          "quantity": {
+            "description": "The quantity of the item",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "quantity",
+          "price"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "customer_details",
+    "items"
+  ],
+  "type": "object"
+}

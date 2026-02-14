@@ -10,6 +10,8 @@
   "scripts": {
     "generate": "tsx src/cli.ts",
     "generate:samples": "tsx src/samples-generate.ts",
+    "emit-test-files": "tsx scripts/emit-group-meta-schema-test-files.ts",
+    "download-samples": "tsx scripts/download-json-schema-samples.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run"
@@ -18,6 +20,8 @@
     "@ssv/eslint-config": "workspace:*",
     "@ssv/tsconfig": "workspace:*",
     "@types/node": "^22.15.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "eslint": "^9.39.1",
     "tsx": "^4.19.0",
     "typescript": "^5.7.2",

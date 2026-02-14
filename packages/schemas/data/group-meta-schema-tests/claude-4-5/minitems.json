@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "minItems",
+    "description": "invalid: minItems",
+    "expectation": "invalid: error must match additional propert|minItems",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|minItems"
+  },
+  "type": "object",
+  "properties": {
+    "arr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false
+}

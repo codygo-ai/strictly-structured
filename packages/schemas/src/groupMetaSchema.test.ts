@@ -11,6 +11,12 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
 const DATA_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const DRAFT_07_PATH = path.join(PACKAGE_ROOT, "data", "draft-07-meta-schema.json");
+
+function loadBaseMetaSchema(): Record<string, unknown> {
+  const raw = fs.readFileSync(DRAFT_07_PATH, "utf-8");
+  return JSON.parse(raw) as Record<string, unknown>;
+}
 
 describe("groupMetaSchema", () => {
   it("normalizeGroupInput throws when machine is missing", () => {
@@ -18,7 +24,8 @@ describe("groupMetaSchema", () => {
     expect(() => normalizeGroupInput({ display: {} })).toThrow("missing machine");
   });
 
-  it("buildGroupMetaSchemaFromGroup produces draft-07 meta-schema with $defs and root type", () => {
+  it("buildGroupMetaSchemaFromGroup produces draft-07 subset with definitions and restricted properties", () => {
+    const base = loadBaseMetaSchema();
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     const data = JSON.parse(raw) as {
       groups: Array<{ groupId: string; display?: unknown; machine?: unknown }>;
@@ -27,22 +34,18 @@ describe("groupMetaSchema", () => {
     expect(first).toBeDefined();
     expect(first.groupId).toBe("gpt-4-o1");
 
-    const schema = buildGroupMetaSchemaFromGroup(first) as Record<string, unknown>;
+    const schema = buildGroupMetaSchemaFromGroup(base, first) as Record<string, unknown>;
     expect(schema.$schema).toBe("http://json-schema.org/draft-07/schema#");
-    expect(schema.$defs).toBeDefined();
-    const defs = schema.$defs as Record<string, unknown>;
-    expect(defs.groupSchemaObject).toBeDefined();
-
-    const allOf = schema.allOf as Array<Record<string, unknown>>;
-    expect(Array.isArray(allOf)).toBe(true);
-    const rootConstraints = allOf[0];
-    expect(rootConstraints.type).toBe("object");
-    expect(rootConstraints.required).toContain("type");
-    const typeProp = (rootConstraints.properties as Record<string, unknown>).type as Record<string, unknown>;
-    expect(typeProp.enum).toEqual(["object"]);
+    expect(schema.definitions).toBeDefined();
+    expect((schema.definitions as Record<string, unknown>).schemaArray).toBeDefined();
+    expect(schema.additionalProperties).toBe(false);
+    const props = schema.properties as Record<string, unknown>;
+    expect(props.oneOf).toBeUndefined();
+    expect(props.anyOf).toBeDefined();
   });
 
-  it("buildGroupMetaSchema from normalized input has correct root for object-only group", () => {
+  it("buildGroupMetaSchema from normalized input removes unsupported keywords", () => {
+    const base = loadBaseMetaSchema();
     const input = normalizeGroupInput({
       machine: {
         rootType: "object",
@@ -54,19 +57,25 @@ describe("groupMetaSchema", () => {
         supportedBooleanKeywords: [],
         supportedObjectKeywords: ["properties", "required", "additionalProperties", "description"],
         supportedArrayKeywords: ["items", "description"],
-        supportedCompositionKeywords: ["$ref", "$defs"],
+        supportedCompositionKeywords: ["$ref", "anyOf"],
         unsupportedCompositionKeywords: ["allOf", "oneOf"],
+        unsupportedStringKeywords: [],
+        unsupportedNumberKeywords: [],
+        unsupportedIntegerKeywords: [],
+        unsupportedObjectKeywords: [],
+        unsupportedArrayKeywords: [],
       },
     });
-    const schema = buildGroupMetaSchema(input) as Record<string, unknown>;
+    const schema = buildGroupMetaSchema(base, input) as Record<string, unknown>;
     expect(schema.$schema).toBe("http://json-schema.org/draft-07/schema#");
-    const allOf = schema.allOf as Array<Record<string, unknown>>;
-    const rootConstraints = allOf[0];
-    const typeProp = (rootConstraints.properties as Record<string, unknown>).type as Record<string, unknown>;
-    expect(typeProp.enum).toEqual(["object"]);
+    expect(schema.additionalProperties).toBe(false);
+    const props = schema.properties as Record<string, unknown>;
+    expect(props.oneOf).toBeUndefined();
+    expect(props.allOf).toBeUndefined();
   });
 
-  it("buildGroupMetaSchema for group with rootType array allows object or array at root", () => {
+  it("buildGroupMetaSchema for gemini removes unsupported composition keywords", () => {
+    const base = loadBaseMetaSchema();
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     const data = JSON.parse(raw) as {
       groups: Array<{ groupId: string; machine?: unknown }>;
@@ -74,10 +83,10 @@ describe("groupMetaSchema", () => {
     const gemini = data.groups.find((g) => g.groupId === "gemini-2-5");
     expect(gemini).toBeDefined();
 
-    const schema = buildGroupMetaSchemaFromGroup(gemini!) as Record<string, unknown>;
-    const allOf = schema.allOf as Array<Record<string, unknown>>;
-    const rootConstraints = allOf[0];
-    const typeProp = (rootConstraints.properties as Record<string, unknown>).type as Record<string, unknown>;
-    expect(typeProp.enum).toEqual(["object", "array"]);
+    const schema = buildGroupMetaSchemaFromGroup(base, gemini!) as Record<string, unknown>;
+    expect(schema.additionalProperties).toBe(false);
+    const props = schema.properties as Record<string, unknown>;
+    expect(props.oneOf).toBeUndefined();
+    expect(props.anyOf).toBeDefined();
   });
 });

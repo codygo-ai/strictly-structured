@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "string enum",
+    "description": "valid: string enum",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "e": {
+      "type": "string",
+      "enum": [
+        "a",
+        "b"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

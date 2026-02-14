@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "create_calendar_event_f33c7e77",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – create_calendar_event_f33c7e77",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "create_calendar_event_f33c7e77"
+  },
+  "properties": {
+    "date": {
+      "description": "The date of the event in YYYY-MM-DD format",
+      "type": "string"
+    },
+    "end_time": {
+      "description": "The end time of the event in HH:MM format",
+      "type": "string"
+    },
+    "location": {
+      "description": "The location of the event",
+      "type": "string"
+    },
+    "start_time": {
+      "description": "The start time of the event in HH:MM format",
+      "type": "string"
+    },
+    "title": {
+      "description": "The title of the event",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "date",
+    "start_time",
+    "end_time"
+  ],
+  "type": "object"
+}

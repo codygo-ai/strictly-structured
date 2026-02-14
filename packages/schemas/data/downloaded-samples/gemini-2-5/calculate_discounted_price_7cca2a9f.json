@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "calculate_discounted_price_7cca2a9f",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_discounted_price_7cca2a9f",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_discounted_price_7cca2a9f"
+  },
+  "properties": {
+    "items": {
+      "items": {
+        "properties": {
+          "discount_percentage": {
+            "description": "The percentage of discount to be applied on the item",
+            "type": "number"
+          },
+          "name": {
+            "description": "The name of the item",
+            "type": "string"
+          },
+          "price": {
+            "description": "The price of the item",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "discount_percentage"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "type": "object"
+}

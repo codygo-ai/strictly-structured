@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "$ref to definitions",
+    "description": "valid: $ref to definitions",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "p": {
+      "$ref": "#/definitions/Leaf"
+    }
+  },
+  "required": [
+    "p"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "Leaf": {
+      "type": "string"
+    }
+  }
+}

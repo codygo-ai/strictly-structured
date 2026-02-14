@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "format mix",
+    "description": "valid: format mix",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "dt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "dt",
+    "uuid"
+  ]
+}

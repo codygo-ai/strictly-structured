@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "number exclusiveMin/Max",
+    "description": "valid: number exclusiveMin/Max",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "n"
+  ]
+}

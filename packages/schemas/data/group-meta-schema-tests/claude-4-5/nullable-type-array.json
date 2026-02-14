@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "nullable type array",
+    "description": "valid: nullable type array",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "s"
+  ]
+}

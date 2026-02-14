@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "calculate_gross_salary_e46c4bac",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_gross_salary_e46c4bac",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "calculate_gross_salary_e46c4bac"
+  },
+  "properties": {
+    "hourly_rate": {
+      "description": "The hourly rate of the employee",
+      "type": "number"
+    },
+    "hours_worked": {
+      "description": "The number of hours worked",
+      "type": "number"
+    },
+    "overtime_hours": {
+      "description": "The number of overtime hours, if any",
+      "type": "number"
+    },
+    "overtime_rate": {
+      "description": "The rate for overtime hours",
+      "type": "number"
+    }
+  },
+  "required": [
+    "hourly_rate",
+    "hours_worked"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "kb_773_Normalized",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – kb_773_Normalized",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "kb_773_Normalized"
+  },
+  "description": "PriorityLevelConfigurationReference contains information that points to the \"request-priority\" being used.",
+  "properties": {
+    "name": {
+      "description": "`name` is the name of the priority level configuration being referenced Required.",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "type": "object"
+}

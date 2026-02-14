@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "empty object",
+    "description": "valid: empty object",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

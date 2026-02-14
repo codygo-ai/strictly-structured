@@ -23,6 +23,7 @@ function findRepoRoot(start: string): string {
 
 const REPO_ROOT = findRepoRoot(PACKAGE_ROOT);
 const DATA_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const DRAFT_07_META_PATH = path.join(PACKAGE_ROOT, "data", "draft-07-meta-schema.json");
 
 const USAGE = `
 Usage: generate --out-dir <path>   (or --to <path>)
@@ -81,10 +82,16 @@ function main(): void {
   console.log(`Wrote ${jsonOutPath}`);
   console.log(`Wrote ${tsOutPath}`);
 
+  if (!fs.existsSync(DRAFT_07_META_PATH)) {
+    console.error(`Draft-07 meta-schema not found: ${DRAFT_07_META_PATH}`);
+    process.exit(1);
+  }
+  const baseMetaSchema = JSON.parse(fs.readFileSync(DRAFT_07_META_PATH, "utf-8")) as Record<string, unknown>;
+
   const metaSchemasDir = path.join(dataDir, "group-meta-schemas");
   fs.mkdirSync(metaSchemasDir, { recursive: true });
   for (const group of data.groups) {
-    const schema = buildGroupMetaSchemaFromGroup(group);
+    const schema = buildGroupMetaSchemaFromGroup(baseMetaSchema, group);
     const schemaPath = path.join(metaSchemasDir, `${group.groupId}.generated.json`);
     fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2), "utf-8");
     console.log(`Wrote ${schemaPath}`);

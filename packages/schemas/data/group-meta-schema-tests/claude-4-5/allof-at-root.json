@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "allOf at root",
+    "description": "invalid: allOf at root",
+    "expectation": "invalid: error must match additional propert|allOf",
+    "expected": "invalid",
+    "expectErrorPattern": "additional propert|allOf"
+  },
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "allOf": []
+}

@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "o47167",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o47167",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o47167"
+  },
+  "additionalProperties": false,
+  "description": "MachineBoss named sequence schema",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "sequence": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "sequence"
+  ],
+  "type": "object"
+}

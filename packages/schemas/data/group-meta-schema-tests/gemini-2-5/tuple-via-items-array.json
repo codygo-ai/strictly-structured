@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "tuple via items array",
+    "description": "valid: tuple via items array",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "tuple": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

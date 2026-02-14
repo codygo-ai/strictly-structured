@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "description on multiple keywords",
+    "description": "valid: description on multiple keywords",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "description": "S"
+    },
+    "n": {
+      "type": "number",
+      "description": "N",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

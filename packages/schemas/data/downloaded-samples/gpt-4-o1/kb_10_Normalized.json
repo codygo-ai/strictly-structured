@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "kb_10_Normalized",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – kb_10_Normalized",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "kb_10_Normalized"
+  },
+  "description": "AllowedFlexVolume represents a single Flexvolume that is allowed to be used. Deprecated: use AllowedFlexVolume from policy API Group instead.",
+  "properties": {
+    "driver": {
+      "description": "driver is the name of the Flexvolume driver.",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "driver"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "multiple optional properties",
+    "description": "valid: multiple optional properties",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "a": {
+      "type": "string"
+    },
+    "b": {
+      "type": "number"
+    },
+    "c": {
+      "type": "array",
+      "items": {
+        "type": "boolean"
+      }
+    }
+  },
+  "additionalProperties": false
+}

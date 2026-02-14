@@ -1,0 +1,31 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "definitions multiple",
+    "description": "valid: definitions multiple",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "a": {
+      "$ref": "#/definitions/A"
+    },
+    "b": {
+      "$ref": "#/definitions/B"
+    }
+  },
+  "required": [
+    "a",
+    "b"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "A": {
+      "type": "string"
+    },
+    "B": {
+      "type": "integer"
+    }
+  }
+}

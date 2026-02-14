@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "number multipleOf",
+    "description": "valid: number multipleOf",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "multipleOf": 0.01
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "n"
+  ]
+}

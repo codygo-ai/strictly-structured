@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "string description and title",
+    "description": "valid: string description and title",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "s": {
+      "type": "string",
+      "description": "d",
+      "title": "T"
+    }
+  },
+  "additionalProperties": false
+}

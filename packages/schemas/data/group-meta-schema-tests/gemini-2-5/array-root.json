@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "array root",
+    "description": "valid: array root",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "array",
+  "items": {
+    "type": "string"
+  },
+  "additionalProperties": false
+}

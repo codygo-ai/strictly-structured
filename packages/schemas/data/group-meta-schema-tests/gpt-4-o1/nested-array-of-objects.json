@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "nested array of objects",
+    "description": "valid: nested array of objects",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ]
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "list"
+  ]
+}

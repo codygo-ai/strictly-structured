@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "deep array",
+    "description": "valid: deep array",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "array",
+  "items": {
+    "type": "array",
+    "items": {
+      "type": "integer"
+    },
+    "additionalProperties": false
+  },
+  "additionalProperties": false
+}

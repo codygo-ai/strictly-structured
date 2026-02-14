@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "kb_1160_Normalized",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – kb_1160_Normalized",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "kb_1160_Normalized"
+  },
+  "description": "WindowsSecurityContextOptions contain Windows-specific options and credentials.",
+  "properties": {
+    "gmsaCredentialSpec": {
+      "description": "GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gmsaCredentialSpecName": {
+      "description": "GMSACredentialSpecName is the name of the GMSA credential spec to use.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runAsUserName": {
+      "description": "The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "type": "object"
+}

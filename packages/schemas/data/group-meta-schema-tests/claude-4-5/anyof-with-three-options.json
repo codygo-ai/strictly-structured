@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "anyOf with three options",
+    "description": "valid: anyOf with three options",
+    "expectation": "valid",
+    "expected": "valid"
+  },
+  "type": "object",
+  "properties": {
+    "v": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

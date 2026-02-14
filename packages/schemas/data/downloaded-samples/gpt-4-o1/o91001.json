@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "TextFixed",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o91001",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o91001"
+  },
+  "title": "TextFixed",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "numWords": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "numWords"
+  ]
+}

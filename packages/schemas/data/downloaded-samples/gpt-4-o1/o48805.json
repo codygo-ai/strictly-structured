@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "groupId": "gpt-4-o1",
+    "name": "DCOS ACL: User authentication",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o48805",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o48805"
+  },
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "http://schema.dcos/acl/auth",
+  "title": "DCOS ACL: User authentication",
+  "type": "object",
+  "properties": {
+    "token": {
+      "title": "User authentication token",
+      "type": "string"
+    }
+  },
+  "required": [
+    "token"
+  ]
+}

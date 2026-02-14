@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "groupId": "claude-4-5",
+    "name": "o89833",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o89833",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o89833"
+  },
+  "description": "OpenContainer Image Layout Schema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://opencontainers.org/schema/image/layout",
+  "type": "object",
+  "properties": {
+    "imageLayoutVersion": {
+      "description": "version of the OCI Image Layout (in the oci-layout file)",
+      "type": "string",
+      "enum": [
+        "1.0.0"
+      ]
+    }
+  },
+  "required": [
+    "imageLayoutVersion"
+  ]
+}

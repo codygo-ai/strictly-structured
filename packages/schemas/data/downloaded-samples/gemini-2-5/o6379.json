@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "groupId": "gemini-2-5",
+    "name": "o6379",
+    "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o6379",
+    "expectation": "unknown (validate per group to set expected)",
+    "expected": "unknown",
+    "source": "epfl-dlab/JSONSchemaBench",
+    "unique_id": "o6379"
+  },
+  "anyOf": [
+    {
+      "$ref": "#/definitions/TestStruct"
+    }
+  ],
+  "definitions": {
+    "TestStruct": {
+      "additionalProperties": false,
+      "description": "for testing the schema generator.",
+      "preferredOrder": [
+        "int32Field",
+        "int64Field",
+        "intField"
+      ],
+      "properties": {
+        "int32Field": {
+          "description": "an integer",
+          "type": "integer",
+          "x-intellij-html-description": "an integer"
+        },
+        "int64Field": {
+          "description": "an integer",
+          "type": "integer",
+          "x-intellij-html-description": "an integer"
+        },
+        "intField": {
+          "description": "an integer",
+          "type": "integer",
+          "x-intellij-html-description": "an integer"
+        }
+      },
+      "x-intellij-html-description": "for testing the schema generator."
+    }
+  },
+  "type": "object"
+}
