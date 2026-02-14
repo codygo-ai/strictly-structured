@@ -35,7 +35,7 @@ export async function validateWithGoogle(
       model,
       generationConfig: {
         responseMimeType: "application/json",
-        responseSchema: schema as Record<string, unknown>,
+        responseSchema: schema as unknown as import("@google/generative-ai").Schema,
       },
     });
     const result = await m.generateContent(PROMPT);
