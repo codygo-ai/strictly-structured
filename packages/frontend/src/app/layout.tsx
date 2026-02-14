@@ -14,6 +14,10 @@ export const metadata: Metadata = {
     template: `%s | ${siteName}`,
   },
   description,
+  icons: [
+    // { url: "/icon.svg", type: "image/svg+xml" },
+    { url: "/icon.png", type: "image/png", sizes: "32x32" },
+  ],
   keywords: [
     "JSON schema",
     "LLM",
