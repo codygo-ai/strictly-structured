@@ -1,13 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(pnpm --filter @ssv/*)",
-      "WebFetch(*)",
-      "Bash(*)"
-    ],
-    "additionalDirectories": [
-      "./.claude",
-      "/Users/danikenan/Projects/codygo-ai/json-schema-validator-audit"
-    ]
+    "allow": ["Bash(pnpm --filter @ssv/*)", "WebFetch(*)", "Bash(*)"],
+    "additionalDirectories": ["./.claude", "../codygo-ai/json-scehma-val*"]
   }
 }
