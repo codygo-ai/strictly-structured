@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/api/validate", destination: `${FUNCTIONS_EMULATOR}/validate` },
       { source: "/api/fix", destination: `${FUNCTIONS_EMULATOR}/fix` },
+      { source: "/api/feedback", destination: `${FUNCTIONS_EMULATOR}/feedback` },
     ];
   },
 };

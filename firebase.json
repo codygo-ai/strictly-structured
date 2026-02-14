@@ -5,6 +5,7 @@
     "rewrites": [
       { "source": "/api/validate", "function": "validate" },
       { "source": "/api/fix", "function": "fix" },
+      { "source": "/api/feedback", "function": "feedback" },
       { "source": "/models", "destination": "/models.html" },
       { "source": "/why", "destination": "/why.html" }
     ]
