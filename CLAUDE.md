@@ -23,3 +23,12 @@ After completing all implementation steps and passing lint/typecheck/tests, invo
 - If the review returns **CHANGES_NEEDED**: fix all listed issues, re-run lint/typecheck/tests, then invoke `/project:review` again.
 - Repeat until the review returns **APPROVED**.
 - Do not mark the task as complete until the review is approved.
+
+## Self-Improvement Protocol
+
+At the end of each completed task (not every turn), if any of these occurred:
+- User had to correct you or expressed frustration
+- You made a wrong approach, hallucinated, or violated project rules
+- Tests/lint/typecheck failed due to your code
+
+Then propose a specific, minimal rule to add to `.cursor/rules/` or `CLAUDE.md` that would prevent this class of mistake. Ask before applying.
