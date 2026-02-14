@@ -36,11 +36,18 @@ function Pill({
   );
 }
 
+function camelCaseToLabel(key: string): string {
+  return key
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function quantitativeLimitsToRows(
   limits: Record<string, number | string | null | undefined>
 ): { label: string; value: string }[] {
   return Object.entries(limits).map(([key, value]) => ({
-    label: key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    label: camelCaseToLabel(key),
     value: value == null ? "—" : String(value),
   }));
 }
@@ -54,19 +61,19 @@ export function GroupCard({
 }) {
   const d = group.display;
   const modelsStr = group.models.join(", ");
-  const limitsRows = quantitativeLimitsToRows(d.quantitative_limits);
-  const badgeClass = meta.provider_badge_classes[group.provider_id] ?? "";
+  const limitsRows = quantitativeLimitsToRows(d.quantitativeLimits);
+  const badgeClass = meta.providerBadgeClasses[group.providerId] ?? "";
 
   return (
     <div className="bg-white border border-[#e8eaed] rounded-[10px] p-6 mb-5">
       <div className="flex justify-between items-start mb-1">
         <div className="text-[17px] font-bold text-[#1a1a1a]">
-          {group.group_name}
+          {group.groupName}
         </div>
         <div
           className={`text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded ${badgeClass}`}
         >
-          {group.short_name}
+          {group.shortName}
         </div>
       </div>
       <div className="text-[13px] text-[#7a7f88] mb-2.5 leading-snug">
@@ -82,7 +89,7 @@ export function GroupCard({
             Constraints
           </div>
           <div className="flex flex-col gap-2">
-            {d.hard_constraints.map((c, i) => (
+            {d.hardConstraints.map((c, i) => (
               <div key={i} className="flex gap-1.5 items-start">
                 <div className="mt-0.5 shrink-0">
                   <SeverityIcon severity={c.severity} />
@@ -120,13 +127,13 @@ export function GroupCard({
           <div className="text-[10px] font-bold tracking-wider uppercase text-[#2a7d4e] mb-2.5 pb-1 border-b border-[#e8f5e9]">
             Supported Keywords
           </div>
-          {d.supported_types.map((st) => (
+          {d.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2">
               <div className="text-[11px] font-semibold text-[#666] mb-0.5 font-mono">
                 {st.type}
               </div>
               <div className="flex flex-wrap">
-                {st.supported_keywords.map((kw) => (
+                {st.supportedKeywords.map((kw) => (
                   <Pill key={kw} variant="supported">
                     {kw}
                   </Pill>
@@ -145,7 +152,7 @@ export function GroupCard({
           <div className="text-[10px] font-bold tracking-wider uppercase text-[#b33] mb-2.5 pb-1 border-b border-[#fce4ec]">
             Unsupported Keywords
           </div>
-          {Object.entries(d.unsupported_keywords).map(([type, kws]) => (
+          {Object.entries(d.unsupportedKeywords).map(([type, kws]) => (
             <div key={type} className="mb-2">
               <div className="text-[11px] font-semibold text-[#666] mb-0.5 font-mono">
                 {type}
@@ -164,7 +171,7 @@ export function GroupCard({
           </div>
           <div className="flex flex-col gap-1">
             {Object.entries(d.behaviors)
-              .filter(([k]) => k !== "unknown_keywords_behavior")
+              .filter(([k]) => k !== "unknownKeywordsBehavior")
               .map(([label, val]) => (
                 <div
                   key={label}
@@ -178,12 +185,12 @@ export function GroupCard({
                     <span className="text-[#888] text-[11px]">?</span>
                   )}
                   <span className="text-[#555]">
-                    {label.replace(/_/g, " ")}
+                    {camelCaseToLabel(label)}
                   </span>
                 </div>
               ))}
             <div className="text-[10.5px] text-[#999] mt-0.5">
-              Unknown kw → {String(d.behaviors.unknown_keywords_behavior ?? "—")}
+              Unknown kw → {String(d.behaviors.unknownKeywordsBehavior ?? "—")}
             </div>
           </div>
         </div>
@@ -192,12 +199,12 @@ export function GroupCard({
       <div className="mt-4 text-[10px] text-[#bbb] text-right">
         Source:{" "}
         <a
-          href={group.doc_url}
+          href={group.docUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[#888] hover:underline"
         >
-          {group.doc_url.replace(/^https?:\/\//, "")}
+          {group.docUrl.replace(/^https?:\/\//, "")}
         </a>
       </div>
     </div>

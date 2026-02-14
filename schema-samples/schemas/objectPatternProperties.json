@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "extra": {
+      "type": "object",
+      "patternProperties": {
+        "^x": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "extra"
+  ],
+  "additionalProperties": false
+}

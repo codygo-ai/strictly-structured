@@ -1,0 +1,20 @@
+{
+  "name": "@ssv/schema-samples",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Structured output schema samples suite: fragments, rule-matrix, validator, generator",
+  "type": "module",
+  "scripts": {
+    "generate": "tsx generate.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "@ssv/eslint-config": "workspace:*",
+    "@ssv/tsconfig": "workspace:*",
+    "@types/node": "^22.15.0",
+    "eslint": "^9.39.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "a",
+        "b"
+      ],
+      "description": "Choice"
+    }
+  },
+  "required": [
+    "kind"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "n": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 100
+    }
+  },
+  "required": [
+    "n"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "opt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "opt"
+  ],
+  "additionalProperties": false
+}

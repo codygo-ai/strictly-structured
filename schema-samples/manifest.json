@@ -1,0 +1,467 @@
+{
+  "version": "1.0",
+  "source_groups": "packages/frontend/src/data/structured_output_groups.json",
+  "group_ids": [
+    "openai_strict",
+    "anthropic_structured",
+    "gemini_json_schema"
+  ],
+  "generated_at": "2026-02-14T07:29:16.017Z",
+  "samples": [
+    {
+      "path": "schemas/rootObject.json",
+      "rule_ids": [
+        "root_type"
+      ],
+      "fragment_id": "rootObject",
+      "description": "Root type object; valid for all groups",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/rootArray.json",
+      "rule_ids": [
+        "root_type"
+      ],
+      "fragment_id": "rootArray",
+      "description": "Root type array; valid Gemini only",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/rootAnyOf.json",
+      "rule_ids": [
+        "root_anyOf"
+      ],
+      "fragment_id": "rootAnyOf",
+      "description": "anyOf at root; invalid for all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/rootObject.json",
+      "rule_ids": [
+        "required"
+      ],
+      "fragment_id": "rootObject",
+      "description": "All properties in required; valid OpenAI",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/optionalNotInRequired.json",
+      "rule_ids": [
+        "required"
+      ],
+      "fragment_id": "optionalNotInRequired",
+      "description": "Optional property not in required; invalid OpenAI",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/rootObject.json",
+      "rule_ids": [
+        "additional_properties"
+      ],
+      "fragment_id": "rootObject",
+      "description": "additionalProperties false; valid all",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/additionalPropertiesTrue.json",
+      "rule_ids": [
+        "additional_properties"
+      ],
+      "fragment_id": "additionalPropertiesTrue",
+      "description": "additionalProperties true; invalid OpenAI",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/additionalPropertiesOmitted.json",
+      "rule_ids": [
+        "additional_properties"
+      ],
+      "fragment_id": "additionalPropertiesOmitted",
+      "description": "additionalProperties omitted; invalid OpenAI",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/stringEnum.json",
+      "rule_ids": [
+        "string_enum"
+      ],
+      "fragment_id": "stringEnum",
+      "description": "string enum; valid all",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/stringConst.json",
+      "rule_ids": [
+        "string_const"
+      ],
+      "fragment_id": "stringConst",
+      "description": "string const; valid OpenAI, Anthropic",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/stringPattern.json",
+      "rule_ids": [
+        "string_pattern"
+      ],
+      "fragment_id": "stringPattern",
+      "description": "string pattern; valid OpenAI only",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/stringFormatDateTime.json",
+      "rule_ids": [
+        "string_format"
+      ],
+      "fragment_id": "stringFormatDateTime",
+      "description": "format date-time; valid OpenAI, Gemini",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/stringFormatDate.json",
+      "rule_ids": [
+        "string_format"
+      ],
+      "fragment_id": "stringFormatDate",
+      "description": "format date; valid OpenAI, Gemini",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/stringFormatTime.json",
+      "rule_ids": [
+        "string_format"
+      ],
+      "fragment_id": "stringFormatTime",
+      "description": "format time; valid OpenAI, Gemini",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/stringFormatUuid.json",
+      "rule_ids": [
+        "string_format"
+      ],
+      "fragment_id": "stringFormatUuid",
+      "description": "format uuid; valid OpenAI only",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/stringMinLength.json",
+      "rule_ids": [
+        "string_unsupported"
+      ],
+      "fragment_id": "stringMinLength",
+      "description": "minLength; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/stringMaxLength.json",
+      "rule_ids": [
+        "string_unsupported"
+      ],
+      "fragment_id": "stringMaxLength",
+      "description": "maxLength; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/numberMinMax.json",
+      "rule_ids": [
+        "number_min_max"
+      ],
+      "fragment_id": "numberMinMax",
+      "description": "number minimum/maximum; valid OpenAI, Gemini",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/numberMultipleOf.json",
+      "rule_ids": [
+        "number_multipleOf"
+      ],
+      "fragment_id": "numberMultipleOf",
+      "description": "multipleOf; valid OpenAI only",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/numberExclusiveMinMax.json",
+      "rule_ids": [
+        "number_exclusive"
+      ],
+      "fragment_id": "numberExclusiveMinMax",
+      "description": "exclusiveMin/Max; valid OpenAI only",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/integerMinMax.json",
+      "rule_ids": [
+        "integer_min_max"
+      ],
+      "fragment_id": "integerMinMax",
+      "description": "integer min/max; valid OpenAI, Gemini",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/arrayItemsOnly.json",
+      "rule_ids": [
+        "array_items"
+      ],
+      "fragment_id": "arrayItemsOnly",
+      "description": "array items only; valid all",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/arrayMinMaxItems.json",
+      "rule_ids": [
+        "array_min_max_items"
+      ],
+      "fragment_id": "arrayMinMaxItems",
+      "description": "minItems/maxItems; valid OpenAI, Gemini",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/arrayPrefixItems.json",
+      "rule_ids": [
+        "array_prefixItems"
+      ],
+      "fragment_id": "arrayPrefixItems",
+      "description": "prefixItems; valid Gemini only",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/arrayUniqueItems.json",
+      "rule_ids": [
+        "array_unsupported"
+      ],
+      "fragment_id": "arrayUniqueItems",
+      "description": "uniqueItems; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/arrayContains.json",
+      "rule_ids": [
+        "array_unsupported"
+      ],
+      "fragment_id": "arrayContains",
+      "description": "contains; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/objectPatternProperties.json",
+      "rule_ids": [
+        "object_unsupported"
+      ],
+      "fragment_id": "objectPatternProperties",
+      "description": "patternProperties; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/objectMinProperties.json",
+      "rule_ids": [
+        "object_unsupported"
+      ],
+      "fragment_id": "objectMinProperties",
+      "description": "minProperties; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/anyOfNested.json",
+      "rule_ids": [
+        "composition_anyOf"
+      ],
+      "fragment_id": "anyOfNested",
+      "description": "anyOf nested; valid all",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/allOf.json",
+      "rule_ids": [
+        "composition_allOf"
+      ],
+      "fragment_id": "allOf",
+      "description": "allOf; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/oneOf.json",
+      "rule_ids": [
+        "composition_oneOf"
+      ],
+      "fragment_id": "oneOf",
+      "description": "oneOf; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/not.json",
+      "rule_ids": [
+        "composition_not"
+      ],
+      "fragment_id": "not",
+      "description": "not; invalid all",
+      "expected": {
+        "openai_strict": "invalid",
+        "anthropic_structured": "invalid",
+        "gemini_json_schema": "invalid"
+      }
+    },
+    {
+      "path": "schemas/refDefs.json",
+      "rule_ids": [
+        "composition_ref_defs"
+      ],
+      "fragment_id": "refDefs",
+      "description": "$ref and $defs; valid OpenAI, Anthropic; Gemini $ref",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/nullableTypeArray.json",
+      "rule_ids": [
+        "nullable"
+      ],
+      "fragment_id": "nullableTypeArray",
+      "description": "nullable via type array; valid all",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    },
+    {
+      "path": "schemas/titleOnProperties.json",
+      "rule_ids": [
+        "title"
+      ],
+      "fragment_id": "titleOnProperties",
+      "description": "title field; valid Gemini only",
+      "expected": {
+        "openai_strict": "valid",
+        "anthropic_structured": "valid",
+        "gemini_json_schema": "valid"
+      }
+    }
+  ]
+}

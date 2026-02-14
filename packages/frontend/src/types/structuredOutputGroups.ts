@@ -1,5 +1,5 @@
 /**
- * Types for structured_output_groups.json (verbatim shape).
+ * Types for structured_output_groups.json (camelCase shape).
  * UI reads from these keys; no transformation of the JSON structure.
  */
 
@@ -11,21 +11,21 @@ export interface HardConstraint {
 
 export interface SupportedType {
   type: string;
-  supported_keywords: string[];
+  supportedKeywords: string[];
   notes?: string;
 }
 
 export interface GroupDisplay {
-  hard_constraints: HardConstraint[];
-  supported_types: SupportedType[];
-  string_formats?: string[];
+  hardConstraints: HardConstraint[];
+  supportedTypes: SupportedType[];
+  stringFormats?: string[];
   composition?: { supported: string[]; unsupported: string[]; notes?: string };
-  unsupported_keywords: Record<string, string[]>;
-  quantitative_limits: Record<string, number | string | null | undefined>;
-  nullable_mechanism?: string;
-  recursive_schemas?: boolean;
+  unsupportedKeywords: Record<string, string[]>;
+  quantitativeLimits: Record<string, number | string | null | undefined>;
+  nullableMechanism?: string;
+  recursiveSchemas?: boolean;
   behaviors: Record<string, string | boolean>;
-  best_practices: string[];
+  bestPractices: string[];
 }
 
 export type ProviderId = "openai" | "anthropic" | "gemini";
@@ -35,16 +35,16 @@ export interface ComparisonColumn {
 }
 
 export interface StructuredOutputGroup {
-  group_id: string;
-  group_name: string;
+  groupId: string;
+  groupName: string;
   provider: string;
-  provider_id: ProviderId;
-  short_name: string;
-  doc_url: string;
+  providerId: ProviderId;
+  shortName: string;
+  docUrl: string;
   description: string;
   models: string[];
-  model_notes?: string;
-  api_parameter?: Record<string, unknown>;
+  modelNotes?: string;
+  apiParameter?: Record<string, unknown>;
   display: GroupDisplay;
   machine?: Record<string, unknown>;
 }
@@ -68,19 +68,19 @@ export interface ComparisonLegend {
   supported: string;
   unsupported: string;
   limited: string;
-  not_on_finetuned: string;
+  notOnFinetuned: string;
 }
 
 export interface StructuredOutputGroupsMeta {
   version: string;
-  last_updated: string;
+  lastUpdated: string;
   description: string;
   sources: Record<string, string>;
-  comparison_columns: ComparisonColumn[];
-  comparison_rows: ComparisonRow[];
-  sources_display: string;
-  provider_badge_classes: Record<ProviderId, string>;
-  comparison_legend: ComparisonLegend;
+  comparisonColumns: ComparisonColumn[];
+  comparisonRows: ComparisonRow[];
+  sourcesDisplay: string;
+  providerBadgeClasses: Record<ProviderId, string>;
+  comparisonLegend: ComparisonLegend;
   universal: UniversalRules;
 }
 

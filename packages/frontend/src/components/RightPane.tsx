@@ -73,18 +73,20 @@ function Collapsible({
   );
 }
 
+function camelCaseToLabel(key: string): string {
+  return key
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function quantitativeLimitsToRows(
   limits: Record<string, number | string | null | undefined>
 ): { label: string; value: string }[] {
-  return Object.entries(limits).map(([key, value]) => {
-    const label = key
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-    return {
-      label,
-      value: value == null ? "—" : String(value),
-    };
-  });
+  return Object.entries(limits).map(([key, value]) => ({
+    label: camelCaseToLabel(key),
+    value: value == null ? "—" : String(value),
+  }));
 }
 
 function formatBehaviorValue(val: string | boolean): "ok" | "no" | "unknown" {
@@ -96,17 +98,17 @@ function formatBehaviorValue(val: string | boolean): "ok" | "no" | "unknown" {
 export function RightPane({ group }: { group: StructuredOutputGroup }) {
   const d = group.display;
   const modelsStr = group.models.join(", ");
-  const limitsRows = quantitativeLimitsToRows(d.quantitative_limits);
+  const limitsRows = quantitativeLimitsToRows(d.quantitativeLimits);
   const unknownKw =
-    typeof d.behaviors.unknown_keywords_behavior === "string"
-      ? d.behaviors.unknown_keywords_behavior
+    typeof d.behaviors.unknownKeywordsBehavior === "string"
+      ? d.behaviors.unknownKeywordsBehavior
       : "—";
 
   return (
     <div className="w-full h-full flex flex-col py-5 px-[22px] text-[13.5px] text-[#2c2c2c] leading-[1.55] font-sans">
       <div className="shrink-0">
         <div className="text-base font-bold text-[#1a1a1a] mb-1">
-          {group.provider}&apos;s {group.group_name}
+          {group.provider}&apos;s {group.groupName}
         </div>
         <Collapsible title="Description & models" defaultOpen className="mt-0">
           <div className="text-[12.5px] text-[#7a7f88] mb-3 leading-snug">
@@ -121,7 +123,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
       <div className="flex-1 min-h-0 overflow-y-auto">
         <Collapsible title="Hard Constraints" defaultOpen>
           <div className="flex flex-col gap-2.5">
-            {d.hard_constraints.map((c, i) => (
+            {d.hardConstraints.map((c, i) => (
               <div key={i} className="flex gap-2 items-start">
                 <div className="mt-0.5 shrink-0">
                   <SeverityIcon severity={c.severity} />
@@ -138,21 +140,21 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
         </Collapsible>
 
         <Collapsible title="Supported Keywords" defaultOpen>
-          {d.supported_types.map((st) => (
+          {d.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2.5">
               <div className="text-xs font-semibold text-[#555] mb-1 font-mono">
                 {st.type}
               </div>
               <div className="flex flex-wrap gap-0">
-                {st.supported_keywords.map((kw) => (
+                {st.supportedKeywords.map((kw) => (
                   <Pill key={kw} variant="supported">
                     {kw}
                   </Pill>
                 ))}
               </div>
-              {d.string_formats && d.string_formats.length > 0 && st.type === "string" && (
+              {d.stringFormats && d.stringFormats.length > 0 && st.type === "string" && (
                 <div className="text-[11px] text-[#888] mt-1 ml-0.5">
-                  Formats: {d.string_formats.join(", ")}
+                  Formats: {d.stringFormats.join(", ")}
                 </div>
               )}
               {st.notes && (
@@ -165,7 +167,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
         </Collapsible>
 
         <Collapsible title="Unsupported Keywords">
-          {Object.entries(d.unsupported_keywords).map(([type, kws]) => (
+          {Object.entries(d.unsupportedKeywords).map(([type, kws]) => (
             <div key={type} className="mb-2">
               <div className="text-xs font-semibold text-[#555] mb-1 font-mono">
                 {type}
@@ -197,7 +199,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
         <Collapsible title="Behaviors">
           <div className="flex flex-col gap-1">
             {Object.entries(d.behaviors)
-              .filter(([k]) => k !== "unknown_keywords_behavior")
+              .filter(([k]) => k !== "unknownKeywordsBehavior")
               .map(([label, val]) => {
                 const status = formatBehaviorValue(val);
                 return (
@@ -221,7 +223,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
                             : "text-[#888]"
                       }
                     >
-                      {label.replace(/_/g, " ")}
+                      {camelCaseToLabel(label)}
                     </span>
                     {status === "unknown" && (
                       <span className="text-[11px] text-[#aaa]">
@@ -240,7 +242,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
 
         <Collapsible title="Best Practices">
           <div className="flex flex-col gap-1.5">
-            {d.best_practices.map((p, i) => (
+            {d.bestPractices.map((p, i) => (
               <div
                 key={i}
                 className="text-xs text-[#555] flex gap-2 items-start"

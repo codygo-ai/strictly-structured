@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "d": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "d"
+  ],
+  "additionalProperties": false
+}

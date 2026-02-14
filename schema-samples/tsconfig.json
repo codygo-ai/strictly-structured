@@ -1,0 +1,10 @@
+{
+  "extends": "@ssv/tsconfig/base.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules"]
+}

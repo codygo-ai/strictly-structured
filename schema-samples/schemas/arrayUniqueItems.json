@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "list": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "list"
+  ],
+  "additionalProperties": false
+}

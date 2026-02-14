@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "list": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "contains": {
+        "type": "string",
+        "const": "x"
+      }
+    }
+  },
+  "required": [
+    "list"
+  ],
+  "additionalProperties": false
+}

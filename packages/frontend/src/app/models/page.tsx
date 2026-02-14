@@ -10,42 +10,42 @@ import { UniversalRules } from "~/components/UniversalRules";
 const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
 
 if (
-  !groupsData.meta?.comparison_columns ||
-  !Array.isArray(groupsData.meta.comparison_columns) ||
-  groupsData.meta.comparison_columns.length === 0
+  !groupsData.meta?.comparisonColumns ||
+  !Array.isArray(groupsData.meta.comparisonColumns) ||
+  groupsData.meta.comparisonColumns.length === 0
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.comparison_columns is required and must be a non-empty array."
+    "structured_output_groups.json: meta.comparisonColumns is required and must be a non-empty array."
   );
 }
 if (
-  !groupsData.meta?.comparison_rows ||
-  !Array.isArray(groupsData.meta.comparison_rows) ||
-  groupsData.meta.comparison_rows.length === 0
+  !groupsData.meta?.comparisonRows ||
+  !Array.isArray(groupsData.meta.comparisonRows) ||
+  groupsData.meta.comparisonRows.length === 0
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.comparison_rows is required and must be a non-empty array."
+    "structured_output_groups.json: meta.comparisonRows is required and must be a non-empty array."
   );
 }
-if (typeof groupsData.meta?.sources_display !== "string") {
+if (typeof groupsData.meta?.sourcesDisplay !== "string") {
   throw new Error(
-    "structured_output_groups.json: meta.sources_display is required."
-  );
-}
-if (
-  !groupsData.meta?.provider_badge_classes ||
-  typeof groupsData.meta.provider_badge_classes !== "object"
-) {
-  throw new Error(
-    "structured_output_groups.json: meta.provider_badge_classes is required."
+    "structured_output_groups.json: meta.sourcesDisplay is required."
   );
 }
 if (
-  !groupsData.meta?.comparison_legend ||
-  typeof groupsData.meta.comparison_legend !== "object"
+  !groupsData.meta?.providerBadgeClasses ||
+  typeof groupsData.meta.providerBadgeClasses !== "object"
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.comparison_legend is required."
+    "structured_output_groups.json: meta.providerBadgeClasses is required."
+  );
+}
+if (
+  !groupsData.meta?.comparisonLegend ||
+  typeof groupsData.meta.comparisonLegend !== "object"
+) {
+  throw new Error(
+    "structured_output_groups.json: meta.comparisonLegend is required."
   );
 }
 if (
@@ -86,21 +86,21 @@ export default function ModelSupportPage() {
           Quick Comparison
         </h2>
         <ComparisonTable
-        columns={META.comparison_columns}
-        rows={META.comparison_rows}
-        legend={META.comparison_legend}
+        columns={META.comparisonColumns}
+        rows={META.comparisonRows}
+        legend={META.comparisonLegend}
         groups={GROUPS}
       />
       </section>
 
       {GROUPS.map((group) => (
-        <GroupCard key={group.group_id} group={group} meta={META} />
+        <GroupCard key={group.groupId} group={group} meta={META} />
       ))}
 
       <UniversalRules data={META.universal} />
 
       <div className="mt-6 text-[11px] text-[#bbb] text-center">
-        Last verified: {META.last_updated} · Sources: {META.sources_display}
+        Last verified: {META.lastUpdated} · Sources: {META.sourcesDisplay}
         official documentation
       </div>
     </div>

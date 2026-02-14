@@ -192,6 +192,27 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  schema-samples:
+    devDependencies:
+      '@ssv/eslint-config':
+        specifier: workspace:*
+        version: link:../devops/eslint-config
+      '@ssv/tsconfig':
+        specifier: workspace:*
+        version: link:../devops/tsconfig
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
 packages:
 
   '@alloc/quick-lru@5.2.0':

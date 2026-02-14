@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "tag": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "a"
+          ]
+        },
+        {
+          "type": "string",
+          "enum": [
+            "b"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "tag"
+  ],
+  "additionalProperties": false
+}

@@ -53,14 +53,14 @@ function ModelIcon({ provider }: { provider: ProviderId }) {
 }
 
 function groupTooltip(group: StructuredOutputGroup): string {
-  return [group.group_name, group.models.join(", ")].join("\n\n");
+  return [group.groupName, group.models.join(", ")].join("\n\n");
 }
 
 export default function Home() {
   useAuth();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(
-    () => GROUPS[0]?.group_id ?? null
+    () => GROUPS[0]?.groupId ?? null
   );
   const [results, setResults] = useState<ValidationResult[] | null>(null);
   const [loading] = useState(false);
@@ -69,7 +69,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedGroup = useMemo(
-    () => GROUPS.find((g) => g.group_id === selectedGroupId) ?? null,
+    () => GROUPS.find((g) => g.groupId === selectedGroupId) ?? null,
     [selectedGroupId]
   );
 
@@ -158,16 +158,16 @@ export default function Home() {
       <div className="model-bar">
         {GROUPS.map((g) => (
           <button
-            key={g.group_id}
+            key={g.groupId}
             type="button"
             title={groupTooltip(g)}
             className={`model-btn ${
-              selectedGroupId === g.group_id ? "selected" : ""
+              selectedGroupId === g.groupId ? "selected" : ""
             }`}
-            onClick={() => handleGroupChange(g.group_id)}
+            onClick={() => handleGroupChange(g.groupId)}
           >
-            <ModelIcon provider={g.provider_id} />
-            <span>{g.short_name}</span>
+            <ModelIcon provider={g.providerId} />
+            <span>{g.shortName}</span>
           </button>
         ))}
       </div>

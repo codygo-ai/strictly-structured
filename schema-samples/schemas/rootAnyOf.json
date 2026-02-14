@@ -1,0 +1,16 @@
+{
+  "anyOf": [
+    {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  ]
+}

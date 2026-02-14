@@ -57,7 +57,7 @@ function cellStyle(ok: boolean | "warn" | "partial"): {
 }
 
 function columnLabel(columnId: ProviderId, groups: StructuredOutputGroup[]): string {
-  return groups.find((g) => g.provider_id === columnId)?.short_name ?? columnId;
+  return groups.find((g) => g.providerId === columnId)?.shortName ?? columnId;
 }
 
 export function ComparisonTable({
@@ -132,7 +132,7 @@ export function ComparisonTable({
         <span>
           <span style={{ color: "#9a6c00" }}>~</span> = {legend.limited}
         </span>
-        <span>* = {legend.not_on_finetuned}</span>
+        <span>* = {legend.notOnFinetuned}</span>
       </div>
     </div>
   );
