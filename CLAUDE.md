@@ -4,6 +4,10 @@
 
 For non-trivial tasks, offer to switch to plan mode so the approach can be reviewed and approved before implementation begins. Simple, straightforward changes can proceed directly.
 
+## Plan Kickoff
+
+After a plan is approved and before implementation begins, offer to run `/project:kickoff` to create a GitHub issue, branch, and worktree from the plan. The user can skip if they prefer to manage this manually.
+
 ## Cursor Rules
 
 All project rules are defined in `.cursor/rules/`. Read and follow every rule file before planning or making any changes:
