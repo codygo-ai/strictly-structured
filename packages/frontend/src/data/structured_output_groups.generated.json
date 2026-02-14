@@ -1259,7 +1259,8 @@
         ],
         "supportedCompositionKeywords": [
           "anyOf",
-          "$ref"
+          "$ref",
+          "$defs"
         ],
         "unsupportedCompositionKeywords": [
           "allOf",

@@ -1,142 +1,111 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
+import { validateSchemaForGroup } from "~/lib/groupSchemaValidator";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
-const DEFAULT_SCHEMA = `{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" },
-    "count": { "type": "integer" }
-  },
-  "required": ["name"]
-}
-`;
+const META_SCHEMA_URI = "http://json-schema.org/draft-07/schema#";
+const EDITOR_MODEL_PATH = "schema.json";
+const CUSTOM_MARKER_OWNER = "ssv-group-validator";
+const DEBOUNCE_MS = 200;
 
 interface SchemaEditorProps {
   value: string;
   onChange: (value: string) => void;
-  onPaste: () => void;
-  /** When true, editor fills container height (use inside flex container). */
+  selectedGroup: StructuredOutputGroup | null;
   fillHeight?: boolean;
-  /** When true, do not render the top action bar (Load/Paste); parent renders header. */
-  noHeader?: boolean;
-  /** Editor theme: "light" for light UI (e.g. validator page), "dark" default. */
   editorTheme?: "light" | "dark";
-  /** Optional JSON Schema (e.g. group meta-schema) to validate the document. Applied when selected group changes. */
-  validationSchema?: object | null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toMonacoSeverity(monaco: any, severity: string): number {
+  switch (severity) {
+    case "error":
+      return monaco.MarkerSeverity.Error;
+    case "warning":
+      return monaco.MarkerSeverity.Warning;
+    default:
+      return monaco.MarkerSeverity.Info;
+  }
 }
 
 export function SchemaEditor({
   value,
   onChange,
-  onPaste,
+  selectedGroup,
   fillHeight = false,
-  noHeader = false,
   editorTheme = "dark",
-  validationSchema = null,
 }: SchemaEditorProps) {
   const isLight = editorTheme === "light";
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const monacoRef = useRef<unknown>(null);
-
-  const handleLoadFile = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const text = reader.result;
-        if (typeof text === "string") onChange(text);
-      };
-      reader.readAsText(file);
-      e.target.value = "";
-    },
-    [onChange]
-  );
-
-  const applyValidationSchema = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (monaco: any, schema: object | null | undefined) => {
-      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-        validate: true,
-        allowComments: false,
-        schemas:
-          schema != null
-            ? [
-                {
-                  uri: "https://group-meta-schema",
-                  fileMatch: ["*"],
-                  schema,
-                },
-              ]
-            : [],
-      });
-    },
-    []
-  );
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const monacoRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const editorRef = useRef<any>(null);
 
   const handleBeforeMount = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (monaco: any) => {
       monacoRef.current = monaco;
-      applyValidationSchema(monaco, validationSchema ?? null);
-    },
-    [validationSchema, applyValidationSchema]
-  );
-
-  const handleEditorMount = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (editor: any, monaco: any) => {
-      applyValidationSchema(monaco, validationSchema ?? null);
-
-      editor.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyP,
-        () => {
-          editor.trigger("keyboard", "editor.action.quickCommand", null);
-        }
-      );
-
-      editor.addAction({
-        id: "editor.action.formatDocument.json",
-        label: "Pretty print (format)",
-        contextMenuGroupId: "1_modification",
-        contextMenuOrder: 1.5,
-        run: () => {
-          const model = editor.getModel();
-          if (!model) return;
-          const text = model.getValue();
-          const trimmed = text.trim();
-          if (!trimmed) return;
-          try {
-            const parsed = JSON.parse(trimmed);
-            const formatted = JSON.stringify(parsed, null, 2);
-            editor.executeEdits("pretty-print", [
-              { range: model.getFullModelRange(), text: formatted },
-            ]);
-          } catch {
-            const formatAction = editor.getAction?.("editor.action.formatDocument");
-            if (formatAction?.run) formatAction.run();
-          }
-        },
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        allowComments: false,
+        enableSchemaRequest: false,
+        schemas: [
+          {
+            uri: META_SCHEMA_URI,
+            fileMatch: [EDITOR_MODEL_PATH],
+          },
+        ],
       });
     },
-    [validationSchema, applyValidationSchema]
+    []
   );
 
-  useEffect(() => {
-    const monaco = monacoRef.current;
-    if (!monaco) return;
-    applyValidationSchema(monaco, validationSchema ?? null);
-  }, [validationSchema, applyValidationSchema]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleMount = useCallback((editor: any) => {
+    editorRef.current = editor;
+    setMounted(true);
+  }, []);
 
-  const editorContent = (
+  useEffect(() => {
+    if (!mounted) return;
+    const monaco = monacoRef.current;
+    const editor = editorRef.current;
+    if (!monaco || !editor) return;
+
+    const timer = setTimeout(() => {
+      const model = editor.getModel();
+      if (!model) return;
+
+      const machine = selectedGroup?.machine as
+        | Record<string, unknown>
+        | undefined;
+      const markers = validateSchemaForGroup(value, machine);
+      const groupLabel = selectedGroup?.groupName ?? "provider";
+
+      monaco.editor.setModelMarkers(
+        model,
+        CUSTOM_MARKER_OWNER,
+        markers.map((m) => ({
+          startLineNumber: m.startLineNumber,
+          startColumn: m.startColumn,
+          endLineNumber: m.endLineNumber,
+          endColumn: m.endColumn,
+          message: `[${groupLabel}] ${m.message}`,
+          severity: toMonacoSeverity(monaco, m.severity),
+          source: CUSTOM_MARKER_OWNER,
+        }))
+      );
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [value, selectedGroup, mounted]);
+
+  return (
     <div
       className={
         fillHeight
@@ -155,10 +124,11 @@ export function SchemaEditor({
       <Monaco
         height={fillHeight ? "100%" : "280px"}
         defaultLanguage="json"
-        value={value || DEFAULT_SCHEMA}
+        defaultPath={EDITOR_MODEL_PATH}
+        value={value}
         onChange={(v) => onChange(v ?? "")}
         beforeMount={handleBeforeMount}
-        onMount={handleEditorMount}
+        onMount={handleMount}
         theme={isLight ? "vs" : "vs-dark"}
         options={{
           minimap: { enabled: false },
@@ -170,42 +140,6 @@ export function SchemaEditor({
           copyWithSyntaxHighlighting: true,
         }}
       />
-    </div>
-  );
-
-  return (
-    <div className={fillHeight ? "flex flex-col min-h-0 flex-1" : "space-y-2"}>
-      {!noHeader && (
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <span className="text-sm font-medium text-zinc-300">
-            JSON Schema
-          </span>
-          <div className="flex gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json,application/json"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <button
-              type="button"
-              onClick={handleLoadFile}
-              className="px-3 py-1.5 text-sm rounded-md bg-zinc-700 text-zinc-200 hover:bg-zinc-600 transition-colors"
-            >
-              Load from file
-            </button>
-            <button
-              type="button"
-              onClick={onPaste}
-              className="px-3 py-1.5 text-sm rounded-md bg-zinc-700 text-zinc-200 hover:bg-zinc-600 transition-colors"
-            >
-              Paste
-            </button>
-          </div>
-        </div>
-      )}
-      {editorContent}
     </div>
   );
 }

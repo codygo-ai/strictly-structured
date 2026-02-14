@@ -16,18 +16,9 @@ import type {
   StructuredOutputGroupsData,
 } from "~/types/structuredOutputGroups";
 import groupsDataJson from "~/data/structured_output_groups.generated.json";
-import metaSchemaGpt from "~/data/group-meta-schemas/gpt-4-o1.generated.json";
-import metaSchemaClaude from "~/data/group-meta-schemas/claude-4-5.generated.json";
-import metaSchemaGemini from "~/data/group-meta-schemas/gemini-2-5.generated.json";
+import { useAuth } from "~/lib/useAuth";
 
 const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
-
-const GROUP_META_SCHEMAS: Record<string, object> = {
-  "gpt-4-o1": metaSchemaGpt as object,
-  "claude-4-5": metaSchemaClaude as object,
-  "gemini-2-5": metaSchemaGemini as object,
-};
-import { useAuth } from "~/lib/useAuth";
 
 const DiffEditor = dynamic(
   () => import("@monaco-editor/react").then((m) => m.DiffEditor),
@@ -105,14 +96,23 @@ export default function Home() {
     setSuggestedSchema(null);
   }, []);
 
-  const handlePaste = useCallback(async () => {
+  const normalizedDiffOriginal = useMemo(() => {
+    if (suggestedSchema == null) return schema;
     try {
-      const text = await navigator.clipboard.readText();
-      if (text) setSchema(text);
+      return JSON.stringify(JSON.parse(schema), null, 2);
     } catch {
-      // ignore
+      return schema;
     }
-  }, []);
+  }, [schema, suggestedSchema]);
+
+  const normalizedDiffModified = useMemo(() => {
+    if (suggestedSchema == null) return null;
+    try {
+      return JSON.stringify(JSON.parse(suggestedSchema), null, 2);
+    } catch {
+      return suggestedSchema;
+    }
+  }, [suggestedSchema]);
 
   const applyLoadedJson = useCallback((text: string) => {
     const trimmed = text.trim();
@@ -211,8 +211,8 @@ export default function Home() {
                   <DiffEditor
                     height="100%"
                     language="json"
-                    original={schema}
-                    modified={suggestedSchema}
+                    original={normalizedDiffOriginal}
+                    modified={normalizedDiffModified!}
                     theme="vs"
                     options={{
                       readOnly: true,
@@ -243,15 +243,9 @@ export default function Home() {
                 <SchemaEditor
                   value={schema}
                   onChange={setSchema}
-                  onPaste={handlePaste}
+                  selectedGroup={selectedGroup}
                   fillHeight
-                  noHeader
                   editorTheme="light"
-                  validationSchema={
-                    selectedGroupId
-                      ? GROUP_META_SCHEMAS[selectedGroupId] ?? undefined
-                      : undefined
-                  }
                 />
                 <div className="flex gap-2 flex-wrap">
                   <button
