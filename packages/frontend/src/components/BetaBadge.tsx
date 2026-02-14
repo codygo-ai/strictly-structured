@@ -1,6 +1,6 @@
 export function BetaBadge() {
   return (
-    <span className="ml-2 inline-flex items-center rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-accent">
+    <span className="absolute -top-5 -right-4 rotate-12 scale-75 rounded bg-primary/10 px-2 py-1 text-[0.55rem] font-semibold uppercase tracking-wider text-primary border border-primary/20 select-none">
       Beta
     </span>
   );

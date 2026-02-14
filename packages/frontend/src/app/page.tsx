@@ -58,14 +58,14 @@ function groupTooltip(group: StructuredOutputGroup): string {
 }
 
 export default function Home() {
-  useAuth();
+  const { ensureAuth } = useAuth();
   const { emit } = useAudit();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(
     () => GROUPS[0]?.groupId ?? null
   );
   const [results, setResults] = useState<ValidationResult[] | null>(null);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [suggestedSchema, setSuggestedSchema] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,20 +84,71 @@ export default function Home() {
   }, [emit]);
 
   const handleValidate = useCallback(async () => {
+    setError(null);
+    setLoading(true);
     const hash = await hashSchema(schema);
     emit("server.validate.requested", {
       schemaHash: hash,
       schemaSizeBytes: new Blob([schema]).size,
-      modelIds: [],
+      modelIds: selectedGroup?.models ?? [],
     });
-    setError("Not implemented");
-  }, [schema, emit]);
+    try {
+      const token = await ensureAuth();
+      const res = await fetch("/api/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          schema,
+          modelIds: selectedGroup?.models,
+        }),
+      });
+      const data = (await res.json()) as { results?: ValidationResult[]; error?: string };
+      if (!res.ok) {
+        setError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      if (data.results) setResults(data.results);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [ensureAuth, schema, selectedGroup, emit]);
 
   const handleFix = useCallback(async () => {
+    setError(null);
+    setLoading(true);
     const hash = await hashSchema(schema);
     emit("fix.requested", { schemaHash: hash, issueCount: 0 });
-    setError("Not implemented");
-  }, [schema, emit]);
+    try {
+      const token = await ensureAuth();
+      const res = await fetch("/api/fix", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          schema,
+          modelIds: selectedGroup?.models,
+          issues: [],
+        }),
+      });
+      const data = (await res.json()) as { suggestedSchema?: string; error?: string };
+      if (!res.ok) {
+        setError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      if (data.suggestedSchema) setSuggestedSchema(data.suggestedSchema);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [ensureAuth, schema, selectedGroup, emit]);
 
   const handleAcceptSuggestion = useCallback(async () => {
     if (suggestedSchema != null) {
@@ -280,7 +331,6 @@ export default function Home() {
                     className="validate-btn"
                     onClick={handleValidate}
                     disabled={loading}
-                    title="Not implemented"
                   >
                     {loading ? "Validating…" : "Server Validation"}
                   </button>
@@ -289,7 +339,6 @@ export default function Home() {
                     className="validate-btn"
                     onClick={handleFix}
                     disabled={loading}
-                    title="Not implemented"
                   >
                     Auto-fix
                   </button>

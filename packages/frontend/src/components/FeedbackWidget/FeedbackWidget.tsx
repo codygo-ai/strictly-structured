@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   FEEDBACK_TYPES,
   FEEDBACK_TYPE_CONFIG,
@@ -22,26 +22,12 @@ export function FeedbackWidget() {
   const [honeypot, setHoneypot] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const panelRef = useRef<HTMLDivElement>(null);
 
-  // Listen for custom event from BetaBanner
   useEffect(() => {
     const handleOpen = () => setOpen(true);
     window.addEventListener("ssv:open-feedback", handleOpen);
     return () => window.removeEventListener("ssv:open-feedback", handleOpen);
   }, []);
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return;
-    const handleClick = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
 
   // Close on Escape
   useEffect(() => {
@@ -106,38 +92,18 @@ export function FeedbackWidget() {
         : ""
   }`;
 
-  return (
-    <div ref={panelRef} className="fixed bottom-5 right-5 z-50">
-      {/* Floating trigger */}
-      {!open && (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-white shadow-lg transition-all duration-[var(--ds-duration)] hover:scale-105 hover:bg-accent-hover cursor-pointer"
-          aria-label="Send feedback"
-          title="Send feedback"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
-        </button>
-      )}
+  if (!open) return null;
 
-      {/* Feedback panel */}
-      {open && (
-        <div className="w-80 rounded-lg border border-border bg-surface shadow-xl feedback-slide-in">
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={handleClose}
+        role="presentation"
+      />
+      {/* Panel */}
+      <div className="relative w-80 rounded-lg border border-border bg-surface shadow-xl feedback-slide-in">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h3 className="text-sm font-semibold text-primary">
@@ -247,8 +213,7 @@ export function FeedbackWidget() {
               </div>
             </div>
           )}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
