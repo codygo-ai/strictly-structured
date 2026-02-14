@@ -18,6 +18,7 @@ import type {
 import groupsDataJson from "~/data/structured_output_groups.generated.json";
 import { useAuth } from "~/lib/useAuth";
 import { useAudit, hashSchema } from "~/lib/audit";
+import { fixSchemaForGroup, type FixResult } from "~/lib/schemaFixer";
 
 const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
 
@@ -67,6 +68,7 @@ export default function Home() {
   const [results, setResults] = useState<ValidationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [suggestedSchema, setSuggestedSchema] = useState<string | null>(null);
+  const [fixResult, setFixResult] = useState<FixResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -120,35 +122,36 @@ export default function Home() {
 
   const handleFix = useCallback(async () => {
     setError(null);
-    setLoading(true);
-    const hash = await hashSchema(schema);
-    emit("fix.requested", { schemaHash: hash, issueCount: 0 });
+    setFixResult(null);
+
+    if (!selectedGroup) return;
+
+    let parsed: Record<string, unknown>;
     try {
-      const token = await ensureAuth();
-      const res = await fetch("/api/fix", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          schema,
-          modelIds: selectedGroup?.models,
-          issues: [],
-        }),
-      });
-      const data = (await res.json()) as { suggestedSchema?: string; error?: string };
-      if (!res.ok) {
-        setError(data.error ?? `Request failed (${res.status})`);
-        return;
-      }
-      if (data.suggestedSchema) setSuggestedSchema(data.suggestedSchema);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
+      parsed = JSON.parse(schema) as Record<string, unknown>;
+    } catch {
+      setError("Schema is not valid JSON");
+      return;
     }
-  }, [ensureAuth, schema, selectedGroup, emit]);
+
+    const result = fixSchemaForGroup(parsed, selectedGroup);
+
+    if (result.appliedFixes.length === 0 && result.unresolvedErrors.length === 0) {
+      setError("No issues found — schema is already compliant");
+      return;
+    }
+
+    setFixResult(result);
+    if (result.appliedFixes.length > 0) {
+      setSuggestedSchema(JSON.stringify(result.fixedSchema, null, 2));
+    }
+
+    const hash = await hashSchema(schema);
+    emit("fix.requested", {
+      schemaHash: hash,
+      issueCount: result.appliedFixes.length + result.unresolvedErrors.length,
+    });
+  }, [schema, selectedGroup, emit]);
 
   const handleAcceptSuggestion = useCallback(async () => {
     if (suggestedSchema != null) {
@@ -157,6 +160,7 @@ export default function Home() {
       emit("fix.accepted", { schemaHash: hash, suggestedSchemaHash: suggestedHash });
       setSchema(suggestedSchema);
       setSuggestedSchema(null);
+      setFixResult(null);
     }
   }, [suggestedSchema, schema, emit]);
 
@@ -164,6 +168,7 @@ export default function Home() {
     const hash = await hashSchema(schema);
     emit("fix.rejected", { schemaHash: hash });
     setSuggestedSchema(null);
+    setFixResult(null);
   }, [schema, emit]);
 
   const normalizedDiffOriginal = useMemo(() => {
@@ -314,6 +319,28 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
+                {fixResult && (
+                  <div className="fix-summary mt-2 text-sm space-y-1 max-h-40 overflow-auto">
+                    {fixResult.appliedFixes.map((fix, i) => (
+                      <div key={i} className="flex gap-2 items-start">
+                        <span className={fix.infoLost ? "text-yellow-600" : "text-green-600"}>
+                          {fix.infoLost ? "~" : "+"}
+                        </span>
+                        <span className="text-primary">{fix.description}</span>
+                        {fix.infoLost && (
+                          <span className="text-secondary italic ml-1">— {fix.infoLost}</span>
+                        )}
+                      </div>
+                    ))}
+                    {fixResult.unresolvedErrors.map((err, i) => (
+                      <div key={`u${i}`} className="flex gap-2 items-start">
+                        <span className="text-red-600">!</span>
+                        <span className="text-primary">{err.message}</span>
+                        <span className="text-secondary italic ml-1">— {err.reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             ) : (
               <>
@@ -343,6 +370,17 @@ export default function Home() {
                     Auto-fix
                   </button>
                 </div>
+                {fixResult && fixResult.appliedFixes.length === 0 && fixResult.unresolvedErrors.length > 0 && (
+                  <div className="fix-summary mt-2 text-sm space-y-1 max-h-40 overflow-auto">
+                    {fixResult.unresolvedErrors.map((err, i) => (
+                      <div key={i} className="flex gap-2 items-start">
+                        <span className="text-red-600">!</span>
+                        <span className="text-primary">{err.message}</span>
+                        <span className="text-secondary italic ml-1">— {err.reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
