@@ -40,7 +40,7 @@ importers:
         version: 0.21.0
       openai:
         specifier: ^4.73.0
-        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@4.3.6)
+        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@3.25.76)
     devDependencies:
       '@ssv/tsconfig':
         specifier: workspace:*
@@ -91,7 +91,7 @@ importers:
     dependencies:
       '@anthropic-ai/sdk':
         specifier: ^0.74.0
-        version: 0.74.0(zod@4.3.6)
+        version: 0.74.0(zod@3.25.76)
       '@google/generative-ai':
         specifier: ^0.24.0
         version: 0.24.1
@@ -103,7 +103,7 @@ importers:
         version: 7.0.5(firebase-admin@13.6.1(encoding@0.1.13))
       openai:
         specifier: ^6.21.0
-        version: 6.21.0(ws@7.5.10)(zod@4.3.6)
+        version: 6.21.0(ws@7.5.10)(zod@3.25.76)
     devDependencies:
       '@ssv/audit':
         specifier: workspace:*
@@ -149,7 +149,7 @@ importers:
         version: 15.5.12(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       openai:
         specifier: ^4.73.0
-        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@4.3.6)
+        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@3.25.76)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -194,6 +194,40 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  packages/mcp-server:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.12.0
+        version: 1.26.0(zod@3.25.76)
+      json-source-map:
+        specifier: ^0.6.1
+        version: 0.6.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@ssv/eslint-config':
+        specifier: workspace:*
+        version: link:../../devops/eslint-config
+      '@ssv/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      '@ssv/tsconfig':
+        specifier: workspace:*
+        version: link:../../devops/tsconfig
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
   packages/schemas:
     devDependencies:
       '@ssv/eslint-config':
@@ -223,6 +257,27 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/skill:
+    devDependencies:
+      '@ssv/eslint-config':
+        specifier: workspace:*
+        version: link:../../devops/eslint-config
+      '@ssv/tsconfig':
+        specifier: workspace:*
+        version: link:../../devops/tsconfig
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
 
 packages:
 
@@ -5645,11 +5700,11 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@anthropic-ai/sdk@0.74.0(zod@4.3.6)':
+  '@anthropic-ai/sdk@0.74.0(zod@3.25.76)':
     dependencies:
       json-schema-to-ts: 3.1.1
     optionalDependencies:
-      zod: 4.3.6
+      zod: 3.25.76
 
   '@apidevtools/json-schema-ref-parser@9.1.2':
     dependencies:
@@ -10260,7 +10315,7 @@ snapshots:
     dependencies:
       is-wsl: 1.1.0
 
-  openai@4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@4.3.6):
+  openai@4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@3.25.76):
     dependencies:
       '@types/node': 18.19.130
       '@types/node-fetch': 2.6.13
@@ -10271,14 +10326,14 @@ snapshots:
       node-fetch: 2.7.0(encoding@0.1.13)
     optionalDependencies:
       ws: 7.5.10
-      zod: 4.3.6
+      zod: 3.25.76
     transitivePeerDependencies:
       - encoding
 
-  openai@6.21.0(ws@7.5.10)(zod@4.3.6):
+  openai@6.21.0(ws@7.5.10)(zod@3.25.76):
     optionalDependencies:
       ws: 7.5.10
-      zod: 4.3.6
+      zod: 3.25.76
 
   openapi3-ts@3.2.0:
     dependencies:

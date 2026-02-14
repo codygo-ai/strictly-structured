@@ -5,7 +5,8 @@
   "description": "Canonical structured_output_groups data and CLI to generate artifacts for consumers",
   "type": "module",
   "exports": {
-    "./compat-types": "./src/compat-types.ts"
+    "./compat-types": "./src/compat-types.ts",
+    "./data/groups": "./data/structured_output_groups.json"
   },
   "scripts": {
     "generate": "tsx src/cli.ts",

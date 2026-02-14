@@ -1,0 +1,93 @@
+---
+name: validate-schema
+description: >
+  Validate a JSON schema for LLM structured outputs against provider rules
+  (OpenAI, Anthropic, Google Gemini). Use when a user has a JSON schema for
+  structured outputs, asks about LLM schema compatibility, wants to check if a
+  schema works with a specific provider, or is debugging structured output errors.
+argument-hint: "[file-path | provider-name | 'fix']"
+allowed-tools: Read, Grep, Glob, Bash(node *)
+---
+
+# Validate Schema for LLM Structured Outputs
+
+You validate JSON schemas against provider-specific rules for OpenAI, Anthropic, and Google Gemini structured outputs.
+
+## Step 1: Get the Schema
+
+Obtain the JSON schema from one of these sources (in priority order):
+
+1. **File path in `$ARGUMENTS`** — read the file
+2. **Provider name in `$ARGUMENTS`** (e.g., "openai") — ask the user for the schema, then validate only against that provider
+3. **`fix` in `$ARGUMENTS`** — validate and then apply fixes
+4. **Inline JSON in the conversation** — use the schema from the user's message
+5. **Search the project** — use Glob to find `.json` files that look like JSON schemas
+
+If you cannot determine the schema, ask the user.
+
+## Step 2: Validate
+
+Run the validation script. The script and rules file are in this skill's directory.
+
+```bash
+node scripts/validate.mjs \
+  --schema-file <path-to-schema> \
+  --rules-file rules/structured_output_groups.json
+```
+
+Or with inline JSON:
+
+```bash
+node scripts/validate.mjs \
+  --schema '{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}' \
+  --rules-file rules/structured_output_groups.json
+```
+
+To validate against a specific provider only:
+
+```bash
+node scripts/validate.mjs \
+  --schema-file <path> \
+  --rules-file rules/structured_output_groups.json \
+  --provider openai
+```
+
+The script outputs JSON with per-provider results.
+
+### Fallback
+
+If Node.js is not available, read `rules/structured_output_groups.json` and validate the schema by reasoning through each group's rules manually.
+
+## Step 3: Present Results
+
+Format the output as a clear table:
+
+```
+## Schema Validation Results
+
+| Provider           | Status | Errors |
+|--------------------|--------|--------|
+| OpenAI (GPT-4+)    | PASS   | 0      |
+| Anthropic (Claude)  | FAIL   | 3      |
+| Gemini (2.5+)       | PASS   | 0      |
+```
+
+Then list each error with its location and a suggested fix.
+
+## Step 4: Fix (if requested)
+
+If the user asks for fixes or passed `fix` as an argument:
+
+1. For each error, suggest a specific fix based on the rules
+2. Common fixes:
+   - Missing `additionalProperties: false` → add it to every object
+   - Properties not in `required` → add all to the required array
+   - Unsupported keyword (e.g., `minLength`) → move the constraint to the `description` field
+   - Unsupported composition (`allOf`, `oneOf`, `not`) → remove or restructure
+   - Invalid root type → wrap in `{"type":"object","properties":{"data": <original>}}`
+3. Output the corrected schema
+
+## Reference
+
+For detailed provider rules, see `reference/validation-logic.md`.
+For a feature comparison table across providers, see `reference/provider-comparison.md`.

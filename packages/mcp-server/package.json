@@ -1,0 +1,47 @@
+{
+  "name": "@ssv/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for validating JSON schemas against LLM provider rules (OpenAI, Anthropic, Gemini)",
+  "type": "module",
+  "bin": {
+    "ssv-mcp-server": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "json-source-map": "^0.6.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@ssv/eslint-config": "workspace:*",
+    "@ssv/tsconfig": "workspace:*",
+    "@ssv/schemas": "workspace:*",
+    "@types/node": "^22.15.0",
+    "eslint": "^9.39.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "keywords": [
+    "mcp",
+    "json-schema",
+    "validation",
+    "structured-output",
+    "openai",
+    "anthropic",
+    "gemini",
+    "llm"
+  ],
+  "license": "MIT"
+}

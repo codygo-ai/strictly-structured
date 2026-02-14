@@ -1,0 +1,33 @@
+import { z } from "zod";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { getGroupByProvider } from "../lib/groups";
+import { fixSchemaForGroup } from "../lib/fixer";
+import type { ProviderId } from "../lib/types";
+
+export function registerFixSchemaTool(server: McpServer): void {
+  server.tool(
+    "fix_schema",
+    "Apply mechanical, rule-based fixes to a JSON schema to make it compatible with a specific LLM provider. No LLM API calls needed.",
+    {
+      schema: z.string().describe("The JSON schema to fix, as a JSON string"),
+      provider: z
+        .enum(["openai", "anthropic", "gemini"])
+        .describe("The target provider to fix the schema for"),
+    },
+    async ({ schema, provider }) => {
+      const group = getGroupByProvider(provider as ProviderId);
+      if (!group) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Unknown provider: ${provider}` }) }],
+          isError: true,
+        };
+      }
+
+      const result = fixSchemaForGroup(schema, group);
+
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(result, undefined, 2) }],
+      };
+    }
+  );
+}

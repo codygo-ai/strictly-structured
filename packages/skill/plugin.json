@@ -1,0 +1,19 @@
+{
+  "name": "validate-schema",
+  "description": "Validates JSON schemas for LLM structured outputs against OpenAI, Anthropic, and Google Gemini provider rules.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Codygo"
+  },
+  "license": "MIT",
+  "keywords": [
+    "json-schema",
+    "structured-output",
+    "openai",
+    "anthropic",
+    "gemini",
+    "validation",
+    "llm"
+  ],
+  "category": "development"
+}
