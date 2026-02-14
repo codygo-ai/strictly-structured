@@ -1,8 +1,8 @@
 /**
  * Builds a group meta-schema as a subset of the draft-07 JSON Schema meta-schema:
  * start from the full draft-07 meta-schema and restrict by removing unsupported
- * keywords and applying group-specific root rules. Uses full group (display + machine);
- * errors if machine is missing. No I/O; pure functions (base schema passed in).
+ * keywords and applying group-specific root rules. Uses unified group structure;
+ * errors if supportedTypes is missing. No I/O; pure functions (base schema passed in).
  */
 
 const DRAFT_07 = "http://json-schema.org/draft-07/schema#";
@@ -28,25 +28,21 @@ export interface GroupMetaSchemaInput {
   unsupportedArrayKeywords: string[];
 }
 
-interface MachineLike {
+interface UnifiedGroupLike {
   rootType?: string | string[];
   rootAnyOfAllowed?: boolean;
   allFieldsRequired?: boolean;
   additionalPropertiesMustBeFalse?: boolean;
-  supportedStringKeywords?: string[];
-  supportedStringFormats?: string[];
-  supportedNumberKeywords?: string[];
-  supportedIntegerKeywords?: string[];
-  supportedBooleanKeywords?: string[];
-  supportedObjectKeywords?: string[];
-  supportedArrayKeywords?: string[];
-  supportedCompositionKeywords?: string[];
-  unsupportedCompositionKeywords?: string[];
-  unsupportedStringKeywords?: string[];
-  unsupportedNumberKeywords?: string[];
-  unsupportedIntegerKeywords?: string[];
-  unsupportedObjectKeywords?: string[];
-  unsupportedArrayKeywords?: string[];
+  supportedTypes?: Array<{
+    type: string;
+    supportedKeywords?: string[];
+    unsupportedKeywords?: string[];
+  }>;
+  stringFormats?: string[];
+  composition?: {
+    supported?: string[];
+    unsupported?: string[];
+  };
 }
 
 function arr(x: unknown): string[] {
@@ -54,39 +50,56 @@ function arr(x: unknown): string[] {
   return [];
 }
 
-export function normalizeGroupInput(group: {
-  display?: unknown;
-  machine?: unknown;
-}): GroupMetaSchemaInput {
-  const m = group.machine as MachineLike | undefined;
-  if (!m || typeof m !== "object") {
-    throw new Error("Group is missing machine; cannot generate group meta-schema.");
+function findSupported(
+  types: UnifiedGroupLike["supportedTypes"],
+  typeName: string
+): string[] {
+  return arr(types?.find((t) => t.type === typeName)?.supportedKeywords);
+}
+
+function findUnsupported(
+  types: UnifiedGroupLike["supportedTypes"],
+  typeName: string
+): string[] {
+  return arr(types?.find((t) => t.type === typeName)?.unsupportedKeywords);
+}
+
+export function normalizeGroupInput(
+  group: Record<string, unknown>
+): GroupMetaSchemaInput {
+  const g = group as unknown as UnifiedGroupLike;
+  if (!g.supportedTypes || !Array.isArray(g.supportedTypes)) {
+    throw new Error(
+      "Group is missing supportedTypes; cannot generate group meta-schema."
+    );
   }
-  const rootTypeRaw = m.rootType;
+  const rootTypeRaw = g.rootType;
   const rootType: "object" | ["object", "array"] =
     Array.isArray(rootTypeRaw) && rootTypeRaw.length === 2
       ? (rootTypeRaw as ["object", "array"])
       : "object";
 
+  const types = g.supportedTypes;
+
   return {
     rootType,
-    rootAnyOfAllowed: Boolean(m.rootAnyOfAllowed),
-    allFieldsRequired: Boolean(m.allFieldsRequired),
-    additionalPropertiesMustBeFalse: Boolean(m.additionalPropertiesMustBeFalse),
-    supportedStringKeywords: arr(m.supportedStringKeywords),
-    supportedStringFormats: arr(m.supportedStringFormats),
-    supportedNumberKeywords: arr(m.supportedNumberKeywords),
-    supportedIntegerKeywords: arr(m.supportedIntegerKeywords),
-    supportedBooleanKeywords: arr(m.supportedBooleanKeywords),
-    supportedObjectKeywords: arr(m.supportedObjectKeywords),
-    supportedArrayKeywords: arr(m.supportedArrayKeywords),
-    supportedCompositionKeywords: arr(m.supportedCompositionKeywords),
-    unsupportedCompositionKeywords: arr(m.unsupportedCompositionKeywords),
-    unsupportedStringKeywords: arr(m.unsupportedStringKeywords),
-    unsupportedNumberKeywords: arr(m.unsupportedNumberKeywords),
-    unsupportedIntegerKeywords: arr(m.unsupportedIntegerKeywords),
-    unsupportedObjectKeywords: arr(m.unsupportedObjectKeywords),
-    unsupportedArrayKeywords: arr(m.unsupportedArrayKeywords),
+    rootAnyOfAllowed: Boolean(g.rootAnyOfAllowed),
+    allFieldsRequired: Boolean(g.allFieldsRequired),
+    additionalPropertiesMustBeFalse: Boolean(g.additionalPropertiesMustBeFalse),
+    supportedStringKeywords: findSupported(types, "string"),
+    supportedStringFormats: arr(g.stringFormats),
+    supportedNumberKeywords: findSupported(types, "number"),
+    supportedIntegerKeywords: findSupported(types, "integer"),
+    supportedBooleanKeywords: findSupported(types, "boolean"),
+    supportedObjectKeywords: findSupported(types, "object"),
+    supportedArrayKeywords: findSupported(types, "array"),
+    supportedCompositionKeywords: arr(g.composition?.supported),
+    unsupportedCompositionKeywords: arr(g.composition?.unsupported),
+    unsupportedStringKeywords: findUnsupported(types, "string"),
+    unsupportedNumberKeywords: findUnsupported(types, "number"),
+    unsupportedIntegerKeywords: findUnsupported(types, "integer"),
+    unsupportedObjectKeywords: findUnsupported(types, "object"),
+    unsupportedArrayKeywords: findUnsupported(types, "array"),
   };
 }
 
@@ -140,7 +153,7 @@ export function buildGroupMetaSchema(
 
 export function buildGroupMetaSchemaFromGroup(
   baseMetaSchema: Record<string, unknown>,
-  group: { groupId: string; display?: unknown; machine?: unknown }
+  group: Record<string, unknown>
 ): Record<string, unknown> {
   const input = normalizeGroupInput(group);
   return buildGroupMetaSchema(baseMetaSchema, input);

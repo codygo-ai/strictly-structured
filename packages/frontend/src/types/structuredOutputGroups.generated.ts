@@ -12,20 +12,18 @@ export interface HardConstraint {
 export interface SupportedType {
   type: string;
   supportedKeywords: string[];
+  unsupportedKeywords?: string[];
   notes?: string;
 }
 
-export interface GroupDisplay {
-  hardConstraints: HardConstraint[];
-  supportedTypes: SupportedType[];
-  stringFormats?: string[];
-  composition?: { supported: string[]; unsupported: string[]; notes?: string };
-  unsupportedKeywords: Record<string, string[]>;
-  quantitativeLimits: Record<string, number | string | null | undefined>;
-  nullableMechanism?: string;
-  recursiveSchemas?: boolean;
-  behaviors: Record<string, string | boolean>;
-  bestPractices: string[];
+export interface GroupLimits {
+  maxProperties: number | null;
+  maxNestingDepth: number | null;
+  maxStringLengthNamesEnums?: number | null;
+  maxEnumValues?: number | null;
+  maxEnumStringLengthOver250Values?: number | null;
+  recursiveDepth?: string | null;
+  notes?: string | null;
 }
 
 export type ProviderId = "openai" | "anthropic" | "gemini";
@@ -44,8 +42,32 @@ export interface StructuredOutputGroup {
   models: string[];
   modelNotes?: string;
   apiParameter?: Record<string, unknown>;
-  display: GroupDisplay;
-  machine?: Record<string, unknown>;
+
+  supportedTypes: SupportedType[];
+  stringFormats?: string[];
+  composition?: { supported: string[]; unsupported: string[]; notes?: string };
+  limits: GroupLimits;
+
+  rootType: string | string[];
+  rootAnyOfAllowed: boolean;
+  allFieldsRequired: boolean;
+  additionalPropertiesMustBeFalse: boolean;
+  additionalPropertiesFalseRecommended?: boolean;
+  recursiveSchemas?: boolean;
+  recursiveDepthLimited?: boolean;
+  nullableViaTypeArray?: boolean;
+  finetunedAdditionallyUnsupported?: string[];
+  validationRules?: Array<{
+    path: string;
+    check: string;
+    value?: unknown;
+    keywords?: string[];
+  }>;
+
+  hardConstraints: HardConstraint[];
+  nullableMechanism?: string;
+  behaviors: Record<string, string | boolean>;
+  bestPractices: string[];
 }
 
 export interface ComparisonRow {

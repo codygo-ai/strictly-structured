@@ -19,16 +19,16 @@ function loadBaseMetaSchema(): Record<string, unknown> {
 }
 
 describe("groupMetaSchema", () => {
-  it("normalizeGroupInput throws when machine is missing", () => {
-    expect(() => normalizeGroupInput({})).toThrow("missing machine");
-    expect(() => normalizeGroupInput({ display: {} })).toThrow("missing machine");
+  it("normalizeGroupInput throws when supportedTypes is missing", () => {
+    expect(() => normalizeGroupInput({})).toThrow("missing supportedTypes");
+    expect(() => normalizeGroupInput({ rootType: "object" })).toThrow("missing supportedTypes");
   });
 
   it("buildGroupMetaSchemaFromGroup produces draft-07 subset with definitions and restricted properties", () => {
     const base = loadBaseMetaSchema();
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     const data = JSON.parse(raw) as {
-      groups: Array<{ groupId: string; display?: unknown; machine?: unknown }>;
+      groups: Array<{ groupId: string; [key: string]: unknown }>;
     };
     const first = data.groups[0];
     expect(first).toBeDefined();
@@ -47,23 +47,20 @@ describe("groupMetaSchema", () => {
   it("buildGroupMetaSchema from normalized input removes unsupported keywords", () => {
     const base = loadBaseMetaSchema();
     const input = normalizeGroupInput({
-      machine: {
-        rootType: "object",
-        rootAnyOfAllowed: false,
-        supportedStringKeywords: ["description"],
-        supportedStringFormats: [],
-        supportedNumberKeywords: [],
-        supportedIntegerKeywords: [],
-        supportedBooleanKeywords: [],
-        supportedObjectKeywords: ["properties", "required", "additionalProperties", "description"],
-        supportedArrayKeywords: ["items", "description"],
-        supportedCompositionKeywords: ["$ref", "anyOf"],
-        unsupportedCompositionKeywords: ["allOf", "oneOf"],
-        unsupportedStringKeywords: [],
-        unsupportedNumberKeywords: [],
-        unsupportedIntegerKeywords: [],
-        unsupportedObjectKeywords: [],
-        unsupportedArrayKeywords: [],
+      rootType: "object",
+      rootAnyOfAllowed: false,
+      supportedTypes: [
+        { type: "string", supportedKeywords: ["description"] },
+        { type: "number", supportedKeywords: [] },
+        { type: "integer", supportedKeywords: [] },
+        { type: "boolean", supportedKeywords: [] },
+        { type: "object", supportedKeywords: ["properties", "required", "additionalProperties", "description"] },
+        { type: "array", supportedKeywords: ["items", "description"] },
+      ],
+      stringFormats: [],
+      composition: {
+        supported: ["$ref", "anyOf"],
+        unsupported: ["allOf", "oneOf"],
       },
     });
     const schema = buildGroupMetaSchema(base, input) as Record<string, unknown>;
@@ -78,7 +75,7 @@ describe("groupMetaSchema", () => {
     const base = loadBaseMetaSchema();
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     const data = JSON.parse(raw) as {
-      groups: Array<{ groupId: string; machine?: unknown }>;
+      groups: Array<{ groupId: string; [key: string]: unknown }>;
     };
     const gemini = data.groups.find((g) => g.groupId === "gemini-2-5");
     expect(gemini).toBeDefined();

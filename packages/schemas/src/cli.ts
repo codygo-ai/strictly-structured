@@ -60,7 +60,7 @@ function main(): void {
   }
 
   const groupsJson = fs.readFileSync(DATA_PATH, "utf-8");
-  const data = JSON.parse(groupsJson) as { groups: Array<{ groupId: string; display?: unknown; machine?: unknown }> };
+  const data = JSON.parse(groupsJson) as { groups: Array<{ groupId: string; [key: string]: unknown }> };
   const typesPath = path.join(__dirname, "types-template.ts");
   const typesContent = fs.readFileSync(typesPath, "utf-8");
   const generatedTypesContent = typesContent.replace(

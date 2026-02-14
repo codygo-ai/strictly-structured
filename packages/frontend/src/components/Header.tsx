@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BetaBadge } from "~/components/BetaBadge";
 
 export function Header() {
   return (
@@ -12,6 +13,7 @@ export function Header() {
           <span className="text-[var(--foreground)] font-semibold ml-2">
             Structured Schema Validator
           </span>
+          <BetaBadge />
         </Link>
         <div className="flex items-center gap-6">
           <Link

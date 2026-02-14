@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
+import { BetaBadge } from "~/components/BetaBadge";
 
 export function SiteHeader({
   subtitle = true,
@@ -18,6 +19,7 @@ export function SiteHeader({
           <Link href="/" className="font-bold text-primary hover:underline">
             Strictly Structured
           </Link>
+          <BetaBadge />
           <span className="text-sm text-secondary">
             {" "}
             by{" "}

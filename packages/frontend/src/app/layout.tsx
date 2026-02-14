@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { FirebaseAnalytics } from "~/components/FirebaseAnalytics";
 import { GoogleOneTap } from "~/components/GoogleOneTap";
+import { BetaBanner } from "~/components/BetaBanner";
+import { FeedbackWidget } from "~/components/FeedbackWidget";
 
 const siteName = "Codygo's Strictly Structured";
 const description =
@@ -61,7 +63,9 @@ export default function RootLayout({
       <body className="min-h-screen antialiased" suppressHydrationWarning>
         <FirebaseAnalytics />
         <GoogleOneTap />
+        <BetaBanner />
         {children}
+        <FeedbackWidget />
       </body>
     </html>
   );
