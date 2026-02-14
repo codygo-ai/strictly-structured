@@ -6,6 +6,8 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
+const IS_EMULATOR = process.env.FUNCTIONS_EMULATOR === "true";
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
@@ -13,7 +15,7 @@ const CORS = {
 };
 
 function setCors(res: { set: (h: Record<string, string>) => void }) {
-  res.set(CORS);
+  if (IS_EMULATOR) res.set(CORS);
 }
 
 async function requireAuth(req: { headers: { authorization?: string } }): Promise<string | null> {
@@ -30,15 +32,16 @@ async function requireAuth(req: { headers: { authorization?: string } }): Promis
 }
 
 function send401(res: { set: (h: Record<string, string>) => void; status: (n: number) => { json: (b: object) => void } }) {
-  res.set(CORS);
+  setCors(res);
   res.status(401).json({ error: "Authentication required. Sign in to use this feature." });
 }
 
 /**
  * Validate JSON schema against LLM providers. Requires Firebase Auth.
+ * invoker: "public" so Cloud Run does not require IAM; we verify Firebase ID token in requireAuth().
  */
 export const validate = onRequest(
-  { cors: true },
+  { cors: IS_EMULATOR, invoker: "public" },
   async (req, res) => {
     setCors(res);
     if (req.method === "OPTIONS") {
@@ -80,9 +83,10 @@ export const validate = onRequest(
 
 /**
  * Auto-fix schema: send issues + model context to a cheap model, return suggested schema. Requires Firebase Auth.
+ * invoker: "public" so Cloud Run does not require IAM; we verify Firebase ID token in requireAuth().
  */
 export const fix = onRequest(
-  { cors: true },
+  { cors: IS_EMULATOR, invoker: "public" },
   async (req, res) => {
     setCors(res);
     if (req.method === "OPTIONS") {

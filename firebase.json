@@ -4,7 +4,9 @@
     "public": "packages/frontend/out",
     "rewrites": [
       { "source": "/api/validate", "function": "validate" },
-      { "source": "/api/fix", "function": "fix" }
+      { "source": "/api/fix", "function": "fix" },
+      { "source": "/models", "destination": "/models.html" },
+      { "source": "/why", "destination": "/why.html" }
     ]
   },
   "functions": {
