@@ -44,6 +44,8 @@
   --ds-sidebar-width: 380px;
   --ds-content-x: 2.5rem;
   --ds-content-y: 1.5rem;
+  /** Max width for site pages (models, why, etc.). Validator page is full-width. */
+  --ds-page-max-width: 84rem;
 
   /* Motion */
   --ds-duration: 0.2s;
@@ -90,6 +92,7 @@
 
   --radius-sm: var(--ds-radius-sm);
   --radius-md: var(--ds-radius-md);
+  --max-width-page: var(--ds-page-max-width);
 }
 
 /* ==========================================================================

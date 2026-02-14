@@ -8,7 +8,7 @@ export default function WhyLayout({
   return (
     <div className="validator-page min-h-screen flex flex-col">
       <SiteHeader subtitle current="why" />
-      <main className="flex-1 container mx-auto px-6 py-8 max-w-3xl">
+      <main className="flex-1 container mx-auto px-6 py-8 max-w-page">
         {children}
       </main>
     </div>
