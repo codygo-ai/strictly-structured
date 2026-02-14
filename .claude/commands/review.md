@@ -63,3 +63,46 @@ List each issue as:
 - **Fix**: what should change
 
 Be specific and actionable. Do not flag subjective style preferences — only flag violations of the project rules and genuine issues.
+
+## Post-Verdict Actions
+
+### After APPROVED — Create PR
+
+When the verdict is **APPROVED**, immediately offer to create a pull request:
+
+1. Ask the user (using AskUserQuestion): "Review approved. Shall I create a draft PR?"
+   - If the user declines, stop here.
+
+2. Gather PR metadata:
+   - **Issue number**: From conversation context (set during kickoff). If not available, extract from the branch name pattern `feat/<number>-<slug>`.
+   - **Issue title**: Run `gh issue view <number> --json title --jq .title`
+   - **Branch name**: Run `git branch --show-current`
+
+3. Create the PR:
+   ```
+   gh pr create \
+     --title "<issue-title>" \
+     --body "$(cat <<'EOF'
+   ## Summary
+   <2-4 bullet points describing the key changes, derived from the diff>
+
+   ## Test Plan
+   - [ ] Lint passes
+   - [ ] Typecheck passes
+   - [ ] Tests pass (if applicable)
+   - [ ] Manual verification
+
+   Closes #<number>
+   EOF
+   )" \
+     --base main \
+     --draft
+   ```
+
+4. Print the PR URL to the user.
+
+### After CHANGES_NEEDED — Enforce re-review
+
+When the verdict is **CHANGES_NEEDED**, end with this reminder:
+
+> Fix the issues listed above, re-run lint/typecheck/tests, then invoke `/project:review` again. Do not create a PR until review is **APPROVED**.

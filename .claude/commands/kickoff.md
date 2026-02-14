@@ -59,3 +59,37 @@ Print a summary with:
 - Worktree path (if created)
 
 The branch is auto-linked to the issue via `gh issue develop`, so any PR from it will automatically close the issue.
+
+## Step 5 — Begin implementation
+
+After printing the summary, immediately begin implementing the plan. Do not wait for the user to ask.
+
+### If a worktree was created:
+1. Change your working directory to the worktree path:
+   ```
+   cd <worktree-path>
+   ```
+2. Confirm the working directory and branch:
+   ```
+   pwd && git branch --show-current
+   ```
+3. Begin implementing the plan step by step, following the mandatory checklist (lint/typecheck/test after each change).
+
+### If only a branch was created (no worktree):
+1. Check out the branch:
+   ```
+   git checkout feat/<number>-<slug>
+   ```
+2. Confirm the branch:
+   ```
+   git branch --show-current
+   ```
+3. Begin implementing the plan step by step.
+
+### If neither was created (skip):
+1. Stay on the current branch.
+2. Begin implementing the plan step by step.
+
+### Important
+- Retain the issue number (`#<number>`) in your context — it is needed when creating a PR after review.
+- When implementation is complete and all checks pass (lint, typecheck, tests, build), you MUST immediately invoke `/project:review`. Do not ask the user — just do it.
