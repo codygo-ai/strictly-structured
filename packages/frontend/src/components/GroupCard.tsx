@@ -3,6 +3,7 @@
 import type {
   StructuredOutputGroup,
   StructuredOutputGroupsMeta,
+  GroupLimits,
 } from "~/types/structuredOutputGroups";
 
 function SeverityIcon({
@@ -43,13 +44,15 @@ function camelCaseToLabel(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function quantitativeLimitsToRows(
-  limits: Record<string, number | string | null | undefined>
+function limitsToRows(
+  limits: GroupLimits
 ): { label: string; value: string }[] {
-  return Object.entries(limits).map(([key, value]) => ({
-    label: camelCaseToLabel(key),
-    value: value == null ? "—" : String(value),
-  }));
+  return Object.entries(limits)
+    .filter(([key]) => key !== "notes")
+    .map(([key, value]) => ({
+      label: camelCaseToLabel(key),
+      value: value == null ? "—" : String(value),
+    }));
 }
 
 export function GroupCard({
@@ -59,10 +62,14 @@ export function GroupCard({
   group: StructuredOutputGroup;
   meta: StructuredOutputGroupsMeta;
 }) {
-  const d = group.display;
   const modelsStr = group.models.join(", ");
-  const limitsRows = quantitativeLimitsToRows(d.quantitativeLimits);
+  const limitsRows = limitsToRows(group.limits);
   const badgeClass = meta.providerBadgeClasses[group.providerId] ?? "";
+  const unsupportedKeywords = Object.fromEntries(
+    group.supportedTypes
+      .filter((st) => st.unsupportedKeywords && st.unsupportedKeywords.length > 0)
+      .map((st) => [st.type, st.unsupportedKeywords!])
+  );
 
   return (
     <div className="bg-white border border-[#e8eaed] rounded-[10px] p-6 mb-5">
@@ -89,7 +96,7 @@ export function GroupCard({
             Constraints
           </div>
           <div className="flex flex-col gap-2">
-            {d.hardConstraints.map((c, i) => (
+            {group.hardConstraints.map((c, i) => (
               <div key={i} className="flex gap-1.5 items-start">
                 <div className="mt-0.5 shrink-0">
                   <SeverityIcon severity={c.severity} />
@@ -127,7 +134,7 @@ export function GroupCard({
           <div className="text-[10px] font-bold tracking-wider uppercase text-[#2a7d4e] mb-2.5 pb-1 border-b border-[#e8f5e9]">
             Supported Keywords
           </div>
-          {d.supportedTypes.map((st) => (
+          {group.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2">
               <div className="text-[11px] font-semibold text-[#666] mb-0.5 font-mono">
                 {st.type}
@@ -152,7 +159,7 @@ export function GroupCard({
           <div className="text-[10px] font-bold tracking-wider uppercase text-[#b33] mb-2.5 pb-1 border-b border-[#fce4ec]">
             Unsupported Keywords
           </div>
-          {Object.entries(d.unsupportedKeywords).map(([type, kws]) => (
+          {Object.entries(unsupportedKeywords).map(([type, kws]) => (
             <div key={type} className="mb-2">
               <div className="text-[11px] font-semibold text-[#666] mb-0.5 font-mono">
                 {type}
@@ -170,7 +177,7 @@ export function GroupCard({
             Behaviors
           </div>
           <div className="flex flex-col gap-1">
-            {Object.entries(d.behaviors)
+            {Object.entries(group.behaviors)
               .filter(([k]) => k !== "unknownKeywordsBehavior")
               .map(([label, val]) => (
                 <div
@@ -190,7 +197,7 @@ export function GroupCard({
                 </div>
               ))}
             <div className="text-[10.5px] text-[#999] mt-0.5">
-              Unknown kw → {String(d.behaviors.unknownKeywordsBehavior ?? "—")}
+              Unknown kw → {String(group.behaviors.unknownKeywordsBehavior ?? "—")}
             </div>
           </div>
         </div>

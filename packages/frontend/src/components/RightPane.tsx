@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
+import type { StructuredOutputGroup, GroupLimits } from "~/types/structuredOutputGroups";
 
 function SeverityIcon({ severity }: { severity: "error" | "warning" | "info" }) {
   if (severity === "error")
@@ -80,13 +80,15 @@ function camelCaseToLabel(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function quantitativeLimitsToRows(
-  limits: Record<string, number | string | null | undefined>
+function limitsToRows(
+  limits: GroupLimits
 ): { label: string; value: string }[] {
-  return Object.entries(limits).map(([key, value]) => ({
-    label: camelCaseToLabel(key),
-    value: value == null ? "—" : String(value),
-  }));
+  return Object.entries(limits)
+    .filter(([key]) => key !== "notes")
+    .map(([key, value]) => ({
+      label: camelCaseToLabel(key),
+      value: value == null ? "—" : String(value),
+    }));
 }
 
 function formatBehaviorValue(val: string | boolean): "ok" | "no" | "unknown" {
@@ -96,13 +98,17 @@ function formatBehaviorValue(val: string | boolean): "ok" | "no" | "unknown" {
 }
 
 export function RightPane({ group }: { group: StructuredOutputGroup }) {
-  const d = group.display;
   const modelsStr = group.models.join(", ");
-  const limitsRows = quantitativeLimitsToRows(d.quantitativeLimits);
+  const limitsRows = limitsToRows(group.limits);
   const unknownKw =
-    typeof d.behaviors.unknownKeywordsBehavior === "string"
-      ? d.behaviors.unknownKeywordsBehavior
+    typeof group.behaviors.unknownKeywordsBehavior === "string"
+      ? group.behaviors.unknownKeywordsBehavior
       : "—";
+  const unsupportedKeywords = Object.fromEntries(
+    group.supportedTypes
+      .filter((st) => st.unsupportedKeywords && st.unsupportedKeywords.length > 0)
+      .map((st) => [st.type, st.unsupportedKeywords!])
+  );
 
   return (
     <div className="w-full h-full flex flex-col py-5 px-[22px] text-[13.5px] text-[#2c2c2c] leading-[1.55] font-sans">
@@ -123,7 +129,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
       <div className="flex-1 min-h-0 overflow-y-auto">
         <Collapsible title="Hard Constraints" defaultOpen>
           <div className="flex flex-col gap-2.5">
-            {d.hardConstraints.map((c, i) => (
+            {group.hardConstraints.map((c, i) => (
               <div key={i} className="flex gap-2 items-start">
                 <div className="mt-0.5 shrink-0">
                   <SeverityIcon severity={c.severity} />
@@ -140,7 +146,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
         </Collapsible>
 
         <Collapsible title="Supported Keywords" defaultOpen>
-          {d.supportedTypes.map((st) => (
+          {group.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2.5">
               <div className="text-xs font-semibold text-[#555] mb-1 font-mono">
                 {st.type}
@@ -152,9 +158,9 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
                   </Pill>
                 ))}
               </div>
-              {d.stringFormats && d.stringFormats.length > 0 && st.type === "string" && (
+              {group.stringFormats && group.stringFormats.length > 0 && st.type === "string" && (
                 <div className="text-[11px] text-[#888] mt-1 ml-0.5">
-                  Formats: {d.stringFormats.join(", ")}
+                  Formats: {group.stringFormats.join(", ")}
                 </div>
               )}
               {st.notes && (
@@ -167,7 +173,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
         </Collapsible>
 
         <Collapsible title="Unsupported Keywords">
-          {Object.entries(d.unsupportedKeywords).map(([type, kws]) => (
+          {Object.entries(unsupportedKeywords).map(([type, kws]) => (
             <div key={type} className="mb-2">
               <div className="text-xs font-semibold text-[#555] mb-1 font-mono">
                 {type}
@@ -198,7 +204,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
 
         <Collapsible title="Behaviors">
           <div className="flex flex-col gap-1">
-            {Object.entries(d.behaviors)
+            {Object.entries(group.behaviors)
               .filter(([k]) => k !== "unknownKeywordsBehavior")
               .map(([label, val]) => {
                 const status = formatBehaviorValue(val);
@@ -242,7 +248,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
 
         <Collapsible title="Best Practices">
           <div className="flex flex-col gap-1.5">
-            {d.bestPractices.map((p, i) => (
+            {group.bestPractices.map((p, i) => (
               <div
                 key={i}
                 className="text-xs text-[#555] flex gap-2 items-start"

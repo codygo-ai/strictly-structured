@@ -4,7 +4,7 @@
 export type {
   HardConstraint,
   SupportedType,
-  GroupDisplay,
+  GroupLimits,
   ProviderId,
   ComparisonColumn,
   StructuredOutputGroup,

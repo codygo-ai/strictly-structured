@@ -81,10 +81,7 @@ export function SchemaEditor({
       const model = editor.getModel();
       if (!model) return;
 
-      const machine = selectedGroup?.machine as
-        | Record<string, unknown>
-        | undefined;
-      const markers = validateSchemaForGroup(value, machine);
+      const markers = validateSchemaForGroup(value, selectedGroup ?? undefined);
       const groupLabel = selectedGroup?.groupName ?? "provider";
 
       monaco.editor.setModelMarkers(

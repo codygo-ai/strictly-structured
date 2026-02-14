@@ -41,7 +41,7 @@ function errorMessage(errors: Array<{ message?: string; params?: unknown }> | nu
 
 describe("group meta-schema validation", () => {
   const baseMetaSchema = loadJson<Record<string, unknown>>(DRAFT_07_PATH);
-  const groupsData = loadJson<{ groups: Array<{ groupId: string; display?: unknown; machine?: unknown }> }>(DATA_PATH);
+  const groupsData = loadJson<{ groups: Array<{ groupId: string; [key: string]: unknown }> }>(DATA_PATH);
   const samples = getSamples();
 
   const validators: Record<string, (doc: Record<string, unknown>) => { valid: boolean; errors: unknown }> = {};

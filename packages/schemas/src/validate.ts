@@ -1,5 +1,5 @@
 /**
- * Validates a JSON Schema against a group's machine rules from structured_output_groups.json.
+ * Validates a JSON Schema against a group's rules from structured_output_groups.json.
  * Single source of truth: validity is derived only from the groups JSON.
  */
 
@@ -10,7 +10,7 @@ interface ValidationRule {
   keywords?: string[];
 }
 
-interface MachineSection {
+interface GroupFields {
   rootType: string | string[];
   rootAnyOfAllowed?: boolean;
   allFieldsRequired?: boolean;
@@ -19,7 +19,15 @@ interface MachineSection {
 }
 
 export interface GroupsData {
-  groups: Array<{ groupId: string; machine?: MachineSection }>;
+  groups: Array<{
+    groupId: string;
+    rootType: string | string[];
+    rootAnyOfAllowed?: boolean;
+    allFieldsRequired?: boolean;
+    additionalPropertiesMustBeFalse?: boolean;
+    validationRules?: ValidationRule[];
+    [key: string]: unknown;
+  }>;
 }
 
 type SchemaNode = Record<string, unknown>;
@@ -158,21 +166,23 @@ export function validateSchemaForGroup(
   groupsData: GroupsData
 ): { valid: boolean } {
   const group = groupsData.groups.find((g) => g.groupId === groupId);
-  const machine = group?.machine;
-  if (!machine) return { valid: false };
+  if (!group) return { valid: false };
 
-  const rootType = machine.rootType;
+  const fields = group as unknown as GroupFields;
+  const rootType = fields.rootType;
+  if (!rootType) return { valid: false };
+
   const rootTypeArr = Array.isArray(rootType) ? rootType : [rootType];
   const rootT = getRootType(schema);
   if (!rootT || !rootTypeArr.includes(rootT)) return { valid: false };
 
-  if (machine.rootAnyOfAllowed === false && isRootAnyOf(schema)) return { valid: false };
+  if (fields.rootAnyOfAllowed === false && isRootAnyOf(schema)) return { valid: false };
 
   const nodes: Array<{ node: SchemaNode; path: string; schemaType: string | undefined }> = [];
   collectNodes(schema, "", nodes);
   const rootNode = nodes.find((n) => n.path === "" || !n.path)?.node ?? schema;
 
-  const rules = machine.validationRules ?? [];
+  const rules = fields.validationRules ?? [];
   for (const rule of rules) {
     if (rule.check === "recommend_additional_properties_false") continue;
 

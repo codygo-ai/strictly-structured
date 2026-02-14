@@ -1,4 +1,5 @@
 import jsonSourceMap from "json-source-map";
+import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
 
 export interface SchemaMarker {
   startLineNumber: number;
@@ -9,29 +10,19 @@ export interface SchemaMarker {
   severity: "error" | "warning" | "info";
 }
 
-interface MachineRules {
+interface ValidatorRules {
   rootType: string | string[];
   rootAnyOfAllowed: boolean;
   allFieldsRequired: boolean;
   additionalPropertiesMustBeFalse: boolean;
   additionalPropertiesFalseRecommended?: boolean;
-  supportedTypes: string[];
-  supportedCompositionKeywords: string[];
-  supportedStringKeywords: string[];
   supportedStringFormats: string[];
-  supportedNumberKeywords: string[];
-  supportedIntegerKeywords: string[];
-  supportedBooleanKeywords: string[];
-  supportedObjectKeywords: string[];
-  supportedArrayKeywords: string[];
-  limits?: MachineLimits;
-}
-
-interface MachineLimits {
-  maxProperties?: number | null;
-  maxNestingDepth?: number | null;
-  maxStringLengthNamesEnums?: number | null;
-  maxEnumValues?: number | null;
+  limits?: {
+    maxProperties?: number | null;
+    maxNestingDepth?: number | null;
+    maxStringLengthNamesEnums?: number | null;
+    maxEnumValues?: number | null;
+  };
 }
 
 interface SourcePos {
@@ -49,7 +40,7 @@ interface PointerEntry {
 type PointerMap = Record<string, PointerEntry>;
 
 interface WalkContext {
-  rules: MachineRules;
+  rules: ValidatorRules;
   pointers: PointerMap;
   markers: SchemaMarker[];
   supportedComposition: Set<string>;
@@ -82,15 +73,12 @@ const COMPOSITION_KEYWORDS = new Set([
 /** Structural keywords valid on any node regardless of type or provider. */
 const STRUCTURAL_KEYWORDS = new Set(["type"]);
 
-function buildSupportedKeywordsByType(rules: MachineRules): Map<string, Set<string>> {
-  return new Map([
-    ["string", new Set(rules.supportedStringKeywords)],
-    ["number", new Set(rules.supportedNumberKeywords)],
-    ["integer", new Set(rules.supportedIntegerKeywords)],
-    ["boolean", new Set(rules.supportedBooleanKeywords)],
-    ["object", new Set(rules.supportedObjectKeywords)],
-    ["array", new Set(rules.supportedArrayKeywords)],
-  ]);
+function buildSupportedKeywordsByType(
+  supportedTypes: StructuredOutputGroup["supportedTypes"]
+): Map<string, Set<string>> {
+  return new Map(
+    supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)])
+  );
 }
 
 function resolveType(node: Record<string, unknown>): string | null {
@@ -125,9 +113,9 @@ function pointerToMarker(
 
 export function validateSchemaForGroup(
   raw: string,
-  machine: Record<string, unknown> | undefined
+  group: StructuredOutputGroup | undefined
 ): SchemaMarker[] {
-  if (!machine) return [];
+  if (!group) return [];
 
   let parsed: { data: unknown; pointers: PointerMap };
   try {
@@ -139,14 +127,28 @@ export function validateSchemaForGroup(
   const { data, pointers } = parsed;
   if (data === null || typeof data !== "object") return [];
 
-  const rules = machine as unknown as MachineRules;
+  const rules: ValidatorRules = {
+    rootType: group.rootType,
+    rootAnyOfAllowed: group.rootAnyOfAllowed,
+    allFieldsRequired: group.allFieldsRequired,
+    additionalPropertiesMustBeFalse: group.additionalPropertiesMustBeFalse,
+    additionalPropertiesFalseRecommended: group.additionalPropertiesFalseRecommended,
+    supportedStringFormats: group.stringFormats ?? [],
+    limits: group.limits ? {
+      maxProperties: group.limits.maxProperties,
+      maxNestingDepth: group.limits.maxNestingDepth,
+      maxStringLengthNamesEnums: group.limits.maxStringLengthNamesEnums ?? null,
+      maxEnumValues: group.limits.maxEnumValues ?? null,
+    } : undefined,
+  };
+
   const ctx: WalkContext = {
     rules,
     pointers,
     markers: [],
-    supportedComposition: new Set(rules.supportedCompositionKeywords ?? []),
-    supportedKeywordsByType: buildSupportedKeywordsByType(rules),
-    supportedTypesSet: new Set(rules.supportedTypes ?? []),
+    supportedComposition: new Set(group.composition?.supported ?? []),
+    supportedKeywordsByType: buildSupportedKeywordsByType(group.supportedTypes),
+    supportedTypesSet: new Set(group.supportedTypes.map((st) => st.type)),
     totalProperties: 0,
     maxDepthSeen: 0,
     totalEnumValues: 0,
