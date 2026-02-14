@@ -2,7 +2,7 @@
 
 ## Plan Mode
 
-Always enter plan mode before making any code changes. Every non-trivial task must be planned and approved before implementation begins.
+For non-trivial tasks, offer to switch to plan mode so the approach can be reviewed and approved before implementation begins. Simple, straightforward changes can proceed directly.
 
 ## Cursor Rules
 
