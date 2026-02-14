@@ -15,3 +15,11 @@ All project rules are defined in `.cursor/rules/`. Read and follow every rule fi
 - `.cursor/rules/commit-messages.mdc` — Conventional Commits format
 
 These are the single source of truth. Do not duplicate their content here.
+
+## Post-Implementation Review (Mandatory)
+
+After completing all implementation steps and passing lint/typecheck/tests, invoke the `/project:review` skill. This skill reviews the implementation against the original requirements and project quality rules.
+
+- If the review returns **CHANGES_NEEDED**: fix all listed issues, re-run lint/typecheck/tests, then invoke `/project:review` again.
+- Repeat until the review returns **APPROVED**.
+- Do not mark the task as complete until the review is approved.

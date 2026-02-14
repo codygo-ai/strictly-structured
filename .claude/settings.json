@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "allow": ["Bash(pnpm --filter @ssv/*)", "WebFetch(*)", "Bash(*)"],
+    "additionalDirectories": ["./.claude"]
+  }
+}
