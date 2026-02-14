@@ -1,0 +1,45 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "audit_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "kind", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "audit_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sessionId", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "audit_traces",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "overallSuccess", "order": "ASCENDING" },
+        { "fieldPath": "startedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "audit_traces",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "operation", "order": "ASCENDING" },
+        { "fieldPath": "startedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "audit_schemas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "successRate", "order": "ASCENDING" },
+        { "fieldPath": "totalValidations", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

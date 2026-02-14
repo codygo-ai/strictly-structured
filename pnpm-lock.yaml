@@ -40,7 +40,7 @@ importers:
         version: 0.21.0
       openai:
         specifier: ^4.73.0
-        version: 4.104.0(encoding@0.1.13)(zod@3.25.76)
+        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@4.3.6)
     devDependencies:
       '@ssv/tsconfig':
         specifier: workspace:*
@@ -69,6 +69,24 @@ importers:
 
   devops/tsconfig: {}
 
+  packages/audit:
+    devDependencies:
+      '@ssv/eslint-config':
+        specifier: workspace:*
+        version: link:../../devops/eslint-config
+      '@ssv/tsconfig':
+        specifier: workspace:*
+        version: link:../../devops/tsconfig
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+
   packages/backend:
     dependencies:
       '@anthropic-ai/sdk':
@@ -85,8 +103,11 @@ importers:
         version: 7.0.5(firebase-admin@13.6.1(encoding@0.1.13))
       openai:
         specifier: ^6.21.0
-        version: 6.21.0(zod@4.3.6)
+        version: 6.21.0(ws@7.5.10)(zod@4.3.6)
     devDependencies:
+      '@ssv/audit':
+        specifier: workspace:*
+        version: link:../audit
       '@ssv/eslint-config':
         specifier: workspace:*
         version: link:../../devops/eslint-config
@@ -128,7 +149,7 @@ importers:
         version: 15.5.12(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       openai:
         specifier: ^4.73.0
-        version: 4.104.0(encoding@0.1.13)(zod@3.25.76)
+        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@4.3.6)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -136,6 +157,9 @@ importers:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
     devDependencies:
+      '@ssv/audit':
+        specifier: workspace:*
+        version: link:../audit
       '@ssv/eslint-config':
         specifier: workspace:*
         version: link:../../devops/eslint-config
@@ -10236,7 +10260,7 @@ snapshots:
     dependencies:
       is-wsl: 1.1.0
 
-  openai@4.104.0(encoding@0.1.13)(zod@3.25.76):
+  openai@4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@4.3.6):
     dependencies:
       '@types/node': 18.19.130
       '@types/node-fetch': 2.6.13
@@ -10246,12 +10270,14 @@ snapshots:
       formdata-node: 4.4.1
       node-fetch: 2.7.0(encoding@0.1.13)
     optionalDependencies:
-      zod: 3.25.76
+      ws: 7.5.10
+      zod: 4.3.6
     transitivePeerDependencies:
       - encoding
 
-  openai@6.21.0(zod@4.3.6):
+  openai@6.21.0(ws@7.5.10)(zod@4.3.6):
     optionalDependencies:
+      ws: 7.5.10
       zod: 4.3.6
 
   openapi3-ts@3.2.0:

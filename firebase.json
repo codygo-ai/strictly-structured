@@ -5,9 +5,11 @@
     "rewrites": [
       { "source": "/api/validate", "function": "validate" },
       { "source": "/api/fix", "function": "fix" },
+      { "source": "/api/evaluate", "function": "evaluate" },
       { "source": "/api/feedback", "function": "feedback" },
       { "source": "/models", "destination": "/models.html" },
-      { "source": "/why", "destination": "/why.html" }
+      { "source": "/why", "destination": "/why.html" },
+      { "source": "/terms", "destination": "/terms.html" }
     ]
   },
   "functions": {
@@ -19,6 +21,10 @@
       "pnpm --filter @ssv/backend deploy --prod --force packages/backend/.deployed",
       "pnpm --filter @ssv/backend strip-dev"
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "emulators": {
     "functions": { "port": 5001 },

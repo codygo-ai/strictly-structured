@@ -1,5 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { AuditContext } from "@ssv/audit";
+import { generateEventId } from "@ssv/audit";
 import type { ValidationResult } from "../types.js";
+import { classifyError } from "../../audit/classify.js";
 
 const DEFAULT_MODEL = "claude-haiku-4-5";
 const PROMPT =
@@ -8,9 +11,24 @@ const PROMPT =
 export async function validateWithAnthropic(
   schema: object,
   apiKey: string,
-  model: string = DEFAULT_MODEL
+  model: string = DEFAULT_MODEL,
+  audit?: AuditContext,
 ): Promise<ValidationResult> {
   const start = Date.now();
+  const schemaSizeBytes = JSON.stringify(schema).length;
+
+  if (audit) {
+    audit.emit({
+      eventId: generateEventId(),
+      timestamp: new Date().toISOString(),
+      sessionId: audit.sessionId,
+      traceId: audit.traceId,
+      source: "backend",
+      kind: "llm.call.started",
+      data: { provider: "anthropic", model, schemaHash: audit.schemaHash, schemaSizeBytes },
+    });
+  }
+
   const client = new Anthropic({ apiKey });
   try {
     const message = await client.messages.create({
@@ -32,28 +50,94 @@ export async function validateWithAnthropic(
     const toolUse = message.content.find(
       (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
     );
+
     if (!toolUse || toolUse.name !== "output") {
+      const errorMsg = "Model did not return tool use";
+      const latencyMs = Date.now() - start;
+
+      if (audit) {
+        audit.emit({
+          eventId: generateEventId(),
+          timestamp: new Date().toISOString(),
+          sessionId: audit.sessionId,
+          traceId: audit.traceId,
+          source: "backend",
+          kind: "llm.call.completed",
+          data: {
+            provider: "anthropic",
+            model,
+            ok: false,
+            latencyMs,
+            errorMessage: errorMsg,
+            errorCategory: "model_error" as const,
+          },
+        });
+      }
+
       return {
         provider: "anthropic",
         model,
         ok: false,
-        latencyMs: Date.now() - start,
-        error: "Model did not return tool use",
+        latencyMs,
+        error: errorMsg,
       };
     }
-    return {
+
+    const result: ValidationResult = {
       provider: "anthropic",
       model,
       ok: true,
       latencyMs: Date.now() - start,
     };
+
+    if (audit) {
+      const responseText = JSON.stringify(toolUse.input);
+      audit.emit({
+        eventId: generateEventId(),
+        timestamp: new Date().toISOString(),
+        sessionId: audit.sessionId,
+        traceId: audit.traceId,
+        source: "backend",
+        kind: "llm.call.completed",
+        data: {
+          provider: "anthropic",
+          model,
+          ok: true,
+          latencyMs: result.latencyMs,
+          responseSizeBytes: Buffer.byteLength(responseText, "utf8"),
+        },
+      });
+    }
+
+    return result;
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);
+    const latencyMs = Date.now() - start;
+
+    if (audit) {
+      audit.emit({
+        eventId: generateEventId(),
+        timestamp: new Date().toISOString(),
+        sessionId: audit.sessionId,
+        traceId: audit.traceId,
+        source: "backend",
+        kind: "llm.call.completed",
+        data: {
+          provider: "anthropic",
+          model,
+          ok: false,
+          latencyMs,
+          errorMessage: error,
+          errorCategory: classifyError(error),
+        },
+      });
+    }
+
     return {
       provider: "anthropic",
       model,
       ok: false,
-      latencyMs: Date.now() - start,
+      latencyMs,
       error,
     };
   }
