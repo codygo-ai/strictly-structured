@@ -1,206 +1,127 @@
 "use client";
 
 import { useState, useCallback, useMemo, useRef } from "react";
-import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
 import { SiteHeader } from "~/components/SiteHeader";
-import { SchemaEditor } from "~/components/SchemaEditor";
-import { ValidationResults } from "~/components/ValidationResults";
-import type { ValidationResult } from "~/lib/providers/types";
-import { RightPane } from "~/components/RightPane";
-import { OpenAIIcon } from "~/components/icons/OpenAIIcon";
-import { ClaudeIcon } from "~/components/icons/ClaudeIcon";
-import { GeminiIcon } from "~/components/icons/GeminiIcon";
-import type {
-  ProviderId,
-  SchemaRuleSet,
-  SchemaRuleSetsData,
-} from "~/types/schemaRuleSets";
+import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
+import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
+import { EditorToolbar } from "~/components/EditorToolbar";
+import type { SchemaRuleSet, SchemaRuleSetsData } from "~/types/schemaRuleSets";
 import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
-import { useAuth } from "~/lib/useAuth";
-import { useAudit, hashSchema } from "~/lib/audit";
-import { fixSchemaForRuleSet, type FixResult } from "~/lib/schemaFixer";
+import { useAudit } from "~/lib/audit";
+import { useAllRuleSetsValidation } from "~/hooks/useAllRuleSetsValidation";
+import type { FixResult } from "~/lib/schemaFixer";
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
+const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
 
-const DiffEditor = dynamic(
-  () => import("@monaco-editor/react").then((m) => m.DiffEditor),
-  { ssr: false }
-);
+const ONBOARDING_KEY = "ssv-onboarding-dismissed";
 
+// Default schema that demonstrates cross-provider incompatibilities
 const DEFAULT_SCHEMA = `{
   "type": "object",
   "properties": {
     "name": { "type": "string" },
-    "count": { "type": "integer" }
+    "category": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" }
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
   },
-  "required": ["name"]
+  "required": ["name", "category"]
 }
 `;
 
-const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
+function useOnboardingHint() {
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(ONBOARDING_KEY) === null;
+  });
 
-function ModelIcon({ provider }: { provider: ProviderId }) {
-  const size = 18;
-  const className = "provider-btn-icon shrink-0";
-  switch (provider) {
-    case "openai":
-      return <OpenAIIcon className={className} width={size} height={size} />;
-    case "anthropic":
-      return <ClaudeIcon className={className} width={size} height={size} />;
-    case "gemini":
-      return <GeminiIcon className={className} width={size} height={size} />;
-    default:
-      return null;
-  }
-}
+  const dismiss = useCallback(() => {
+    localStorage.setItem(ONBOARDING_KEY, "1");
+    setVisible(false);
+  }, []);
 
-function ruleSetTooltip(ruleSet: SchemaRuleSet): string {
-  return [ruleSet.displayName, ruleSet.models.join(", ")].join("\n\n");
+  return { visible, dismiss };
 }
 
 export default function Home() {
-  const { resolvedTheme } = useTheme();
-  const { ensureAuth } = useAuth();
   const { emit } = useAudit();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
-  const [selectedRuleSetId, setSelectedRuleSetId] = useState<string | null>(
-    () => RULE_SETS[0]?.ruleSetId ?? null
+  const [selectedRuleSetId, setSelectedRuleSetId] = useState<string>(
+    () => RULE_SETS[0]?.ruleSetId ?? "",
   );
-  const [results, setResults] = useState<ValidationResult[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [suggestedSchema, setSuggestedSchema] = useState<string | null>(null);
   const [fixResult, setFixResult] = useState<FixResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const editorApiRef = useRef<SchemaEditorApi | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const onboarding = useOnboardingHint();
+
+  const validationResults = useAllRuleSetsValidation(schema, RULE_SETS);
 
   const selectedRuleSet = useMemo(
     () => RULE_SETS.find((r) => r.ruleSetId === selectedRuleSetId) ?? null,
-    [selectedRuleSetId]
+    [selectedRuleSetId],
   );
 
-  const handleRuleSetChange = useCallback((ruleSetId: string) => {
-    setSelectedRuleSetId(ruleSetId);
-    const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
-    if (ruleSet) {
-      emit("ruleSet.selected", { ruleSetId, providerId: ruleSet.providerId });
-    }
-  }, [emit]);
+  const selectedMarkers = useMemo(
+    () => validationResults.get(selectedRuleSetId)?.markers ?? [],
+    [validationResults, selectedRuleSetId],
+  );
 
-  const handleValidate = useCallback(async () => {
-    setError(null);
-    setLoading(true);
-    const hash = await hashSchema(schema);
-    emit("server.validate.requested", {
-      schemaHash: hash,
-      schemaSizeBytes: new Blob([schema]).size,
-      modelIds: selectedRuleSet?.models ?? [],
-    });
-    try {
-      const token = await ensureAuth();
-      const res = await fetch("/api/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          schema,
-          modelIds: selectedRuleSet?.models,
-        }),
-      });
-      const data = (await res.json()) as { results?: ValidationResult[]; error?: string };
-      if (!res.ok) {
-        setError(data.error ?? `Request failed (${res.status})`);
-        return;
-      }
-      if (data.results) setResults(data.results);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, [ensureAuth, schema, selectedRuleSet, emit]);
-
-  const handleFix = useCallback(async () => {
-    setError(null);
-    setFixResult(null);
-
-    if (!selectedRuleSet) return;
-
-    let parsed: Record<string, unknown>;
-    try {
-      parsed = JSON.parse(schema) as Record<string, unknown>;
-    } catch {
-      setError("Schema is not valid JSON");
-      return;
-    }
-
-    const result = fixSchemaForRuleSet(parsed, selectedRuleSet);
-
-    if (result.appliedFixes.length === 0 && result.unresolvedErrors.length === 0) {
-      setError("No issues found — schema is already compliant");
-      return;
-    }
-
-    setFixResult(result);
-    if (result.appliedFixes.length > 0) {
-      setSuggestedSchema(JSON.stringify(result.fixedSchema, null, 2));
-    }
-
-    const hash = await hashSchema(schema);
-    emit("fix.requested", {
-      schemaHash: hash,
-      issueCount: result.appliedFixes.length + result.unresolvedErrors.length,
-    });
-  }, [schema, selectedRuleSet, emit]);
-
-  const handleAcceptSuggestion = useCallback(async () => {
-    if (suggestedSchema != null) {
-      const hash = await hashSchema(schema);
-      const suggestedHash = await hashSchema(suggestedSchema);
-      emit("fix.accepted", { schemaHash: hash, suggestedSchemaHash: suggestedHash });
-      setSchema(suggestedSchema);
-      setSuggestedSchema(null);
+  const handleRuleSetChange = useCallback(
+    (ruleSetId: string) => {
+      setSelectedRuleSetId(ruleSetId);
       setFixResult(null);
-    }
-  }, [suggestedSchema, schema, emit]);
+      const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
+      if (ruleSet) {
+        emit("ruleSet.selected", { ruleSetId, providerId: ruleSet.providerId });
+      }
+    },
+    [emit],
+  );
 
-  const handleRejectSuggestion = useCallback(async () => {
-    const hash = await hashSchema(schema);
-    emit("fix.rejected", { schemaHash: hash });
-    setSuggestedSchema(null);
+  const handleSchemaChange = useCallback((newSchema: string) => {
+    setSchema(newSchema);
     setFixResult(null);
-  }, [schema, emit]);
-
-  const normalizedDiffOriginal = useMemo(() => {
-    if (suggestedSchema == null) return schema;
-    try {
-      return JSON.stringify(JSON.parse(schema), null, 2);
-    } catch {
-      return schema;
-    }
-  }, [schema, suggestedSchema]);
-
-  const normalizedDiffModified = useMemo(() => {
-    if (suggestedSchema == null) return null;
-    try {
-      return JSON.stringify(JSON.parse(suggestedSchema), null, 2);
-    } catch {
-      return suggestedSchema;
-    }
-  }, [suggestedSchema]);
-
-  const applyLoadedJson = useCallback((text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    try {
-      const parsed = JSON.parse(trimmed);
-      setSchema(JSON.stringify(parsed, null, 2));
-    } catch {
-      setSchema(trimmed);
-    }
+    setError(null);
   }, []);
+
+  const handleFixAll = useCallback(
+    (fixedSchema: string, result: FixResult) => {
+      editorApiRef.current?.applyText(fixedSchema);
+      setSchema(fixedSchema);
+      setFixResult(result);
+    },
+    [],
+  );
+
+  const handleScrollToLine = useCallback((line: number) => {
+    editorApiRef.current?.scrollToLine(line);
+  }, []);
+
+  const handleEditorReady = useCallback((api: SchemaEditorApi) => {
+    editorApiRef.current = api;
+  }, []);
+
+  const applyLoadedJson = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      try {
+        const parsed = JSON.parse(trimmed);
+        handleSchemaChange(JSON.stringify(parsed, null, 2));
+      } catch {
+        handleSchemaChange(trimmed);
+      }
+    },
+    [handleSchemaChange],
+  );
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -210,14 +131,17 @@ export default function Home() {
       reader.onload = () => {
         const text = reader.result;
         if (typeof text === "string") {
-          emit("schema.loaded", { method: "file_upload", schemaSizeBytes: new Blob([text]).size });
+          emit("schema.loaded", {
+            method: "file_upload",
+            schemaSizeBytes: new Blob([text]).size,
+          });
           applyLoadedJson(text);
         }
       };
       reader.readAsText(file);
       e.target.value = "";
     },
-    [applyLoadedJson, emit]
+    [applyLoadedJson, emit],
   );
 
   const handleDrop = useCallback(
@@ -229,13 +153,16 @@ export default function Home() {
       reader.onload = () => {
         const text = reader.result;
         if (typeof text === "string") {
-          emit("schema.loaded", { method: "drag_drop", schemaSizeBytes: new Blob([text]).size });
+          emit("schema.loaded", {
+            method: "drag_drop",
+            schemaSizeBytes: new Blob([text]).size,
+          });
           applyLoadedJson(text);
         }
       };
       reader.readAsText(file);
     },
-    [applyLoadedJson, emit]
+    [applyLoadedJson, emit],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -247,34 +174,23 @@ export default function Home() {
     <div className="validator-page flex flex-col h-screen min-h-0">
       <SiteHeader subtitle current="validator" />
 
-      <div className="provider-bar">
-        {RULE_SETS.map((r) => (
-          <button
-            key={r.ruleSetId}
-            type="button"
-            title={ruleSetTooltip(r)}
-            className={`provider-btn ${
-              selectedRuleSetId === r.ruleSetId ? "selected" : ""
-            }`}
-            onClick={() => handleRuleSetChange(r.ruleSetId)}
-          >
-            <ModelIcon provider={r.providerId} />
-            <span>{r.displayName}</span>
+      {/* Onboarding hint */}
+      {onboarding.visible && (
+        <div className="onboarding-hint">
+          <span>
+            This example schema has compatibility issues across providers. Edit it or paste your own.
+          </span>
+          <button type="button" onClick={onboarding.dismiss} aria-label="Dismiss">
+            &#x2715;
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
       <div className="flex flex-1 overflow-hidden min-h-0">
+        {/* Left pane: editor + toolbar */}
         <section className="editor-section">
           <div className="editor-header">
             <span className="editor-label">Schema Editor</span>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="upload-hint hover:text-accent hover:underline cursor-pointer"
-            >
-              Drop or upload file, paste or edit JSON
-            </button>
           </div>
           <div
             className="editor-container"
@@ -288,142 +204,50 @@ export default function Home() {
               className="hidden"
               onChange={handleFileChange}
             />
-            {suggestedSchema != null ? (
-              <>
-                <div className="flex-1 min-h-0 rounded-lg overflow-hidden flex flex-col border border-border bg-surface relative">
-                  <DiffEditor
-                    height="100%"
-                    language="json"
-                    original={normalizedDiffOriginal}
-                    modified={normalizedDiffModified!}
-                    theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
-                    options={{
-                      readOnly: true,
-                      renderSideBySide: true,
-                      enableSplitViewResizing: true,
-                      fixedOverflowWidgets: true,
-                    }}
-                  />
-                  <div className="absolute bottom-3 right-3 flex gap-2 z-10">
-                    <button
-                      type="button"
-                      className="px-4 py-2 rounded-md bg-accent text-surface font-medium shadow hover:opacity-90"
-                      onClick={handleAcceptSuggestion}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      type="button"
-                      className="px-4 py-2 rounded-md bg-secondary text-primary font-medium shadow hover:opacity-90"
-                      onClick={handleRejectSuggestion}
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-                {fixResult && (
-                  <div className="fix-summary mt-2 text-sm space-y-1 max-h-40 overflow-auto">
-                    {fixResult.appliedFixes.map((fix, i) => (
-                      <div key={i} className="flex gap-2 items-start">
-                        <span className={fix.infoLost ? "text-yellow-600" : "text-green-600"}>
-                          {fix.infoLost ? "~" : "+"}
-                        </span>
-                        <span className="text-primary">{fix.description}</span>
-                        {fix.infoLost && (
-                          <span className="text-secondary italic ml-1">— {fix.infoLost}</span>
-                        )}
-                      </div>
-                    ))}
-                    {fixResult.unresolvedErrors.map((err, i) => (
-                      <div key={`u${i}`} className="flex gap-2 items-start">
-                        <span className="text-red-600">!</span>
-                        <span className="text-primary">{err.message}</span>
-                        <span className="text-secondary italic ml-1">— {err.reason}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <SchemaEditor
-                  value={schema}
-                  onChange={setSchema}
-                  selectedRuleSet={selectedRuleSet}
-                  fillHeight
-                  onAuditEvent={emit}
-                />
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    className="validate-btn"
-                    onClick={handleValidate}
-                    disabled={loading}
-                  >
-                    {loading ? "Validating…" : "Server Validation"}
-                  </button>
-                  <button
-                    type="button"
-                    className="validate-btn"
-                    onClick={handleFix}
-                    disabled={loading}
-                  >
-                    Auto-fix
-                  </button>
-                </div>
-                {fixResult && fixResult.appliedFixes.length === 0 && fixResult.unresolvedErrors.length > 0 && (
-                  <div className="fix-summary mt-2 text-sm space-y-1 max-h-40 overflow-auto">
-                    {fixResult.unresolvedErrors.map((err, i) => (
-                      <div key={i} className="flex gap-2 items-start">
-                        <span className="text-red-600">!</span>
-                        <span className="text-primary">{err.message}</span>
-                        <span className="text-secondary italic ml-1">— {err.reason}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+            <SchemaEditor
+              value={schema}
+              onChange={handleSchemaChange}
+              markers={selectedMarkers}
+              markerLabel={selectedRuleSet?.displayName}
+              fillHeight
+              onEditorReady={handleEditorReady}
+            />
           </div>
+          <EditorToolbar
+            schema={schema}
+            onSchemaChange={handleSchemaChange}
+            fileInputRef={fileInputRef}
+          />
         </section>
 
-        <aside className="sidebar">
-          {selectedRuleSet ? (
-            <RightPane ruleSet={selectedRuleSet} />
-          ) : (
-            <div className="p-5 text-secondary text-sm">
-              Choose a rule set above.
-            </div>
-          )}
-        </aside>
+        {/* Right pane: compatibility dashboard */}
+        <CompatibilityDashboard
+          ruleSets={RULE_SETS}
+          validationResults={validationResults}
+          selectedRuleSetId={selectedRuleSetId}
+          onSelectRuleSet={handleRuleSetChange}
+          schema={schema}
+          onFixAll={handleFixAll}
+          onScrollToLine={handleScrollToLine}
+          fixResult={fixResult}
+        />
       </div>
 
+      {/* Error toast — only for real errors */}
       {error && (
         <div
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-error text-surface px-4 py-2 rounded-md shadow-lg text-sm z-50"
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-error text-surface px-4 py-2 rounded-md shadow-lg text-sm z-50 flex items-center gap-3"
           role="alert"
         >
-          {error}
-        </div>
-      )}
-
-      {results && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
-          <div className="validator-page bg-surface rounded-lg shadow-xl max-h-[90vh] overflow-auto w-full max-w-2xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-primary">
-                Validation results
-              </h2>
-              <button
-                type="button"
-                onClick={() => setResults(null)}
-                className="text-secondary hover:text-primary"
-              >
-                Close
-              </button>
-            </div>
-            <ValidationResults results={results} />
-          </div>
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="text-surface/80 hover:text-surface"
+            aria-label="Dismiss"
+          >
+            &#x2715;
+          </button>
         </div>
       )}
     </div>
