@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import type { SchemaMarker } from "~/lib/ruleSetValidator";
-import metaSchema from "~/data/json-schema-meta.json";
+import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
+import metaSchema from "@ssv/schemas/data/versionAggregatedJsonSchema.json";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 

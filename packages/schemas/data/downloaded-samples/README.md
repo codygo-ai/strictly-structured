@@ -1,6 +1,6 @@
 # Downloaded JSON Schema Samples (Structured Outputs)
 
-This directory holds **70 JSON schema samples per rule set** fetched from the [JSONSchemaBench](https://huggingface.co/datasets/epfl-dlab/JSONSchemaBench) dataset (EPFL Data Science Lab). Each file is a **schema** (describes data). They are intended as a basis for test cases for **meta-schema** validation (validating those schemas against our per–rule-set meta-schemas). See docs/VOCABULARY.md.
+This directory holds **70 JSON schema samples per rule set** fetched from the [JSONSchemaBench](https://huggingface.co/datasets/epfl-dlab/JSONSchemaBench) dataset (EPFL Data Science Lab). Each file is a **schema** (describes data). They are intended as a basis for test cases for rule set validation (validating those schemas against provider rules via `ruleSetValidator`). See docs/vocabulary.md.
 
 ## Source
 
@@ -31,6 +31,6 @@ Requires network access to `datasets-server.huggingface.co`.
 
 ## Using as test cases
 
-1. Validate each sample schema against the per–rule-set meta-schema (e.g. via `groupMetaSchema.validation.test.ts` or CLI).
+1. Validate each sample schema against provider rules via `validateSchemaForRuleSet` (see `ruleSetValidator.test.ts`).
 2. Set `_meta.expected` to `"valid"` or `"invalid"` and optionally `expectErrorPattern` for invalid cases.
-3. Optionally copy or move selected files into `group-meta-schema-tests/{ruleSetId}/` and wire them into `getSamples()` / `buildSamples()` as needed.
+3. Copy or move selected files into `validationSamples/{ruleSetId}/` to include them in the test suite.

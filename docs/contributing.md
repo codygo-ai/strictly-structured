@@ -37,4 +37,4 @@ This project uses pnpm workspaces and Turborepo. See [architecture.md](architect
 
 - Shared config lives in `devops/`
 - Application code lives in `packages/`
-- The canonical data source is `packages/schemas/data/schema_rule_sets.json`
+- The canonical data source is `packages/schemas/data/schemaRuleSets.json`

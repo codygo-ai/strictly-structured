@@ -1,8 +1,8 @@
 {
   "_meta": {
     "ruleSetId": "gemini-2-5",
-    "name": "array root with items object",
-    "description": "valid: array root with items object",
+    "name": "array of objects",
+    "description": "valid: array of objects",
     "expectation": "valid",
     "expected": "valid"
   },
@@ -10,11 +10,10 @@
   "items": {
     "type": "object",
     "properties": {
-      "k": {
-        "type": "string"
+      "id": {
+        "type": "integer"
       }
     },
     "additionalProperties": false
-  },
-  "additionalProperties": false
+  }
 }

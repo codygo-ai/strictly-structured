@@ -7,11 +7,11 @@ import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
 
 import { EditorInputHint } from "~/components/EditorInputHint";
 import { EditorBottomBar } from "~/components/EditorBottomBar";
-import type { SchemaRuleSet, SchemaRuleSetsData } from "~/types/schemaRuleSets";
-import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
+import type { SchemaRuleSet, SchemaRuleSetsData } from "@ssv/schemas/types";
+import ruleSetsDataJson from "@ssv/schemas/data/schemaRuleSets.json";
 import { useAudit } from "~/lib/audit";
 import { useAllRuleSetsValidation } from "~/hooks/useAllRuleSetsValidation";
-import type { FixResult } from "~/lib/schemaFixer";
+import type { FixResult } from "@ssv/schemas/ruleSetFixer";
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];

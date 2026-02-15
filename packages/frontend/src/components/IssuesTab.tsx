@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
-import type { SchemaMarker } from "~/lib/ruleSetValidator";
-import { fixSchemaForRuleSet, type FixResult } from "~/lib/schemaFixer";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
+import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
+import { fixSchemaForRuleSet, type FixResult } from "@ssv/schemas/ruleSetFixer";
 import { SeverityIcon } from "~/components/SeverityIcon";
 import { Button } from "~/components/ui";
 import { CopyIcon } from "~/components/icons/CopyIcon";

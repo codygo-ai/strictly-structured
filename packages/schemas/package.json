@@ -2,27 +2,29 @@
   "name": "@ssv/schemas",
   "version": "0.0.0",
   "private": true,
-  "description": "Canonical schema rule sets data and CLI to generate artifacts for consumers",
+  "description": "Canonical schema rule sets, validation, and fixer — single source of truth",
   "type": "module",
   "exports": {
-    "./compat-types": "./src/compat-types.ts",
-    "./data/rule-sets": "./data/schema_rule_sets.json"
+    "./types": "./src/types.ts",
+    "./ruleSetValidator": "./src/ruleSetValidator.ts",
+    "./ruleSetFixer": "./src/ruleSetFixer.ts",
+    "./data/schemaRuleSets.json": "./data/schemaRuleSets.json",
+    "./data/versionAggregatedJsonSchema.json": "./data/versionAggregatedJsonSchema.json"
   },
   "scripts": {
-    "generate": "tsx src/cli.ts",
     "generate:samples": "tsx src/samples-generate.ts",
-    "emit-test-files": "tsx scripts/emit-group-meta-schema-test-files.ts",
     "download-samples": "tsx scripts/download-json-schema-samples.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run"
   },
+  "dependencies": {
+    "json-source-map": "^0.6.1"
+  },
   "devDependencies": {
     "@ssv/eslint-config": "workspace:*",
     "@ssv/tsconfig": "workspace:*",
     "@types/node": "^22.15.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
     "eslint": "^9.39.1",
     "tsx": "^4.19.0",
     "typescript": "^5.7.2",

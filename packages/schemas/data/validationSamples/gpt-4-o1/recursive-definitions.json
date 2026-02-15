@@ -27,6 +27,10 @@
           "$ref": "#/definitions/Node"
         }
       },
+      "required": [
+        "value",
+        "child"
+      ],
       "additionalProperties": false
     }
   }

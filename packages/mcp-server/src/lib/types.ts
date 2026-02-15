@@ -25,4 +25,4 @@ export interface FixResult {
   remainingIssues: string[];
 }
 
-export type ProviderId = "openai" | "anthropic" | "gemini";
+export type { ProviderId } from "@ssv/schemas/types";

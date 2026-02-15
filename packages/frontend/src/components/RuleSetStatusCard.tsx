@@ -1,6 +1,6 @@
 "use client";
 
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
 import { ProviderIcon } from "~/components/ui";
 
 interface RuleSetStatusCardProps {

@@ -1,53 +1,16 @@
-import ruleSetsData from "@ssv/schemas/data/rule-sets" with { type: "json" };
-import type { ProviderId } from "./types";
+import ruleSetsData from "@ssv/schemas/data/schemaRuleSets.json" with { type: "json" };
+import type { SchemaRuleSet, ProviderId } from "@ssv/schemas/types";
 
-export interface SupportedType {
-  type: string;
-  supportedKeywords: string[];
-  unsupportedKeywords?: string[];
-  notes?: string;
-}
+export type { SchemaRuleSet, ProviderId };
 
-export interface SizeLimits {
-  maxProperties: number | null;
-  maxNestingDepth: number | null;
-  maxStringLengthNamesEnums?: number | null;
-  maxEnumValues?: number | null;
-}
-
-export interface SchemaRuleSet {
-  ruleSetId: string;
-  displayName: string;
-  provider: string;
-  providerId: ProviderId;
-  docUrl: string;
-  description: string;
-  models: string[];
-  modelNotes?: string;
-
-  supportedTypes: SupportedType[];
-  stringFormats?: string[];
-  composition?: { supported: string[]; unsupported: string[]; notes?: string };
-  sizeLimits: SizeLimits;
-
-  rootType: string | string[];
-  rootAnyOfAllowed: boolean;
-  allFieldsRequired: boolean;
-  additionalPropertiesMustBeFalse: boolean;
-  additionalPropertiesFalseRecommended?: boolean;
-
-  requirements: Array<{ rule: string; detail: string; severity: string }>;
-  tips: string[];
-}
-
-export interface RuleSetsMeta {
+interface RuleSetsMeta {
   version: string;
   lastUpdated: string;
   description: string;
   sources: Record<string, string>;
 }
 
-const data = ruleSetsData as { meta: RuleSetsMeta; ruleSets: SchemaRuleSet[] };
+const data = ruleSetsData as unknown as { meta: RuleSetsMeta; ruleSets: SchemaRuleSet[] };
 
 export function getRuleSets(): SchemaRuleSet[] {
   return data.ruleSets;

@@ -18,7 +18,7 @@ Strictly Structured is a monorepo that validates and auto-fixes JSON schemas for
 ├── packages/
 │   ├── frontend        # Next.js static export — validator UI
 │   ├── backend         # Firebase Cloud Functions — /api/validate, /api/fix
-│   ├── schemas         # Canonical schema_rule_sets.json + CLI for generating types and meta-schemas
+│   ├── schemas         # Canonical schemaRuleSets.json, validator, fixer — single source of truth
 │   ├── mcp-server      # MCP server exposing validate_schema, fix_schema, list_groups
 │   ├── skill           # Claude Code / Cursor skill plugin
 │   └── audit           # Shared test data and utilities for validating rule sets
@@ -32,14 +32,12 @@ Strictly Structured is a monorepo that validates and auto-fixes JSON schemas for
 
 ### Single Source of Truth
 
-`packages/schemas/data/schema_rule_sets.json` is the canonical dataset. It defines:
+`packages/schemas/data/schemaRuleSets.json` is the canonical dataset. It defines:
 - Rule sets that group providers with identical schema support
 - Per-rule-set constraints (supported/unsupported keywords, limits, behaviors)
 - Metadata (version, lastUpdated, comparison columns, legend)
 
-The `schemas` package CLI generates from this file:
-- TypeScript types consumed by frontend and other packages
-- Per-rule-set meta-schemas for external validators
+The `@ssv/schemas` package also exports the validation engine (`ruleSetValidator`), auto-fix engine (`ruleSetFixer`), TypeScript types, and an aggregated meta-schema — all imported directly by consumers.
 
 ### Client-Side Validation Pipeline
 

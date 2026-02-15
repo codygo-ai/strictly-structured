@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
 import {
   validateSchemaForRuleSet,
   type SchemaMarker,
-} from "~/lib/ruleSetValidator";
+} from "@ssv/schemas/ruleSetValidator";
 
 export interface RuleSetValidationSummary {
   errorCount: number;

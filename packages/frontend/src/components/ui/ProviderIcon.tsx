@@ -1,5 +1,5 @@
 import { OpenAIIcon, ClaudeIcon, GeminiIcon } from "~/components/icons";
-import type { ProviderId } from "~/types/schemaRuleSets";
+import type { ProviderId } from "@ssv/schemas/types";
 
 const PROVIDER_COLORS: Record<ProviderId, string> = {
   openai: "var(--ds-primary)",
@@ -11,7 +11,7 @@ interface ProviderIconProps {
   provider: ProviderId;
   size?: number;
   className?: string;
-  /** Apply brand color (default true). Set false to inherit parent color. */
+  /** Apply brand color. Set true to use provider color, false to inherit parent color. */
   colored?: boolean;
 }
 

@@ -1,4 +1,4 @@
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "./types.js";
 
 // ── Public types ──────────────────────────────────────────────────────
 

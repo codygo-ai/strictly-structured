@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef } from "react";
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
 import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation";
-import type { FixResult } from "~/lib/schemaFixer";
+import type { FixResult } from "@ssv/schemas/ruleSetFixer";
 import { RuleSetStatusCard } from "~/components/RuleSetStatusCard";
 import { IssuesTab } from "~/components/IssuesTab";
 import { ServerTestTab } from "~/components/ServerTestTab";

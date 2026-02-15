@@ -13,8 +13,7 @@
       "items": {
         "type": "string"
       },
-      "minItems": 2,
-      "additionalProperties": false
+      "minItems": 2
     }
   },
   "additionalProperties": false

@@ -1,24 +1,26 @@
 {
   "_meta": {
     "ruleSetId": "gemini-2-5",
-    "name": "tuple via items array",
-    "description": "valid: tuple via items array",
+    "name": "tuple of three via items",
+    "description": "valid: tuple of three via items",
     "expectation": "valid",
     "expected": "valid"
   },
   "type": "object",
   "properties": {
-    "tuple": {
+    "t": {
       "type": "array",
       "items": [
         {
           "type": "string"
         },
         {
-          "type": "integer"
+          "type": "number"
+        },
+        {
+          "type": "boolean"
         }
-      ],
-      "additionalProperties": false
+      ]
     }
   },
   "additionalProperties": false
