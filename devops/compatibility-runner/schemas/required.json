@@ -1,9 +1,0 @@
-{
-  "_meta": { "features": ["properties", "required"] },
-  "type": "object",
-  "properties": {
-    "a": { "type": "string" },
-    "b": { "type": "number" }
-  },
-  "required": ["a"]
-}

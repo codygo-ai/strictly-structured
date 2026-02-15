@@ -1,7 +1,0 @@
-{
-  "_meta": { "features": ["patternProperties"] },
-  "type": "object",
-  "patternProperties": {
-    "^x_": { "type": "string" }
-  }
-}

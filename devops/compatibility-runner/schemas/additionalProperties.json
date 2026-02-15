@@ -1,8 +1,0 @@
-{
-  "_meta": { "features": ["additionalProperties"] },
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  },
-  "additionalProperties": false
-}

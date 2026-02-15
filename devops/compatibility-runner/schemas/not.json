@@ -1,9 +1,0 @@
-{
-  "_meta": { "features": ["not"] },
-  "type": "object",
-  "properties": {
-    "value": {
-      "not": { "type": "null" }
-    }
-  }
-}
