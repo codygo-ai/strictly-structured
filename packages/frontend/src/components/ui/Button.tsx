@@ -22,6 +22,7 @@ export function Button({
           "gap-2 px-4 py-2 text-[0.8rem] font-semibold text-white bg-accent border-none rounded-md",
           "[box-shadow:var(--ds-shadow-button)]",
           "hover:bg-accent-hover hover:[box-shadow:var(--ds-shadow-button-hover)]",
+          "disabled:bg-disabled disabled:cursor-not-allowed disabled:[box-shadow:var(--ds-shadow-button-disabled)] disabled:hover:bg-disabled disabled:hover:[box-shadow:var(--ds-shadow-button-disabled)]",
           "transition-[background-color,box-shadow] duration-200",
         ],
         variant === "toolbar" && [
