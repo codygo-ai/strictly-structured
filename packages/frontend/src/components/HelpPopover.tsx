@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Tooltip } from "~/components/Tooltip";
 
 export function HelpPopover() {
   const [open, setOpen] = useState(false);
@@ -21,15 +22,17 @@ export function HelpPopover() {
 
   return (
     <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-border text-muted hover:text-primary hover:border-accent text-xs font-medium transition-colors cursor-pointer"
-        aria-label="How to use"
-        aria-expanded={open}
-      >
-        ?
-      </button>
+      <Tooltip content="How to use" position="bottom">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:text-primary"
+          aria-label="How to use"
+          aria-expanded={open}
+        >
+          ?
+        </button>
+      </Tooltip>
       {open && (
         <div className="help-popover">
           <p className="text-xs font-semibold text-primary mb-2.5 pb-1.5 border-b border-border">How it works</p>

@@ -13,6 +13,7 @@ export interface RuleSetValidationSummary {
   infoCount: number;
   markers: SchemaMarker[];
   isValidJson: boolean;
+  isValidJsonSchema: boolean;
 }
 
 const DEBOUNCE_MS = 200;
@@ -20,6 +21,7 @@ const DEBOUNCE_MS = 200;
 export function useAllRuleSetsValidation(
   schema: string,
   ruleSets: SchemaRuleSet[],
+  isValidJsonSchema: boolean,
 ): Map<string, RuleSetValidationSummary> {
   const [results, setResults] = useState<Map<string, RuleSetValidationSummary>>(
     () => new Map(),
@@ -40,13 +42,13 @@ export function useAllRuleSetsValidation(
       }
 
       for (const rs of ruleSets) {
-        const markers = validateSchemaForRuleSet(schema, rs);
+        const markers = isValidJsonSchema ? validateSchemaForRuleSet(schema, rs) : [];
         const errorCount = markers.filter((m) => m.severity === "error").length;
         const warningCount = markers.filter(
           (m) => m.severity === "warning",
         ).length;
         const infoCount = markers.length - errorCount - warningCount;
-        next.set(rs.ruleSetId, { errorCount, warningCount, infoCount, markers, isValidJson });
+        next.set(rs.ruleSetId, { errorCount, warningCount, infoCount, markers, isValidJson, isValidJsonSchema });
       }
 
       setResults(next);
@@ -55,7 +57,7 @@ export function useAllRuleSetsValidation(
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [schema, ruleSets]);
+  }, [schema, ruleSets, isValidJsonSchema]);
 
   return results;
 }

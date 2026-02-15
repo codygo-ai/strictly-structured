@@ -25,6 +25,7 @@ interface RuleSetStatusCardProps {
   errorCount: number;
   warningCount: number;
   isValidJson: boolean;
+  isValidJsonSchema: boolean;
   selected: boolean;
   onClick: () => void;
 }
@@ -34,6 +35,7 @@ export function RuleSetStatusCard({
   errorCount,
   warningCount,
   isValidJson,
+  isValidJsonSchema,
   selected,
   onClick,
 }: RuleSetStatusCardProps) {
@@ -45,6 +47,9 @@ export function RuleSetStatusCard({
 
   if (!isValidJson) {
     statusText = "Invalid JSON";
+    statusClass = "neutral";
+  } else if (!isValidJsonSchema) {
+    statusText = "Not a Schema";
     statusClass = "neutral";
   } else if (hasErrors) {
     statusText = `${errorCount} issue${errorCount !== 1 ? "s" : ""}`;
@@ -68,10 +73,10 @@ export function RuleSetStatusCard({
         <span>{ruleSet.displayName}</span>
       </div>
       <div className={`status-card-status ${statusClass}`}>
-        {!isValidJson && <span>&#x2014; </span>}
-        {isValidJson && hasErrors && <span>&#x2717; </span>}
-        {isValidJson && !hasErrors && hasWarnings && <span>&#x26A0; </span>}
-        {isValidJson && !hasErrors && !hasWarnings && <span>&#x2713; </span>}
+        {(!isValidJson || !isValidJsonSchema) && <span>&#x2014; </span>}
+        {isValidJsonSchema && hasErrors && <span>&#x2717; </span>}
+        {isValidJsonSchema && !hasErrors && hasWarnings && <span>&#x26A0; </span>}
+        {isValidJsonSchema && !hasErrors && !hasWarnings && <span>&#x2713; </span>}
         {statusText}
       </div>
     </button>

@@ -7,6 +7,8 @@ import {
   type FeedbackType,
   type FeedbackPayload,
 } from "./types";
+import { useAuth } from "~/lib/useAuth";
+import { Tooltip } from "~/components/Tooltip";
 
 const GITHUB_ISSUES_URL =
   "https://github.com/codygo-ai/strictly-structured/issues";
@@ -15,6 +17,7 @@ const API_URL = "/api/feedback";
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function FeedbackWidget() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<FeedbackType>("general");
   const [description, setDescription] = useState("");
@@ -64,7 +67,7 @@ export function FeedbackWidget() {
     const payload: FeedbackPayload = {
       type,
       description: description.trim(),
-      email: email.trim() || undefined,
+      email: (user?.email ?? email.trim()) || undefined,
       website: honeypot || undefined,
       page: window.location.pathname,
     };
@@ -86,7 +89,7 @@ export function FeedbackWidget() {
       setFormState("error");
       setErrorMessage((err as Error).message);
     }
-  }, [type, description, email, honeypot]);
+  }, [type, description, email, honeypot, user?.email]);
 
   function handleClose() {
     setOpen(false);
@@ -103,23 +106,24 @@ export function FeedbackWidget() {
 
   return (
     <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => {
-          if (open) {
-            handleClose();
-          } else {
-            setOpen(true);
-          }
-        }}
-        className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-hover hover:text-primary"
-        title="Send feedback"
-        aria-expanded={open}
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-      </button>
+      <Tooltip content="Feedback" position="bottom">
+        <button
+          type="button"
+          onClick={() => {
+            if (open) {
+              handleClose();
+            } else {
+              setOpen(true);
+            }
+          }}
+          className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:text-primary"
+          aria-expanded={open}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+        </button>
+      </Tooltip>
       {open && (
         <div className="feedback-popover feedback-slide-in">
           {/* Header */}
@@ -184,14 +188,16 @@ export function FeedbackWidget() {
                 className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-primary placeholder:text-muted focus:border-accent focus:outline-none resize-none"
               />
 
-              {/* Email (optional) */}
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email (optional, for follow-up)"
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-primary placeholder:text-muted focus:border-accent focus:outline-none"
-              />
+              {/* Email (optional, hidden when logged in) */}
+              {!user && (
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email (optional, for follow-up)"
+                  className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-primary placeholder:text-muted focus:border-accent focus:outline-none"
+                />
+              )}
 
               {/* Honeypot */}
               <input

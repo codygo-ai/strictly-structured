@@ -10,9 +10,10 @@ import { useAudit, hashSchema } from "~/lib/audit";
 interface ServerTestTabProps {
   schema: string;
   ruleSet: SchemaRuleSet;
+  isValidJsonSchema: boolean;
 }
 
-export function ServerTestTab({ schema, ruleSet }: ServerTestTabProps) {
+export function ServerTestTab({ schema, ruleSet, isValidJsonSchema }: ServerTestTabProps) {
   const { ensureAuth } = useAuth();
   const { emit } = useAudit();
   const [results, setResults] = useState<ValidationResult[] | null>(null);
@@ -75,7 +76,7 @@ export function ServerTestTab({ schema, ruleSet }: ServerTestTabProps) {
         type="button"
         className="primary-btn"
         onClick={handleTest}
-        disabled={loading}
+        disabled={loading || !isValidJsonSchema}
       >
         {loading ? "Testing\u2026" : "Run server test"}
       </button>

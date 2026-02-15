@@ -73,33 +73,6 @@ const COMPOSITION_KEYWORDS = new Set([
 /** Structural keywords valid on any node regardless of type or provider. */
 const STRUCTURAL_KEYWORDS = new Set(["type"]);
 
-/**
- * Keywords whose presence at the root indicates the object is a JSON Schema.
- * If none are found, the input is plain JSON — not a schema.
- */
-const JSON_SCHEMA_INDICATORS = new Set([
-  "type",
-  "properties",
-  "items",
-  "enum",
-  "const",
-  "anyOf",
-  "allOf",
-  "oneOf",
-  "not",
-  "$ref",
-  "$defs",
-  "$schema",
-  "required",
-  "additionalProperties",
-  "if",
-  "then",
-  "else",
-  "prefixItems",
-  "dependentRequired",
-  "dependentSchemas",
-]);
-
 function buildSupportedKeywordsByType(
   supportedTypes: SchemaRuleSet["supportedTypes"]
 ): Map<string, Set<string>> {
@@ -153,22 +126,6 @@ export function validateSchemaForRuleSet(
 
   const { data, pointers } = parsed;
   if (data === null || typeof data !== "object" || Array.isArray(data)) return [];
-
-  const root = data as Record<string, unknown>;
-  const hasSchemaKeyword = Object.keys(root).some((k) =>
-    JSON_SCHEMA_INDICATORS.has(k),
-  );
-  if (!hasSchemaKeyword) {
-    return [
-      pointerToMarker(
-        pointers,
-        "",
-        "",
-        "This doesn't appear to be a JSON Schema. Expected keywords like \"type\", \"properties\", \"anyOf\", etc.",
-        "error",
-      ),
-    ];
-  }
 
   const rules: ValidatorRules = {
     rootType: ruleSet.rootType,

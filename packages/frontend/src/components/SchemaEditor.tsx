@@ -23,6 +23,7 @@ interface SchemaEditorProps {
   markerLabel?: string;
   fillHeight?: boolean;
   onEditorReady?: (api: SchemaEditorApi) => void;
+  onSchemaValidation?: (hasErrors: boolean) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,6 +45,7 @@ export function SchemaEditor({
   markerLabel = "provider",
   fillHeight = false,
   onEditorReady,
+  onSchemaValidation,
 }: SchemaEditorProps) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -98,6 +100,46 @@ export function SchemaEditor({
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Listen to Monaco's built-in JSON/meta-schema diagnostics
+  useEffect(() => {
+    if (!mounted) return;
+    const monaco = monacoRef.current;
+    const editor = editorRef.current;
+    if (!monaco || !editor) return;
+
+    const model = editor.getModel();
+    if (!model) return;
+
+    const disposable = monaco.editor.onDidChangeMarkers((uris: unknown[]) => {
+      const modelUri = model.uri.toString();
+      const affected = (uris as { toString(): string }[]).some(
+        (u) => u.toString() === modelUri,
+      );
+      if (!affected) return;
+
+      const allMarkers = monaco.editor.getModelMarkers({ resource: model.uri });
+      const builtinErrors = allMarkers.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (m: any) =>
+          m.owner !== CUSTOM_MARKER_OWNER &&
+          m.severity === monaco.MarkerSeverity.Error,
+      );
+      onSchemaValidation?.(builtinErrors.length > 0);
+    });
+
+    // Fire once immediately so the initial state is correct
+    const allMarkers = monaco.editor.getModelMarkers({ resource: model.uri });
+    const builtinErrors = allMarkers.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (m: any) =>
+        m.owner !== CUSTOM_MARKER_OWNER &&
+        m.severity === monaco.MarkerSeverity.Error,
+    );
+    onSchemaValidation?.(builtinErrors.length > 0);
+
+    return () => disposable.dispose();
+  }, [mounted, onSchemaValidation]);
 
   // Apply markers from parent
   useEffect(() => {

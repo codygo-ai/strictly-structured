@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
 import { CopyIcon } from "~/components/icons/CopyIcon";
 import { DownloadIcon } from "~/components/icons/DownloadIcon";
+import { Tooltip } from "~/components/Tooltip";
 
 interface EditorInputHintProps {
   schema: string;
@@ -96,24 +97,26 @@ export function EditorInputHint({
           </div>
         )}
       </span>
-      <button
-        type="button"
-        className="text-muted hover:text-primary cursor-pointer transition-colors"
-        onClick={handleCopy}
-        aria-label="Copy schema"
-        title="Copy schema"
-      >
-        {copied ? "✓" : <CopyIcon width={14} height={14} />}
-      </button>
-      <button
-        type="button"
-        className="text-muted hover:text-primary cursor-pointer transition-colors"
-        onClick={handleDownload}
-        aria-label="Download JSON"
-        title="Download JSON"
-      >
-        <DownloadIcon width={14} height={14} />
-      </button>
+      <Tooltip content="Copy schema">
+        <button
+          type="button"
+          className="text-muted hover:text-primary cursor-pointer transition-colors"
+          onClick={handleCopy}
+          aria-label="Copy schema"
+        >
+          {copied ? "✓" : <CopyIcon width={14} height={14} />}
+        </button>
+      </Tooltip>
+      <Tooltip content="Download JSON">
+        <button
+          type="button"
+          className="text-muted hover:text-primary cursor-pointer transition-colors"
+          onClick={handleDownload}
+          aria-label="Download JSON"
+        >
+          <DownloadIcon width={14} height={14} />
+        </button>
+      </Tooltip>
     </span>
   );
 }

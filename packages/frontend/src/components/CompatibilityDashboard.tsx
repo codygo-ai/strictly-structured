@@ -60,6 +60,7 @@ export function CompatibilityDashboard({
               errorCount={summary?.errorCount ?? 0}
               warningCount={summary?.warningCount ?? 0}
               isValidJson={summary?.isValidJson ?? true}
+              isValidJsonSchema={summary?.isValidJsonSchema ?? true}
               selected={rs.ruleSetId === selectedRuleSetId}
               onClick={() => onSelectRuleSet(rs.ruleSetId)}
             />
@@ -95,13 +96,18 @@ export function CompatibilityDashboard({
                 markers={selectedSummary?.markers ?? []}
                 ruleSet={selectedRuleSet}
                 schema={schema}
+                isValidJsonSchema={selectedSummary?.isValidJsonSchema ?? true}
                 onFixAll={onFixAll}
                 onScrollToLine={onScrollToLine}
                 fixResult={fixResult}
               />
             )}
             {activeTab === "server-test" && (
-              <ServerTestTab schema={schema} ruleSet={selectedRuleSet} />
+              <ServerTestTab
+                schema={schema}
+                ruleSet={selectedRuleSet}
+                isValidJsonSchema={selectedSummary?.isValidJsonSchema ?? true}
+              />
             )}
             {activeTab === "reference" && (
               <ReferenceTab ruleSet={selectedRuleSet} />

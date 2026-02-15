@@ -12,6 +12,7 @@ interface IssuesTabProps {
   markers: SchemaMarker[];
   ruleSet: SchemaRuleSet;
   schema: string;
+  isValidJsonSchema: boolean;
   onFixAll: (fixedSchema: string, fixResult: FixResult) => void;
   onScrollToLine: (line: number) => void;
   fixResult: FixResult | null;
@@ -23,6 +24,7 @@ export function IssuesTab({
   markers,
   ruleSet,
   schema,
+  isValidJsonSchema,
   onFixAll,
   onScrollToLine,
   fixResult,
@@ -199,7 +201,7 @@ export function IssuesTab({
         </div>
       ))}
 
-      {fixableCount > 0 && (
+      {isValidJsonSchema && fixableCount > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
           <button
             type="button"

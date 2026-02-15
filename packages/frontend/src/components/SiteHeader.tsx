@@ -2,6 +2,7 @@ import Link from "next/link";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
 import { BetaBadge } from "~/components/BetaBadge";
 import { FeedbackWidget } from "~/components/FeedbackWidget";
+import { HelpPopover } from "~/components/HelpPopover";
 import { ThemeToggle } from "~/components/ThemeToggle";
 
 export function SiteHeader({
@@ -64,11 +65,12 @@ export function SiteHeader({
             </Link>
           )}
         </nav>
-        <div className="flex items-center gap-0.5 ml-1 pl-3 border-l border-border">
+        <div className="flex items-center gap-1 ml-1 pl-3 border-l border-border">
+          <HelpPopover />
           <FeedbackWidget />
           <ThemeToggle />
+          <UserAvatarMenu />
         </div>
-        <UserAvatarMenu />
       </div>
     </header>
   );

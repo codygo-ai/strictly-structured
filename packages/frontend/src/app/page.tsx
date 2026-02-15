@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
-import { HelpPopover } from "~/components/HelpPopover";
+
 import { EditorInputHint } from "~/components/EditorInputHint";
 import type { SchemaRuleSet, SchemaRuleSetsData } from "~/types/schemaRuleSets";
 import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
@@ -64,11 +64,12 @@ function HomeContent() {
     return RULE_SETS[0]?.ruleSetId ?? "";
   });
   const [fixResult, setFixResult] = useState<FixResult | null>(null);
+  const [hasMonacoErrors, setHasMonacoErrors] = useState(false);
   const editorApiRef = useRef<SchemaEditorApi | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onboarding = useOnboardingHint();
 
-  const validationResults = useAllRuleSetsValidation(schema, RULE_SETS);
+  const validationResults = useAllRuleSetsValidation(schema, RULE_SETS, !hasMonacoErrors);
 
   const selectedRuleSet = useMemo(
     () => RULE_SETS.find((r) => r.ruleSetId === selectedRuleSetId) ?? null,
@@ -195,10 +196,7 @@ function HomeContent() {
         {/* Left pane: editor + toolbar */}
         <section className="editor-section">
           <div className="editor-header">
-            <div className="flex items-center gap-1.5">
-              <span className="editor-label">Schema Editor</span>
-              <HelpPopover />
-            </div>
+            <span className="editor-label">Schema Editor</span>
             <EditorInputHint
               schema={schema}
               onSchemaChange={handleSchemaChange}
@@ -224,6 +222,7 @@ function HomeContent() {
               markerLabel={selectedRuleSet?.displayName}
               fillHeight
               onEditorReady={handleEditorReady}
+              onSchemaValidation={setHasMonacoErrors}
             />
           </div>
         </section>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "~/lib/useAuth";
+import { Tooltip } from "~/components/Tooltip";
 
 function getInitials(displayName: string | null, email: string | null): string {
   if (displayName?.trim()) {
@@ -18,7 +19,7 @@ function getInitials(displayName: string | null, email: string | null): string {
 }
 
 export function UserAvatarMenu() {
-  const { user, signOut } = useAuth();
+  const { user, signIn, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -34,20 +35,37 @@ export function UserAvatarMenu() {
     }
   }, [open]);
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <Tooltip content="Log in" position="bottom">
+        <button
+          type="button"
+          onClick={() => void signIn()}
+          className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:text-primary"
+          aria-label="Log in"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </button>
+      </Tooltip>
+    );
+  }
 
   const initials = getInitials(user.displayName ?? null, user.email ?? null);
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-(--ds-border) bg-(--ds-surface-subtle) text-sm font-medium text-primary ring-offset-(--ds-surface) focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
-        aria-expanded={open}
-        aria-haspopup="true"
-        aria-label="User menu"
-      >
+      <Tooltip content="Account" position="bottom">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-(--ds-border) bg-(--ds-surface-subtle) text-sm font-medium text-primary ring-offset-(--ds-surface) focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          aria-expanded={open}
+          aria-haspopup="true"
+          aria-label="User menu"
+        >
         {user.photoURL ? (
           <img
             src={user.photoURL}
@@ -59,6 +77,7 @@ export function UserAvatarMenu() {
           <span className="text-primary">{initials}</span>
         )}
       </button>
+      </Tooltip>
       {open && (
         <div
           className="absolute right-0 top-full z-50 mt-1 min-w-48 max-w-[18rem] rounded-md border border-(--ds-border) bg-(--ds-surface) py-1 shadow-lg"
