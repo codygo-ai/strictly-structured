@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type {
   SchemaRuleSet,
   SchemaRuleSetsMeta,
@@ -204,16 +205,24 @@ export function RuleSetCard({
         </div>
       </div>
 
-      <div className="mt-4 text-[10px] text-muted text-right">
-        Source:{" "}
-        <a
-          href={ruleSet.docUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-secondary hover:underline"
+      <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+        <div className="text-[10px] text-muted">
+          Source:{" "}
+          <a
+            href={ruleSet.docUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-secondary hover:underline"
+          >
+            {ruleSet.docUrl.replace(/^https?:\/\//, "")}
+          </a>
+        </div>
+        <Link
+          href={`/?ruleSet=${ruleSet.ruleSetId}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-accent hover:bg-accent-hover rounded-md transition-colors"
         >
-          {ruleSet.docUrl.replace(/^https?:\/\//, "")}
-        </a>
+          Try in validator
+        </Link>
       </div>
     </div>
   );
