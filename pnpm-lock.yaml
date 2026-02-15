@@ -36,31 +36,6 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
-  devops/compatibility-runner:
-    dependencies:
-      '@anthropic-ai/sdk':
-        specifier: ^0.32.1
-        version: 0.32.1(encoding@0.1.13)
-      '@google/generative-ai':
-        specifier: ^0.21.0
-        version: 0.21.0
-      openai:
-        specifier: ^4.73.0
-        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@3.25.76)
-    devDependencies:
-      '@ssv/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@types/node':
-        specifier: ^22.15.0
-        version: 22.19.11
-      tsx:
-        specifier: ^4.19.0
-        version: 4.21.0
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-
   devops/eslint-config:
     devDependencies:
       '@eslint/js':
@@ -132,6 +107,43 @@ importers:
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
+
+  packages/codegen:
+    dependencies:
+      json-schema-to-zod:
+        specifier: ^2.7.0
+        version: 2.7.0
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+      zod-to-json-schema:
+        specifier: ^3.24.0
+        version: 3.25.1(zod@3.25.76)
+    devDependencies:
+      '@ssv/eslint-config':
+        specifier: workspace:*
+        version: link:../../devops/eslint-config
+      '@ssv/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      '@ssv/tsconfig':
+        specifier: workspace:*
+        version: link:../../devops/tsconfig
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/frontend:
     dependencies:
@@ -211,6 +223,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.0
         version: 1.26.0(zod@3.25.76)
+      '@ssv/codegen':
+        specifier: workspace:*
+        version: link:../codegen
       json-source-map:
         specifier: ^0.6.1
         version: 0.6.1
@@ -3760,6 +3775,10 @@ packages:
   json-schema-to-ts@3.1.1:
     resolution: {integrity: sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==}
     engines: {node: '>=16'}
+
+  json-schema-to-zod@2.7.0:
+    resolution: {integrity: sha512-eW59l3NQ6sa3HcB+Ahf7pP6iGU7MY4we5JsPqXQ2ZcIPF8QxSg/lkY8lN0Js/AG0NjMbk+nZGUfHlceiHF+bwQ==}
+    hasBin: true
 
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
@@ -9846,6 +9865,8 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.6
       ts-algebra: 2.0.0
+
+  json-schema-to-zod@2.7.0: {}
 
   json-schema-traverse@0.4.1: {}
 
