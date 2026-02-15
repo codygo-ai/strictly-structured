@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import type { SchemaRuleSet } from "@ssv/schemas/types";
 import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
@@ -81,6 +81,12 @@ export function CompatibilityDashboard({
     const currentWidth = sidebar.getBoundingClientRect().width;
     const delta = e.key === "ArrowLeft" ? -KEYBOARD_RESIZE_STEP : KEYBOARD_RESIZE_STEP;
     setWidth(Math.max(MIN_SIDEBAR_WIDTH, currentWidth + delta));
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => setWidth(null);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   const selectedRuleSet = useMemo(
