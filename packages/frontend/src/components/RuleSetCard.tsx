@@ -4,58 +4,10 @@ import Link from "next/link";
 import type {
   SchemaRuleSet,
   SchemaRuleSetsMeta,
-  SizeLimits,
 } from "~/types/schemaRuleSets";
-
-function SeverityIcon({
-  severity,
-}: {
-  severity: "error" | "warning" | "info";
-}) {
-  if (severity === "error")
-    return <span className="text-[13px] font-bold text-error">✕</span>;
-  if (severity === "warning")
-    return <span className="text-[13px] font-bold text-warning">⚠</span>;
-  return <span className="text-[13px] font-bold text-accent">ℹ</span>;
-}
-
-function Pill({
-  children,
-  variant,
-}: {
-  children: React.ReactNode;
-  variant: "supported" | "unsupported";
-}) {
-  const classes =
-    variant === "supported"
-      ? "bg-pill-supported-bg text-pill-supported-text"
-      : "bg-pill-unsupported-bg text-pill-unsupported-text";
-  return (
-    <span
-      className={`inline-block px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap rounded ${classes}`}
-    >
-      {children}
-    </span>
-  );
-}
-
-function camelCaseToLabel(key: string): string {
-  return key
-    .replace(/([A-Z])/g, " $1")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function limitsToRows(
-  limits: SizeLimits
-): { label: string; value: string }[] {
-  return Object.entries(limits)
-    .filter(([key]) => key !== "notes")
-    .map(([key, value]) => ({
-      label: camelCaseToLabel(key),
-      value: value == null ? "—" : String(value),
-    }));
-}
+import { SeverityIcon } from "~/components/SeverityIcon";
+import { Pill } from "~/components/ui";
+import { camelCaseToLabel, limitsToRows } from "~/lib/format";
 
 export function RuleSetCard({
   ruleSet,
@@ -101,7 +53,7 @@ export function RuleSetCard({
             {ruleSet.requirements.map((c, i) => (
               <div key={i} className="flex gap-1.5 items-start">
                 <div className="mt-0.5 shrink-0">
-                  <SeverityIcon severity={c.severity} />
+                  <SeverityIcon severity={c.severity} className="text-[13px] font-bold" />
                 </div>
                 <div>
                   <div className="font-semibold text-xs text-primary">

@@ -1,26 +1,7 @@
 "use client";
 
 import type { UniversalRules as UniversalRulesType } from "~/types/schemaRuleSets";
-
-function Pill({
-  children,
-  variant,
-}: {
-  children: React.ReactNode;
-  variant: "supported" | "unsupported";
-}) {
-  const classes =
-    variant === "supported"
-      ? "bg-pill-supported-bg text-pill-supported-text"
-      : "bg-pill-unsupported-bg text-pill-unsupported-text";
-  return (
-    <span
-      className={`inline-block rounded px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap ${classes}`}
-    >
-      {children}
-    </span>
-  );
-}
+import { Pill } from "~/components/ui";
 
 export function UniversalRules({ data }: { data: UniversalRulesType }) {
   return (

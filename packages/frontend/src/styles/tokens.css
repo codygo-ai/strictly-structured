@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Design system tokens – single source of truth for the site
+   ========================================================================== */
+:root {
+  /* Surfaces */
+  --ds-page: #fafafa;
+  --ds-surface: #ffffff;
+  --ds-surface-subtle: #fafafa;
+  --ds-surface-hover: #f5f5f5;
+  --ds-surface-active: #f8fbfd;
+
+  /* Text */
+  --ds-primary: #1a1a1a;
+  --ds-secondary: #666666;
+  --ds-muted: #999999;
+
+  /* Borders */
+  --ds-border: #e5e5e5;
+  --ds-border-focus: #d0e4f2;
+
+  /* Codygo brand (logo, brand wordmark) */
+  --ds-codygo: #0d9488;
+
+  /* Accent (links, primary actions, code) */
+  --ds-accent: #5b8fc7;
+  --ds-accent-hover: #4a7db0;
+  --ds-accent-muted: #d0e4f2;
+  --ds-accent-bg: #f8fbfd;
+
+  /* Semantic */
+  --ds-success: #5cb85c;
+  --ds-warning: #f0ad4e;
+  --ds-error: #dc3545;
+  --ds-disabled: #cccccc;
+
+  /* Code / inline */
+  --ds-code-bg: #f5f5f5;
+
+  /* Layout & shape */
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-sidebar-width: 420px;
+  --ds-content-x: 1.25rem;
+  --ds-content-y: 0.75rem;
+  /** Max width for site pages (models, why, etc.). Validator page is full-width. */
+  --ds-page-max-width: 84rem;
+
+  /* Motion */
+  --ds-duration: 0.2s;
+
+  /* Shadows */
+  --ds-shadow-button: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(91, 143, 199, 0.3);
+  --ds-shadow-button-hover: 0 6px 20px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(91, 143, 199, 0.4);
+  --ds-shadow-button-disabled: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Pill / badge colours */
+  --ds-pill-supported-bg: #e8f5e9;
+  --ds-pill-supported-text: #2e7d32;
+  --ds-pill-unsupported-bg: #fce4ec;
+  --ds-pill-unsupported-text: #b71c1c;
+  --ds-heading-supported: #2a7d4e;
+  --ds-heading-unsupported: #bb3333;
+
+  /* Provider brand colours */
+  --ds-provider-anthropic: #d97706;
+  --ds-provider-gemini: #4285f4;
+
+  /* Table cell colours */
+  --ds-cell-ok-bg: #f0faf4;
+  --ds-cell-ok-text: #2a7d4e;
+  --ds-cell-fail-bg: #fef5f5;
+  --ds-cell-fail-text: #bb3333;
+  --ds-cell-warn-bg: #fefbf0;
+  --ds-cell-warn-text: #9a6c00;
+  --ds-row-alt: #fafbfc;
+}
+
+/* ==========================================================================
+   Dark theme overrides
+   ========================================================================== */
+.dark {
+  --ds-page: #0f1117;
+  --ds-surface: #1a1d27;
+  --ds-surface-subtle: #151820;
+  --ds-surface-hover: #22262f;
+  --ds-surface-active: #1c2230;
+
+  --ds-primary: #e4e4e7;
+  --ds-secondary: #a1a1aa;
+  --ds-muted: #71717a;
+
+  --ds-border: #2e3039;
+  --ds-border-focus: #3b4a6b;
+
+  --ds-codygo: #2dd4bf;
+
+  --ds-accent: #7eafd4;
+  --ds-accent-hover: #9bc2e0;
+  --ds-accent-muted: #2a3a52;
+  --ds-accent-bg: #151c28;
+
+  --ds-success: #4ade80;
+  --ds-warning: #fbbf24;
+  --ds-error: #f87171;
+  --ds-disabled: #3f3f46;
+
+  --ds-code-bg: #1e2028;
+
+  --ds-shadow-button: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(126, 175, 212, 0.2);
+  --ds-shadow-button-hover: 0 6px 20px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(126, 175, 212, 0.3);
+  --ds-shadow-button-disabled: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  --ds-pill-supported-bg: #1a3a2a;
+  --ds-pill-supported-text: #4ade80;
+  --ds-pill-unsupported-bg: #3a1a1a;
+  --ds-pill-unsupported-text: #f87171;
+  --ds-heading-supported: #4ade80;
+  --ds-heading-unsupported: #f87171;
+
+  --ds-provider-anthropic: #f59e0b;
+  --ds-provider-gemini: #60a5fa;
+
+  --ds-cell-ok-bg: #112a1a;
+  --ds-cell-ok-text: #4ade80;
+  --ds-cell-fail-bg: #2a1111;
+  --ds-cell-fail-text: #f87171;
+  --ds-cell-warn-bg: #2a2211;
+  --ds-cell-warn-text: #fbbf24;
+  --ds-row-alt: #151820;
+}
+
+@theme {
+  --font-sans: system-ui, sans-serif;
+
+  /* Design system → Tailwind utilities */
+  --color-page: var(--ds-page);
+  --color-surface: var(--ds-surface);
+  --color-surface-subtle: var(--ds-surface-subtle);
+  --color-surface-hover: var(--ds-surface-hover);
+  --color-surface-active: var(--ds-surface-active);
+  --color-primary: var(--ds-primary);
+  --color-secondary: var(--ds-secondary);
+  --color-muted: var(--ds-muted);
+  --color-border: var(--ds-border);
+  --color-border-focus: var(--ds-border-focus);
+  --color-codygo: var(--ds-codygo);
+  --color-accent: var(--ds-accent);
+  --color-accent-hover: var(--ds-accent-hover);
+  --color-accent-muted: var(--ds-accent-muted);
+  --color-accent-bg: var(--ds-accent-bg);
+  --color-success: var(--ds-success);
+  --color-warning: var(--ds-warning);
+  --color-error: var(--ds-error);
+  --color-disabled: var(--ds-disabled);
+  --color-code-bg: var(--ds-code-bg);
+  --color-pill-supported-bg: var(--ds-pill-supported-bg);
+  --color-pill-supported-text: var(--ds-pill-supported-text);
+  --color-pill-unsupported-bg: var(--ds-pill-unsupported-bg);
+  --color-pill-unsupported-text: var(--ds-pill-unsupported-text);
+  --color-heading-supported: var(--ds-heading-supported);
+  --color-heading-unsupported: var(--ds-heading-unsupported);
+  --color-cell-ok-bg: var(--ds-cell-ok-bg);
+  --color-cell-ok-text: var(--ds-cell-ok-text);
+  --color-cell-fail-bg: var(--ds-cell-fail-bg);
+  --color-cell-fail-text: var(--ds-cell-fail-text);
+  --color-cell-warn-bg: var(--ds-cell-warn-bg);
+  --color-cell-warn-text: var(--ds-cell-warn-text);
+  --color-row-alt: var(--ds-row-alt);
+
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --max-width-page: var(--ds-page-max-width);
+}

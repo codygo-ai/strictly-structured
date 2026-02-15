@@ -2,37 +2,39 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
+import { ProviderIcon } from "~/components/ui";
+import { UploadIcon } from "~/components/icons/UploadIcon";
 import { CopyIcon } from "~/components/icons/CopyIcon";
 import { DownloadIcon } from "~/components/icons/DownloadIcon";
 import { Tooltip } from "~/components/Tooltip";
 
 interface EditorInputHintProps {
   schema: string;
-  onSchemaChange: (schema: string) => void;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
+  onSchemaChange: (schema: string) => void;
 }
 
 export function EditorInputHint({
   schema,
-  onSchemaChange,
   fileInputRef,
+  onSchemaChange,
 }: EditorInputHintProps) {
-  const [loadOpen, setLoadOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const loadRef = useRef<HTMLSpanElement>(null);
-
-  const handleExampleSelect = useCallback(
-    (s: string) => {
-      onSchemaChange(s);
-      setLoadOpen(false);
-    },
-    [onSchemaChange],
-  );
+  const menuRef = useRef<HTMLSpanElement>(null);
 
   const handleUpload = useCallback(() => {
     fileInputRef.current?.click();
-    setLoadOpen(false);
+    setMenuOpen(false);
   }, [fileInputRef]);
+
+  const handleSample = useCallback(
+    (s: string) => {
+      onSchemaChange(s);
+      setMenuOpen(false);
+    },
+    [onSchemaChange],
+  );
 
   const handleCopy = useCallback(async () => {
     try {
@@ -54,50 +56,69 @@ export function EditorInputHint({
     URL.revokeObjectURL(url);
   }, [schema]);
 
-  // Click-outside for load dropdown
   useEffect(() => {
-    if (!loadOpen) return;
+    if (!menuOpen) return;
     const handler = (e: MouseEvent) => {
-      if (loadRef.current && !loadRef.current.contains(e.target as Node)) {
-        setLoadOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [loadOpen]);
+  }, [menuOpen]);
 
   return (
     <span className="inline-flex items-center gap-3 text-xs text-muted whitespace-nowrap">
-      <span className="relative" ref={loadRef}>
-        <button
-          type="button"
-          className="text-muted hover:text-primary cursor-pointer transition-colors"
-          onClick={() => setLoadOpen(!loadOpen)}
-          aria-expanded={loadOpen}
-        >
-          Drop, Paste or Load <span className="text-sm">&#x25BE;</span>
-        </button>
-        {loadOpen && (
+      <span className="relative" ref={menuRef}>
+        <Tooltip content="Open / Load" position="bottom">
+          <button
+            type="button"
+            className="text-muted hover:text-primary cursor-pointer transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-label="Open or load schema"
+          >
+            <UploadIcon width={14} height={14} />
+          </button>
+        </Tooltip>
+        {menuOpen && (
           <div className="examples-dropdown-header">
             <button type="button" className="load-upload" onClick={handleUpload}>
-              Upload file&hellip;
+              Open local file&hellip;
+              <span className="examples-desc">Load your structured output schema</span>
             </button>
             <div className="examples-dropdown-divider" />
-            <div className="examples-dropdown-section-label">Samples</div>
-            {EXAMPLE_SCHEMAS.map((ex) => (
-              <button
-                key={ex.name}
-                type="button"
-                onClick={() => handleExampleSelect(ex.schema)}
-              >
-                {ex.name}
-                <span className="examples-desc">{ex.description}</span>
-              </button>
-            ))}
+            <div className="examples-samples-section">
+              <div className="examples-dropdown-section-label">Samples</div>
+              <div className="examples-samples-scroll">
+                {EXAMPLE_SCHEMAS.map((ex) => (
+                  <button
+                    key={ex.name}
+                    type="button"
+                    onClick={() => handleSample(ex.schema)}
+                  >
+                    <span className="examples-sample-row">
+                      <span>{ex.name}</span>
+                      <span className="examples-providers">
+                        {ex.compatibleWith.length === 0
+                          ? <span className="examples-provider-tag none">none</span>
+                          : ex.compatibleWith.map((p) => (
+                            <span key={p} className={`examples-provider-tag ${p}`}>
+                              <ProviderIcon provider={p} size={13} className="" colored />
+                            </span>
+                          ))}
+                      </span>
+                    </span>
+                    <span className="examples-desc">{ex.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </span>
-      <Tooltip content="Copy schema">
+      <span className="text-border select-none">|</span>
+      <Tooltip content="Copy schema" position="bottom">
         <button
           type="button"
           className="text-muted hover:text-primary cursor-pointer transition-colors"
@@ -107,7 +128,7 @@ export function EditorInputHint({
           {copied ? "✓" : <CopyIcon width={14} height={14} />}
         </button>
       </Tooltip>
-      <Tooltip content="Download JSON">
+      <Tooltip content="Download JSON" position="bottom">
         <button
           type="button"
           className="text-muted hover:text-primary cursor-pointer transition-colors"

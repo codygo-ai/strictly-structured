@@ -2,11 +2,11 @@
 
 import { useState, useCallback, useMemo, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
 
 import { EditorInputHint } from "~/components/EditorInputHint";
+import { EditorBottomBar } from "~/components/EditorBottomBar";
 import type { SchemaRuleSet, SchemaRuleSetsData } from "~/types/schemaRuleSets";
 import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
 import { useAudit } from "~/lib/audit";
@@ -177,9 +177,7 @@ function HomeContent() {
   }, []);
 
   return (
-    <div className="validator-page flex flex-col h-screen min-h-0">
-      <SiteHeader subtitle current="validator" />
-
+    <div className="validator-page flex flex-col flex-1 min-h-0">
       {/* Onboarding hint */}
       {onboarding.visible && (
         <div className="onboarding-hint">
@@ -199,8 +197,8 @@ function HomeContent() {
             <span className="editor-label">Schema Editor</span>
             <EditorInputHint
               schema={schema}
-              onSchemaChange={handleSchemaChange}
               fileInputRef={fileInputRef}
+              onSchemaChange={handleSchemaChange}
             />
           </div>
           <div
@@ -223,6 +221,10 @@ function HomeContent() {
               fillHeight
               onEditorReady={handleEditorReady}
               onSchemaValidation={setHasMonacoErrors}
+            />
+            <EditorBottomBar
+              fileInputRef={fileInputRef}
+              onSchemaChange={handleSchemaChange}
             />
           </div>
         </section>
