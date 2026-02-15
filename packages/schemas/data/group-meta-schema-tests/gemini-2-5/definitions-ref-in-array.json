@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "definitions ref in array",
     "description": "valid: definitions ref in array",
     "expectation": "valid",

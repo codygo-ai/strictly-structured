@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "nested array of objects",
     "description": "valid: nested array of objects",
     "expectation": "valid",

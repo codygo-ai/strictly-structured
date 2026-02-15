@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "com.apple.vpn.managed.appmapping",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o61646",
     "expectation": "unknown (validate per group to set expected)",

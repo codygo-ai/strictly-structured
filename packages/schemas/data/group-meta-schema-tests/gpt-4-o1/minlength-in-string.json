@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "minLength in string",
     "description": "invalid: minLength in string",
     "expectation": "invalid: error must match additional propert|minLength",

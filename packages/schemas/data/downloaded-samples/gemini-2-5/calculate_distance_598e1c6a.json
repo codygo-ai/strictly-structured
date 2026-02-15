@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "calculate_distance_598e1c6a",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_distance_598e1c6a",
     "expectation": "unknown (validate per group to set expected)",

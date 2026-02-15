@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "unevaluatedProperties",
     "description": "invalid: unevaluatedProperties",
     "expectation": "invalid: error must match additional propert|unevaluatedProperties",

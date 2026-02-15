@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "array items with description",
     "description": "valid: array items with description",
     "expectation": "valid",

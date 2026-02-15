@@ -1,4 +1,4 @@
-import groupsData from "@ssv/schemas/data/groups" with { type: "json" };
+import ruleSetsData from "@ssv/schemas/data/rule-sets" with { type: "json" };
 import type { ProviderId } from "./types";
 
 export interface SupportedType {
@@ -8,16 +8,16 @@ export interface SupportedType {
   notes?: string;
 }
 
-export interface GroupLimits {
+export interface SizeLimits {
   maxProperties: number | null;
   maxNestingDepth: number | null;
   maxStringLengthNamesEnums?: number | null;
   maxEnumValues?: number | null;
 }
 
-export interface StructuredOutputGroup {
-  groupId: string;
-  groupName: string;
+export interface SchemaRuleSet {
+  ruleSetId: string;
+  displayName: string;
   provider: string;
   providerId: ProviderId;
   docUrl: string;
@@ -28,7 +28,7 @@ export interface StructuredOutputGroup {
   supportedTypes: SupportedType[];
   stringFormats?: string[];
   composition?: { supported: string[]; unsupported: string[]; notes?: string };
-  limits: GroupLimits;
+  sizeLimits: SizeLimits;
 
   rootType: string | string[];
   rootAnyOfAllowed: boolean;
@@ -36,34 +36,34 @@ export interface StructuredOutputGroup {
   additionalPropertiesMustBeFalse: boolean;
   additionalPropertiesFalseRecommended?: boolean;
 
-  hardConstraints: Array<{ rule: string; detail: string; severity: string }>;
-  bestPractices: string[];
+  requirements: Array<{ rule: string; detail: string; severity: string }>;
+  tips: string[];
 }
 
-export interface GroupsMeta {
+export interface RuleSetsMeta {
   version: string;
   lastUpdated: string;
   description: string;
   sources: Record<string, string>;
 }
 
-const data = groupsData as { meta: GroupsMeta; groups: StructuredOutputGroup[] };
+const data = ruleSetsData as { meta: RuleSetsMeta; ruleSets: SchemaRuleSet[] };
 
-export function getGroups(): StructuredOutputGroup[] {
-  return data.groups;
+export function getRuleSets(): SchemaRuleSet[] {
+  return data.ruleSets;
 }
 
-export function getMeta(): GroupsMeta {
+export function getRuleSetsMeta(): RuleSetsMeta {
   return data.meta;
 }
 
-export function getGroupByProvider(providerId: ProviderId): StructuredOutputGroup | undefined {
-  return data.groups.find((g) => g.providerId === providerId);
+export function getRuleSetByProvider(providerId: ProviderId): SchemaRuleSet | undefined {
+  return data.ruleSets.find((r) => r.providerId === providerId);
 }
 
-export function getGroupsByProviders(
+export function getRuleSetsByProviders(
   providerIds?: ProviderId[]
-): StructuredOutputGroup[] {
-  if (!providerIds || providerIds.length === 0) return data.groups;
-  return data.groups.filter((g) => providerIds.includes(g.providerId));
+): SchemaRuleSet[] {
+  if (!providerIds || providerIds.length === 0) return data.ruleSets;
+  return data.ruleSets.filter((r) => providerIds.includes(r.providerId));
 }

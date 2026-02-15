@@ -10,8 +10,8 @@ import type {
   ComparisonLegend,
   ComparisonRow,
   ProviderId,
-  StructuredOutputGroup,
-} from "~/types/structuredOutputGroups";
+  SchemaRuleSet,
+} from "~/types/schemaRuleSets";
 
 const TABLE_ICON_SIZE = 18;
 
@@ -56,20 +56,20 @@ function cellStyle(ok: boolean | "warn" | "partial"): {
   return { color: "#9a6c00", background: "#fefbf0" };
 }
 
-function columnLabel(columnId: ProviderId, groups: StructuredOutputGroup[]): string {
-  return groups.find((g) => g.providerId === columnId)?.groupName ?? columnId;
+function columnLabel(columnId: ProviderId, ruleSets: SchemaRuleSet[]): string {
+  return ruleSets.find((r) => r.providerId === columnId)?.displayName ?? columnId;
 }
 
 export function ComparisonTable({
   columns,
   rows,
   legend,
-  groups,
+  ruleSets,
 }: {
   columns: ComparisonColumn[];
   rows: ComparisonRow[];
   legend: ComparisonLegend;
-  groups: StructuredOutputGroup[];
+  ruleSets: SchemaRuleSet[];
 }) {
   return (
     <div className="overflow-x-auto">
@@ -86,7 +86,7 @@ export function ComparisonTable({
               >
                 <span className="inline-flex items-center gap-1.5">
                   <ProviderIcon providerId={col.id} />
-                  {columnLabel(col.id, groups)}
+                  {columnLabel(col.id, ruleSets)}
                 </span>
               </th>
             ))}

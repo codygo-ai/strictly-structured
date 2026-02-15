@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "Service 001 : POST /users/create",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o64532",
     "expectation": "unknown (validate per group to set expected)",

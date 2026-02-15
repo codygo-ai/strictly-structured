@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getGroupByProvider } from "../lib/groups";
-import { fixSchemaForGroup } from "../lib/fixer";
+import { getRuleSetByProvider } from "../lib/groups";
+import { fixSchemaForRuleSet } from "../lib/fixer";
 import type { ProviderId } from "../lib/types";
 
 export function registerFixSchemaTool(server: McpServer): void {
@@ -15,15 +15,15 @@ export function registerFixSchemaTool(server: McpServer): void {
         .describe("The target provider to fix the schema for"),
     },
     async ({ schema, provider }) => {
-      const group = getGroupByProvider(provider as ProviderId);
-      if (!group) {
+      const ruleSet = getRuleSetByProvider(provider as ProviderId);
+      if (!ruleSet) {
         return {
           content: [{ type: "text" as const, text: JSON.stringify({ error: `Unknown provider: ${provider}` }) }],
           isError: true,
         };
       }
 
-      const result = fixSchemaForGroup(schema, group);
+      const result = fixSchemaForRuleSet(schema, ruleSet);
 
       return {
         content: [{ type: "text" as const, text: JSON.stringify(result, undefined, 2) }],

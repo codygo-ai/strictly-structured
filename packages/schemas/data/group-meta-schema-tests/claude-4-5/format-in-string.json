@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "format in string",
     "description": "invalid: format in string",
     "expectation": "invalid: error must match additional propert|format",

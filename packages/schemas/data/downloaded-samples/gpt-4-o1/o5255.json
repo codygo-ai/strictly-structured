@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "Результат процедуры getTradeDate",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o5255",
     "expectation": "unknown (validate per group to set expected)",

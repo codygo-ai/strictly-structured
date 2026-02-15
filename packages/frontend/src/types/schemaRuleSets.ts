@@ -2,15 +2,15 @@
  * Re-export from generated types. Source: @ssv/schemas generate --out-dir <path>
  */
 export type {
-  HardConstraint,
+  Requirement,
   SupportedType,
-  GroupLimits,
+  SizeLimits,
   ProviderId,
   ComparisonColumn,
-  StructuredOutputGroup,
+  SchemaRuleSet,
   ComparisonRow,
   UniversalRules,
   ComparisonLegend,
-  StructuredOutputGroupsMeta,
-  StructuredOutputGroupsData,
-} from "./structuredOutputGroups.generated";
+  SchemaRuleSetsMeta,
+  SchemaRuleSetsData,
+} from "./schemaRuleSets.generated";

@@ -1,6 +1,6 @@
 /**
- * Validates a JSON Schema against a group's rules from structured_output_groups.json.
- * Single source of truth: validity is derived only from the groups JSON.
+ * Validates a JSON Schema against a rule set's rules from schema_rule_sets.json.
+ * Single source of truth: validity is derived only from the rule sets JSON.
  */
 
 interface ValidationRule {
@@ -10,9 +10,9 @@ interface ValidationRule {
   keywords?: string[];
 }
 
-export interface GroupsData {
-  groups: Array<{
-    groupId: string;
+export interface RuleSetsData {
+  ruleSets: Array<{
+    ruleSetId: string;
     rootType: string | string[];
     rootAnyOfAllowed?: boolean;
     allFieldsRequired?: boolean;
@@ -152,28 +152,28 @@ function checkValueIn(node: SchemaNode, value: unknown): boolean {
   return typeof formatVal === "string" && allowed.includes(formatVal);
 }
 
-export function validateSchemaForGroup(
+export function validateSchemaForRuleSet(
   schema: SchemaNode,
-  groupId: string,
-  groupsData: GroupsData
+  ruleSetId: string,
+  ruleSetsData: RuleSetsData
 ): { valid: boolean } {
-  const group = groupsData.groups.find((g) => g.groupId === groupId);
-  if (!group) return { valid: false };
+  const ruleSet = ruleSetsData.ruleSets.find((r) => r.ruleSetId === ruleSetId);
+  if (!ruleSet) return { valid: false };
 
-  const rootType = group.rootType;
+  const rootType = ruleSet.rootType;
   if (!rootType) return { valid: false };
 
   const rootTypeArr = Array.isArray(rootType) ? rootType : [rootType];
   const rootT = getRootType(schema);
   if (!rootT || !rootTypeArr.includes(rootT)) return { valid: false };
 
-  if (group.rootAnyOfAllowed === false && isRootAnyOf(schema)) return { valid: false };
+  if (ruleSet.rootAnyOfAllowed === false && isRootAnyOf(schema)) return { valid: false };
 
   const nodes: Array<{ node: SchemaNode; path: string; schemaType: string | undefined }> = [];
   collectNodes(schema, "", nodes);
   const rootNode = nodes.find((n) => n.path === "" || !n.path)?.node ?? schema;
 
-  const rules = group.validationRules ?? [];
+  const rules = ruleSet.validationRules ?? [];
   for (const rule of rules) {
     if (rule.check === "recommend_additional_properties_false") continue;
 
@@ -223,6 +223,6 @@ export function validateSchemaForGroup(
   return { valid: true };
 }
 
-export function getGroupIds(groupsData: GroupsData): string[] {
-  return groupsData.groups.map((g) => g.groupId);
+export function getRuleSetIds(ruleSetsData: RuleSetsData): string[] {
+  return ruleSetsData.ruleSets.map((r) => r.ruleSetId);
 }

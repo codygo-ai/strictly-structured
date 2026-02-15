@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "multiple properties all required",
     "description": "valid: multiple properties all required",
     "expectation": "valid",

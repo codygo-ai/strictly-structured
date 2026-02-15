@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "anyOf with format",
     "description": "valid: anyOf with format",
     "expectation": "valid",

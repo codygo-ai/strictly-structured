@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "mixed types in object",
     "description": "valid: mixed types in object",
     "expectation": "valid",

@@ -22,7 +22,7 @@ function findRepoRoot(start: string): string {
 }
 
 const REPO_ROOT = findRepoRoot(PACKAGE_ROOT);
-const DATA_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const DATA_PATH = path.join(PACKAGE_ROOT, "data", "schema_rule_sets.json");
 const DRAFT_07_META_PATH = path.join(PACKAGE_ROOT, "data", "draft-07-meta-schema.json");
 
 const USAGE = `
@@ -32,9 +32,9 @@ Usage: generate --out-dir <path>   (or --to <path>)
   --to <path>        Alias for --out-dir.
 
 Writes under the given path:
-  - data/structured_output_groups.generated.json
-  - types/structuredOutputGroups.generated.ts
-  - data/group-meta-schemas/<groupId>.generated.json   (one valid draft-07 JSON Schema file per group)
+  - data/schema_rule_sets.generated.json
+  - types/schemaRuleSets.generated.ts
+  - data/rule-set-meta-schemas/<ruleSetId>.generated.json   (one meta-schema per rule set)
 `;
 
 function parseArgs(): string | null {
@@ -59,8 +59,8 @@ function main(): void {
     process.exit(1);
   }
 
-  const groupsJson = fs.readFileSync(DATA_PATH, "utf-8");
-  const data = JSON.parse(groupsJson) as { groups: Array<{ groupId: string; [key: string]: unknown }> };
+  const ruleSetsJson = fs.readFileSync(DATA_PATH, "utf-8");
+  const data = JSON.parse(ruleSetsJson) as { ruleSets: Array<{ ruleSetId: string; [key: string]: unknown }> };
   const typesPath = path.join(__dirname, "types-template.ts");
   const typesContent = fs.readFileSync(typesPath, "utf-8");
   const generatedTypesContent = typesContent.replace(
@@ -73,10 +73,10 @@ function main(): void {
   fs.mkdirSync(dataDir, { recursive: true });
   fs.mkdirSync(typesDir, { recursive: true });
 
-  const jsonOutPath = path.join(dataDir, "structured_output_groups.generated.json");
-  const tsOutPath = path.join(typesDir, "structuredOutputGroups.generated.ts");
+  const jsonOutPath = path.join(dataDir, "schema_rule_sets.generated.json");
+  const tsOutPath = path.join(typesDir, "schemaRuleSets.generated.ts");
 
-  fs.writeFileSync(jsonOutPath, groupsJson, "utf-8");
+  fs.writeFileSync(jsonOutPath, ruleSetsJson, "utf-8");
   fs.writeFileSync(tsOutPath, generatedTypesContent, "utf-8");
 
   console.log(`Wrote ${jsonOutPath}`);
@@ -88,13 +88,13 @@ function main(): void {
   }
   const baseMetaSchema = JSON.parse(fs.readFileSync(DRAFT_07_META_PATH, "utf-8")) as Record<string, unknown>;
 
-  const metaSchemasDir = path.join(dataDir, "group-meta-schemas");
+  const metaSchemasDir = path.join(dataDir, "rule-set-meta-schemas");
   fs.mkdirSync(metaSchemasDir, { recursive: true });
-  for (const group of data.groups) {
-    const schema = buildGroupMetaSchemaFromGroup(baseMetaSchema, group);
-    const schemaPath = path.join(metaSchemasDir, `${group.groupId}.generated.json`);
-    fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2), "utf-8");
-    console.log(`Wrote ${schemaPath}`);
+  for (const ruleSet of data.ruleSets) {
+    const metaSchema = buildGroupMetaSchemaFromGroup(baseMetaSchema, ruleSet);
+    const metaSchemaPath = path.join(metaSchemasDir, `${ruleSet.ruleSetId}.generated.json`);
+    fs.writeFileSync(metaSchemaPath, JSON.stringify(metaSchema, null, 2), "utf-8");
+    console.log(`Wrote ${metaSchemaPath}`);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "anyOf with object",
     "description": "valid: anyOf with object",
     "expectation": "valid",

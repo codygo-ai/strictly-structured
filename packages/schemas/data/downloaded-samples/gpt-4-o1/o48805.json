@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "DCOS ACL: User authentication",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o48805",
     "expectation": "unknown (validate per group to set expected)",

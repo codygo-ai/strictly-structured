@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
-import { validateSchemaForGroup } from "~/lib/groupSchemaValidator";
+import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import { validateSchemaForRuleSet } from "~/lib/ruleSetValidator";
 import type { AuditEventKind } from "@ssv/audit/browser";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -16,7 +16,7 @@ const DEBOUNCE_MS = 200;
 interface SchemaEditorProps {
   value: string;
   onChange: (value: string) => void;
-  selectedGroup: StructuredOutputGroup | null;
+  selectedRuleSet: SchemaRuleSet | null;
   fillHeight?: boolean;
   editorTheme?: "light" | "dark";
   onAuditEvent?: (kind: AuditEventKind, data: Record<string, unknown>) => void;
@@ -39,7 +39,7 @@ const SCHEMA_EDIT_THROTTLE_MS = 2000;
 export function SchemaEditor({
   value,
   onChange,
-  selectedGroup,
+  selectedRuleSet,
   fillHeight = false,
   editorTheme = "dark",
   onAuditEvent,
@@ -87,8 +87,8 @@ export function SchemaEditor({
       const model = editor.getModel();
       if (!model) return;
 
-      const markers = validateSchemaForGroup(value, selectedGroup ?? undefined);
-      const groupLabel = selectedGroup?.groupName ?? "provider";
+      const markers = validateSchemaForRuleSet(value, selectedRuleSet ?? undefined);
+      const ruleSetLabel = selectedRuleSet?.displayName ?? "provider";
 
       monaco.editor.setModelMarkers(
         model,
@@ -98,7 +98,7 @@ export function SchemaEditor({
           startColumn: m.startColumn,
           endLineNumber: m.endLineNumber,
           endColumn: m.endColumn,
-          message: `[${groupLabel}] ${m.message}`,
+          message: `[${ruleSetLabel}] ${m.message}`,
           severity: toMonacoSeverity(monaco, m.severity),
           source: CUSTOM_MARKER_OWNER,
         }))
@@ -118,12 +118,12 @@ export function SchemaEditor({
           });
         }
 
-        if (markers.length > 0 && selectedGroup) {
+        if (markers.length > 0 && selectedRuleSet) {
           const errorCount = markers.filter((m) => m.severity === "error").length;
           const warningCount = markers.filter((m) => m.severity === "warning").length;
           const infoCount = markers.length - errorCount - warningCount;
           onAuditEvent("client.validation", {
-            groupId: selectedGroup.groupId,
+            ruleSetId: selectedRuleSet.ruleSetId,
             schemaHash: "",
             markerCount: markers.length,
             errorCount,
@@ -136,7 +136,7 @@ export function SchemaEditor({
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [value, selectedGroup, mounted, onAuditEvent]);
+  }, [value, selectedRuleSet, mounted, onAuditEvent]);
 
   return (
     <div

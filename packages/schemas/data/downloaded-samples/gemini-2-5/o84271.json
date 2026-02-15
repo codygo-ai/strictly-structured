@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "Automation Template Definitions",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o84271",
     "expectation": "unknown (validate per group to set expected)",

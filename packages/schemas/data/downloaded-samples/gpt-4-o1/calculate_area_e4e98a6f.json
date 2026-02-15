@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "calculate_area_e4e98a6f",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_e4e98a6f",
     "expectation": "unknown (validate per group to set expected)",

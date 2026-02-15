@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "sp_84_Normalized",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – sp_84_Normalized",
     "expectation": "unknown (validate per group to set expected)",

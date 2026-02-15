@@ -1,7 +1,7 @@
 /**
- * Validates that generated group meta-schemas accept good documents and reject bad ones
- * with correct errors. Uses ajv to run meta-schema validation. Runs 150+ samples covering
- * the full JSON Schema (draft-07) feature set.
+ * Validates that generated per–rule-set meta-schemas accept valid schemas and reject
+ * invalid ones with correct errors. Uses AJV to validate each sample schema against
+ * the corresponding meta-schema. Runs 150+ samples. See docs/VOCABULARY.md.
  */
 
 import * as fs from "fs";
@@ -15,7 +15,7 @@ import { getSamples } from "./groupMetaSchema.samples.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
-const DATA_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const DATA_PATH = path.join(PACKAGE_ROOT, "data", "schema_rule_sets.json");
 const DRAFT_07_PATH = path.join(PACKAGE_ROOT, "data", "draft-07-meta-schema.json");
 
 function loadJson<T>(filePath: string): T {
@@ -23,13 +23,14 @@ function loadJson<T>(filePath: string): T {
   return JSON.parse(raw) as T;
 }
 
+/** Returns a function that validates a schema document against the given meta-schema. */
 function createValidator(metaSchema: Record<string, unknown>, schemaKey: string) {
   const ajv = new Ajv({ strict: false, validateFormats: true });
   addFormats(ajv);
-  const schema = { ...metaSchema, $id: `http://ssv/group-meta/${schemaKey}#` };
-  ajv.addSchema(schema);
-  return (doc: Record<string, unknown>) => {
-    const valid = ajv.validate(schema.$id as string, doc);
+  const metaSchemaWithId = { ...metaSchema, $id: `http://ssv/rule-set-meta/${schemaKey}#` };
+  ajv.addSchema(metaSchemaWithId);
+  return (schemaDoc: Record<string, unknown>) => {
+    const valid = ajv.validate(metaSchemaWithId.$id as string, schemaDoc);
     return { valid: !!valid, errors: ajv.errors ?? null };
   };
 }
@@ -39,15 +40,15 @@ function errorMessage(errors: Array<{ message?: string; params?: unknown }> | nu
   return errors.map((e) => e.message ?? JSON.stringify(e.params)).join(" ");
 }
 
-describe("group meta-schema validation", () => {
+describe("rule-set meta-schema validation", () => {
   const baseMetaSchema = loadJson<Record<string, unknown>>(DRAFT_07_PATH);
-  const groupsData = loadJson<{ groups: Array<{ groupId: string; [key: string]: unknown }> }>(DATA_PATH);
+  const ruleSetsData = loadJson<{ ruleSets: Array<{ ruleSetId: string; [key: string]: unknown }> }>(DATA_PATH);
   const samples = getSamples();
 
   const validators: Record<string, (doc: Record<string, unknown>) => { valid: boolean; errors: unknown }> = {};
-  for (const group of groupsData.groups) {
-    const metaSchema = buildGroupMetaSchemaFromGroup(baseMetaSchema, group) as Record<string, unknown>;
-    validators[group.groupId] = createValidator(metaSchema, group.groupId);
+  for (const ruleSet of ruleSetsData.ruleSets) {
+    const metaSchema = buildGroupMetaSchemaFromGroup(baseMetaSchema, ruleSet) as Record<string, unknown>;
+    validators[ruleSet.ruleSetId] = createValidator(metaSchema, ruleSet.ruleSetId);
   }
 
   it("has at least 150 samples", () => {
@@ -55,8 +56,8 @@ describe("group meta-schema validation", () => {
   });
 
   for (const sample of samples) {
-    const validate = validators[sample.groupId];
-    it(`${sample.groupId}: ${sample.description}`, () => {
+    const validate = validators[sample.ruleSetId];
+    it(`${sample.ruleSetId}: ${sample.description}`, () => {
       expect(validate).toBeDefined();
       const result = validate(sample.doc);
       const msg = errorMessage(result.errors as Array<{ message?: string; params?: unknown }>);

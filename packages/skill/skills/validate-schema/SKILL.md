@@ -32,7 +32,7 @@ Run the validation script. The script and rules file are in this skill's directo
 ```bash
 node scripts/validate.mjs \
   --schema-file <path-to-schema> \
-  --rules-file rules/structured_output_groups.json
+  --rules-file rules/schema_rule_sets.json
 ```
 
 Or with inline JSON:
@@ -40,7 +40,7 @@ Or with inline JSON:
 ```bash
 node scripts/validate.mjs \
   --schema '{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}' \
-  --rules-file rules/structured_output_groups.json
+  --rules-file rules/schema_rule_sets.json
 ```
 
 To validate against a specific provider only:
@@ -48,7 +48,7 @@ To validate against a specific provider only:
 ```bash
 node scripts/validate.mjs \
   --schema-file <path> \
-  --rules-file rules/structured_output_groups.json \
+  --rules-file rules/schema_rule_sets.json \
   --provider openai
 ```
 
@@ -56,7 +56,7 @@ The script outputs JSON with per-provider results.
 
 ### Fallback
 
-If Node.js is not available, read `rules/structured_output_groups.json` and validate the schema by reasoning through each group's rules manually.
+If Node.js is not available, read `rules/schema_rule_sets.json` and validate the schema by reasoning through each rule set's rules manually.
 
 ## Step 3: Present Results
 

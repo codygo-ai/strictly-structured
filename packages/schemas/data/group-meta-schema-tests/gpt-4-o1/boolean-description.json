@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "boolean description",
     "description": "valid: boolean description",
     "expectation": "valid",

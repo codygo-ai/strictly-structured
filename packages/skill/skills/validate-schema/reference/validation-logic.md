@@ -4,7 +4,7 @@ This document describes the validation algorithm used by the `validate.mjs` scri
 
 ## Rule Types
 
-Each provider group in `structured_output_groups.json` has a `validationRules` array. Each rule has:
+Each provider rule set in `schema_rule_sets.json` has a `validationRules` array. Each rule has:
 
 - `path` — which nodes to check
 - `check` — what to check
@@ -39,7 +39,7 @@ Each provider group in `structured_output_groups.json` has a `validationRules` a
 
 ## Top-Level Group Fields
 
-Beyond `validationRules`, each group also has:
+Beyond `validationRules`, each rule set also has:
 
 - `rootType` — allowed root type(s)
 - `rootAnyOfAllowed` — whether `anyOf` is allowed at root

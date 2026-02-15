@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getGroupsByProviders } from "../lib/groups";
-import { validateSchemaForGroup } from "../lib/validator";
+import { getRuleSetsByProviders } from "../lib/groups";
+import { validateSchemaForRuleSet } from "../lib/validator";
 import type { ProviderId, ProviderValidationResult, ValidateSchemaResponse } from "../lib/types";
 
 export function registerValidateSchemaTool(server: McpServer): void {
@@ -13,20 +13,20 @@ export function registerValidateSchemaTool(server: McpServer): void {
       providers: z
         .array(z.enum(["openai", "anthropic", "gemini"]))
         .optional()
-        .describe("Provider groups to validate against. Defaults to all providers if omitted."),
+        .describe("Provider rule sets to validate against. Defaults to all providers if omitted."),
     },
     async ({ schema, providers }) => {
-      const groups = getGroupsByProviders(providers as ProviderId[] | undefined);
-      const results: ProviderValidationResult[] = groups.map((group) => {
-        const markers = validateSchemaForGroup(schema, group);
+      const ruleSets = getRuleSetsByProviders(providers as ProviderId[] | undefined);
+      const results: ProviderValidationResult[] = ruleSets.map((ruleSet) => {
+        const markers = validateSchemaForRuleSet(schema, ruleSet);
         const errors = markers.filter((m) => m.severity === "error");
         const warnings = markers.filter((m) => m.severity === "warning");
         const infos = markers.filter((m) => m.severity === "info");
 
         return {
-          provider: group.providerId,
-          groupId: group.groupId,
-          groupName: group.groupName,
+          provider: ruleSet.providerId,
+          ruleSetId: ruleSet.ruleSetId,
+          displayName: ruleSet.displayName,
           valid: errors.length === 0,
           errors: errors.map((m) => ({
             message: m.message,

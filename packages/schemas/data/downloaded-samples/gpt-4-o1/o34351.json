@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "Loot Table",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o34351",
     "expectation": "unknown (validate per group to set expected)",

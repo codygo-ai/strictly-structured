@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "maxItems",
     "description": "invalid: maxItems",
     "expectation": "invalid: error must match additional propert|maxItems",

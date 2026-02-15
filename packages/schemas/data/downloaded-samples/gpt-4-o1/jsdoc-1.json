@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "JSON Schema for JSDoc configuration files",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – jsdoc-1",
     "expectation": "unknown (validate per group to set expected)",

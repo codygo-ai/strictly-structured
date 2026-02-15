@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "source_groups": "packages/schemas/data/structured_output_groups.json",
+  "source_ruleSets": "packages/schemas/data/schema_rule_sets.json",
   "rows": [
     { "rule_id": "root_type", "fragment_id": "rootObject", "description": "Root type object; valid for all groups" },
     { "rule_id": "root_type", "fragment_id": "rootArray", "description": "Root type array; valid Gemini only" },

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "exclusiveMinimum in number",
     "description": "invalid: exclusiveMinimum in number",
     "expectation": "invalid: error must match additional propert|exclusiveMinimum",

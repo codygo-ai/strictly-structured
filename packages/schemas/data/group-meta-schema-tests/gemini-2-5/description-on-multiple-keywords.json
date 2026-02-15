@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "description on multiple keywords",
     "description": "valid: description on multiple keywords",
     "expectation": "valid",

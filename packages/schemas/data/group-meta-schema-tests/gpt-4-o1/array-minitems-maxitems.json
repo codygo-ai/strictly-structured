@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "array minItems maxItems",
     "description": "valid: array minItems maxItems",
     "expectation": "valid",

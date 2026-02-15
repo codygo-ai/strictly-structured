@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "format hostname",
     "description": "invalid: format hostname",
     "expectation": "invalid: error must match additional propert|format|enum|allowed values",

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "$ref to definitions",
     "description": "valid: $ref to definitions",
     "expectation": "valid",

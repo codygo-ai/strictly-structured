@@ -6,8 +6,8 @@ export interface ValidationIssue {
 
 export interface ProviderValidationResult {
   provider: string;
-  groupId: string;
-  groupName: string;
+  ruleSetId: string;
+  displayName: string;
   valid: boolean;
   errors: ValidationIssue[];
   warnings: ValidationIssue[];

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "Response from GET rest/warehouse/export/requests",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o83283",
     "expectation": "unknown (validate per group to set expected)",

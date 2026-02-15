@@ -12,15 +12,15 @@ import { ClaudeIcon } from "~/components/icons/ClaudeIcon";
 import { GeminiIcon } from "~/components/icons/GeminiIcon";
 import type {
   ProviderId,
-  StructuredOutputGroup,
-  StructuredOutputGroupsData,
-} from "~/types/structuredOutputGroups";
-import groupsDataJson from "~/data/structured_output_groups.generated.json";
+  SchemaRuleSet,
+  SchemaRuleSetsData,
+} from "~/types/schemaRuleSets";
+import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
 import { useAuth } from "~/lib/useAuth";
 import { useAudit, hashSchema } from "~/lib/audit";
-import { fixSchemaForGroup, type FixResult } from "~/lib/schemaFixer";
+import { fixSchemaForRuleSet, type FixResult } from "~/lib/schemaFixer";
 
-const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
+const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 
 const DiffEditor = dynamic(
   () => import("@monaco-editor/react").then((m) => m.DiffEditor),
@@ -37,11 +37,11 @@ const DEFAULT_SCHEMA = `{
 }
 `;
 
-const GROUPS = groupsData.groups as StructuredOutputGroup[];
+const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
 
 function ModelIcon({ provider }: { provider: ProviderId }) {
   const size = 18;
-  const className = "model-btn-icon shrink-0";
+  const className = "provider-btn-icon shrink-0";
   switch (provider) {
     case "openai":
       return <OpenAIIcon className={className} width={size} height={size} />;
@@ -54,16 +54,16 @@ function ModelIcon({ provider }: { provider: ProviderId }) {
   }
 }
 
-function groupTooltip(group: StructuredOutputGroup): string {
-  return [group.groupName, group.models.join(", ")].join("\n\n");
+function ruleSetTooltip(ruleSet: SchemaRuleSet): string {
+  return [ruleSet.displayName, ruleSet.models.join(", ")].join("\n\n");
 }
 
 export default function Home() {
   const { ensureAuth } = useAuth();
   const { emit } = useAudit();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(
-    () => GROUPS[0]?.groupId ?? null
+  const [selectedRuleSetId, setSelectedRuleSetId] = useState<string | null>(
+    () => RULE_SETS[0]?.ruleSetId ?? null
   );
   const [results, setResults] = useState<ValidationResult[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -72,16 +72,16 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const selectedGroup = useMemo(
-    () => GROUPS.find((g) => g.groupId === selectedGroupId) ?? null,
-    [selectedGroupId]
+  const selectedRuleSet = useMemo(
+    () => RULE_SETS.find((r) => r.ruleSetId === selectedRuleSetId) ?? null,
+    [selectedRuleSetId]
   );
 
-  const handleGroupChange = useCallback((groupId: string) => {
-    setSelectedGroupId(groupId);
-    const group = GROUPS.find((g) => g.groupId === groupId);
-    if (group) {
-      emit("group.selected", { groupId, providerId: group.providerId });
+  const handleRuleSetChange = useCallback((ruleSetId: string) => {
+    setSelectedRuleSetId(ruleSetId);
+    const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
+    if (ruleSet) {
+      emit("ruleSet.selected", { ruleSetId, providerId: ruleSet.providerId });
     }
   }, [emit]);
 
@@ -92,7 +92,7 @@ export default function Home() {
     emit("server.validate.requested", {
       schemaHash: hash,
       schemaSizeBytes: new Blob([schema]).size,
-      modelIds: selectedGroup?.models ?? [],
+      modelIds: selectedRuleSet?.models ?? [],
     });
     try {
       const token = await ensureAuth();
@@ -104,7 +104,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           schema,
-          modelIds: selectedGroup?.models,
+          modelIds: selectedRuleSet?.models,
         }),
       });
       const data = (await res.json()) as { results?: ValidationResult[]; error?: string };
@@ -118,13 +118,13 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [ensureAuth, schema, selectedGroup, emit]);
+  }, [ensureAuth, schema, selectedRuleSet, emit]);
 
   const handleFix = useCallback(async () => {
     setError(null);
     setFixResult(null);
 
-    if (!selectedGroup) return;
+    if (!selectedRuleSet) return;
 
     let parsed: Record<string, unknown>;
     try {
@@ -134,7 +134,7 @@ export default function Home() {
       return;
     }
 
-    const result = fixSchemaForGroup(parsed, selectedGroup);
+    const result = fixSchemaForRuleSet(parsed, selectedRuleSet);
 
     if (result.appliedFixes.length === 0 && result.unresolvedErrors.length === 0) {
       setError("No issues found — schema is already compliant");
@@ -151,7 +151,7 @@ export default function Home() {
       schemaHash: hash,
       issueCount: result.appliedFixes.length + result.unresolvedErrors.length,
     });
-  }, [schema, selectedGroup, emit]);
+  }, [schema, selectedRuleSet, emit]);
 
   const handleAcceptSuggestion = useCallback(async () => {
     if (suggestedSchema != null) {
@@ -245,19 +245,19 @@ export default function Home() {
     <div className="validator-page flex flex-col h-screen min-h-0">
       <SiteHeader subtitle current="validator" />
 
-      <div className="model-bar">
-        {GROUPS.map((g) => (
+      <div className="provider-bar">
+        {RULE_SETS.map((r) => (
           <button
-            key={g.groupId}
+            key={r.ruleSetId}
             type="button"
-            title={groupTooltip(g)}
-            className={`model-btn ${
-              selectedGroupId === g.groupId ? "selected" : ""
+            title={ruleSetTooltip(r)}
+            className={`provider-btn ${
+              selectedRuleSetId === r.ruleSetId ? "selected" : ""
             }`}
-            onClick={() => handleGroupChange(g.groupId)}
+            onClick={() => handleRuleSetChange(r.ruleSetId)}
           >
-            <ModelIcon provider={g.providerId} />
-            <span>{g.groupName}</span>
+            <ModelIcon provider={r.providerId} />
+            <span>{r.displayName}</span>
           </button>
         ))}
       </div>
@@ -347,7 +347,7 @@ export default function Home() {
                 <SchemaEditor
                   value={schema}
                   onChange={setSchema}
-                  selectedGroup={selectedGroup}
+                  selectedRuleSet={selectedRuleSet}
                   fillHeight
                   editorTheme="light"
                   onAuditEvent={emit}
@@ -387,11 +387,11 @@ export default function Home() {
         </section>
 
         <aside className="sidebar">
-          {selectedGroup ? (
-            <RightPane group={selectedGroup} />
+          {selectedRuleSet ? (
+            <RightPane ruleSet={selectedRuleSet} />
           ) : (
             <div className="p-5 text-secondary text-sm">
-              Choose a model group above.
+              Choose a rule set above.
             </div>
           )}
         </aside>

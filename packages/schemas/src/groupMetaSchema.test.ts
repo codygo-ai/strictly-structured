@@ -10,7 +10,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
-const DATA_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const DATA_PATH = path.join(PACKAGE_ROOT, "data", "schema_rule_sets.json");
 const DRAFT_07_PATH = path.join(PACKAGE_ROOT, "data", "draft-07-meta-schema.json");
 
 function loadBaseMetaSchema(): Record<string, unknown> {
@@ -28,11 +28,11 @@ describe("groupMetaSchema", () => {
     const base = loadBaseMetaSchema();
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     const data = JSON.parse(raw) as {
-      groups: Array<{ groupId: string; [key: string]: unknown }>;
+      ruleSets: Array<{ ruleSetId: string; [key: string]: unknown }>;
     };
-    const first = data.groups[0];
+    const first = data.ruleSets[0];
     expect(first).toBeDefined();
-    expect(first.groupId).toBe("gpt-4-o1");
+    expect(first.ruleSetId).toBe("gpt-4-o1");
 
     const schema = buildGroupMetaSchemaFromGroup(base, first) as Record<string, unknown>;
     expect(schema.$schema).toBe("http://json-schema.org/draft-07/schema#");
@@ -75,9 +75,9 @@ describe("groupMetaSchema", () => {
     const base = loadBaseMetaSchema();
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     const data = JSON.parse(raw) as {
-      groups: Array<{ groupId: string; [key: string]: unknown }>;
+      ruleSets: Array<{ ruleSetId: string; [key: string]: unknown }>;
     };
-    const gemini = data.groups.find((g) => g.groupId === "gemini-2-5");
+    const gemini = data.ruleSets.find((r) => r.ruleSetId === "gemini-2-5");
     expect(gemini).toBeDefined();
 
     const schema = buildGroupMetaSchemaFromGroup(base, gemini!) as Record<string, unknown>;

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "contains",
     "description": "invalid: contains",
     "expectation": "invalid: error must match additional propert|contains",

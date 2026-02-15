@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "string description and title",
     "description": "valid: string description and title",
     "expectation": "valid",

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "enum with many values",
     "description": "valid: enum with many values",
     "expectation": "valid",

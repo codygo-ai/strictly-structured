@@ -8,7 +8,7 @@ export type {
   ErrorCategory,
   AuditEventBase,
   SchemaEditedEvent,
-  GroupSelectedEvent,
+  RuleSetSelectedEvent,
   ClientValidationEvent,
   ServerValidateRequestedEvent,
   ServerValidateCompletedEvent,
