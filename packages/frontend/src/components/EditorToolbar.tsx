@@ -1,22 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
+import { useState, useCallback } from "react";
 
 interface EditorToolbarProps {
   schema: string;
   onSchemaChange: (s: string) => void;
-  fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 export function EditorToolbar({
   schema,
   onSchemaChange,
-  fileInputRef,
 }: EditorToolbarProps) {
   const [copied, setCopied] = useState(false);
-  const [examplesOpen, setExamplesOpen] = useState(false);
-  const examplesRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -42,26 +37,6 @@ export function EditorToolbar({
     onSchemaChange("{}");
   }, [onSchemaChange]);
 
-  const handleExampleSelect = useCallback(
-    (exampleSchema: string) => {
-      onSchemaChange(exampleSchema);
-      setExamplesOpen(false);
-    },
-    [onSchemaChange],
-  );
-
-  // Click-outside for examples dropdown
-  useEffect(() => {
-    if (!examplesOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (examplesRef.current && !examplesRef.current.contains(e.target as Node)) {
-        setExamplesOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [examplesOpen]);
-
   return (
     <div className="editor-toolbar">
       <button
@@ -79,38 +54,6 @@ export function EditorToolbar({
       >
         Download
       </button>
-
-      <button
-        type="button"
-        className="editor-toolbar-btn"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        Upload
-      </button>
-
-      <div className="relative" ref={examplesRef}>
-        <button
-          type="button"
-          className="editor-toolbar-btn"
-          onClick={() => setExamplesOpen(!examplesOpen)}
-        >
-          Examples &#x25BE;
-        </button>
-        {examplesOpen && (
-          <div className="examples-dropdown">
-            {EXAMPLE_SCHEMAS.map((ex) => (
-              <button
-                key={ex.name}
-                type="button"
-                onClick={() => handleExampleSelect(ex.schema)}
-              >
-                {ex.name}
-                <span className="examples-desc">{ex.description}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
 
       <button
         type="button"

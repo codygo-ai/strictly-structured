@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
 import { BetaBadge } from "~/components/BetaBadge";
-import { FeedbackLink } from "~/components/FeedbackLink";
+import { FeedbackWidget } from "~/components/FeedbackWidget";
 import { ThemeToggle } from "~/components/ThemeToggle";
-import { HelpPopover } from "~/components/HelpPopover";
 
 export function SiteHeader({
   subtitle = true,
@@ -12,7 +11,7 @@ export function SiteHeader({
   subtitle?: boolean;
   current?: "validator" | "why" | "models";
 }) {
-  const linkClass = "text-sm text-primary hover:underline cursor-pointer";
+  const linkClass = "text-sm text-secondary hover:text-primary transition-colors cursor-pointer";
   const activeClass = "text-sm text-accent font-medium hover:no-underline cursor-default";
 
   return (
@@ -64,9 +63,8 @@ export function SiteHeader({
               Model support
             </Link>
           )}
-          <FeedbackLink />
+          <FeedbackWidget />
         </nav>
-        <HelpPopover />
         <ThemeToggle />
         <UserAvatarMenu />
       </div>

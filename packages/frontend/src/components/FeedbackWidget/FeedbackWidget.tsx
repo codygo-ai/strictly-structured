@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   FEEDBACK_TYPES,
   FEEDBACK_TYPE_CONFIG,
@@ -9,7 +9,7 @@ import {
 } from "./types";
 
 const GITHUB_ISSUES_URL =
-  "https://github.com/codygo-ai/structured-schema-validator/issues";
+  "https://github.com/codygo-ai/strictly-structured/issues";
 const API_URL = "/api/feedback";
 
 type FormState = "idle" | "submitting" | "success" | "error";
@@ -22,12 +22,21 @@ export function FeedbackWidget() {
   const [honeypot, setHoneypot] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (ref.current && !ref.current.contains(e.target as Node)) {
+      setOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const handleOpen = () => setOpen(true);
-    window.addEventListener("ssv:open-feedback", handleOpen);
-    return () => window.removeEventListener("ssv:open-feedback", handleOpen);
-  }, []);
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [open, handleClickOutside]);
 
   // Close on Escape
   useEffect(() => {
@@ -92,18 +101,24 @@ export function FeedbackWidget() {
         : ""
   }`;
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={handleClose}
-        role="presentation"
-      />
-      {/* Panel */}
-      <div className="relative w-80 rounded-lg border border-border bg-surface shadow-xl feedback-slide-in">
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => {
+          if (open) {
+            handleClose();
+          } else {
+            setOpen(true);
+          }
+        }}
+        className="text-sm text-primary hover:underline cursor-pointer"
+        aria-expanded={open}
+      >
+        Feedback
+      </button>
+      {open && (
+        <div className="feedback-popover feedback-slide-in">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h3 className="text-sm font-semibold text-primary">
@@ -213,7 +228,8 @@ export function FeedbackWidget() {
               </div>
             </div>
           )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

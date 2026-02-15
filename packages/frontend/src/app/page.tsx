@@ -4,7 +4,8 @@ import { useState, useCallback, useMemo, useRef } from "react";
 import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
-import { EditorToolbar } from "~/components/EditorToolbar";
+import { HelpPopover } from "~/components/HelpPopover";
+import { EditorInputHint } from "~/components/EditorInputHint";
 import type { SchemaRuleSet, SchemaRuleSetsData } from "~/types/schemaRuleSets";
 import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
 import { useAudit } from "~/lib/audit";
@@ -188,7 +189,15 @@ export default function Home() {
         {/* Left pane: editor + toolbar */}
         <section className="editor-section">
           <div className="editor-header">
-            <span className="editor-label">Schema Editor</span>
+            <div className="flex items-center gap-1.5">
+              <span className="editor-label">Schema Editor</span>
+              <HelpPopover />
+            </div>
+            <EditorInputHint
+              schema={schema}
+              onSchemaChange={handleSchemaChange}
+              fileInputRef={fileInputRef}
+            />
           </div>
           <div
             className="editor-container"
@@ -211,11 +220,6 @@ export default function Home() {
               onEditorReady={handleEditorReady}
             />
           </div>
-          <EditorToolbar
-            schema={schema}
-            onSchemaChange={handleSchemaChange}
-            fileInputRef={fileInputRef}
-          />
         </section>
 
         {/* Right pane: compatibility dashboard */}

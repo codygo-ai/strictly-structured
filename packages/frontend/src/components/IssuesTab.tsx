@@ -61,7 +61,7 @@ export function IssuesTab({
   // After a fix has been applied, show the results
   if (fixResult) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 rounded-md bg-surface-subtle p-3 border border-border">
         {fixResult.appliedFixes.length > 0 && (
           <div>
             <p className="text-xs font-semibold text-success mb-1.5">
@@ -105,9 +105,11 @@ export function IssuesTab({
   // No markers
   if (sorted.length === 0) {
     return (
-      <p className="text-xs text-muted italic">
-        No issues found &mdash; schema is compatible with {ruleSet.displayName}.
-      </p>
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <span className="text-success text-2xl mb-2">&#x2713;</span>
+        <p className="text-sm text-secondary font-medium">Compatible with {ruleSet.displayName}</p>
+        <p className="text-xs text-muted mt-1">No issues found</p>
+      </div>
     );
   }
 

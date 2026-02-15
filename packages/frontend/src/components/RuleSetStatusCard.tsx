@@ -60,7 +60,7 @@ export function RuleSetStatusCard({
   return (
     <button
       type="button"
-      className={`status-card ${selected ? "selected" : ""}`}
+      className={`status-card ${selected ? "selected" : ""} status-${statusClass}`}
       onClick={onClick}
     >
       <div className="status-card-header">

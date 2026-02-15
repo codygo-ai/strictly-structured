@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { FirebaseAnalytics } from "~/components/FirebaseAnalytics";
 import { GoogleOneTap } from "~/components/GoogleOneTap";
-import { FeedbackWidget } from "~/components/FeedbackWidget";
 import { ThemeProvider } from "~/components/ThemeProvider";
 
 const siteName = "Codygo's Strictly Structured";
@@ -65,7 +64,6 @@ export default function RootLayout({
           <FirebaseAnalytics />
           <GoogleOneTap />
           {children}
-          <FeedbackWidget />
         </ThemeProvider>
       </body>
     </html>

@@ -190,11 +190,11 @@ body {
 .validator-page .validator-header {
   background: var(--ds-surface);
   border-bottom: 1px solid var(--ds-border);
-  padding: 2rem var(--ds-content-x);
+  padding: 1.25rem var(--ds-content-x);
 }
 
 .validator-page .validator-title {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 600;
   color: var(--ds-primary);
   letter-spacing: -0.02em;
@@ -468,8 +468,8 @@ body {
    ========================================================================== */
 .validator-page .status-cards {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem var(--ds-content-x);
+  gap: 0.75rem;
+  padding: 1rem var(--ds-content-x);
   background: var(--ds-surface);
   border-bottom: 1px solid var(--ds-border);
   flex-shrink: 0;
@@ -478,29 +478,38 @@ body {
 .validator-page .status-card {
   flex: 1;
   cursor: pointer;
-  padding: 0.625rem 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--ds-radius-md);
   border: 1px solid var(--ds-border);
   background: var(--ds-surface);
-  transition: border-color var(--ds-duration), background-color var(--ds-duration);
+  transition: border-color var(--ds-duration), background-color var(--ds-duration), box-shadow var(--ds-duration), transform var(--ds-duration);
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.375rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .validator-page .status-card:hover {
   background: var(--ds-surface-hover);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .validator-page .status-card.selected {
   border-color: var(--ds-accent);
   background: var(--ds-accent-bg);
+  box-shadow: 0 2px 8px rgba(91, 143, 199, 0.15);
 }
+
+.validator-page .status-card.status-ok { border-left: 3px solid var(--ds-success); }
+.validator-page .status-card.status-error { border-left: 3px solid var(--ds-error); }
+.validator-page .status-card.status-warning { border-left: 3px solid var(--ds-warning); }
+.validator-page .status-card.status-neutral { border-left: 3px solid var(--ds-disabled); }
 
 .validator-page .status-card .status-card-header {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.5rem;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--ds-primary);
@@ -522,12 +531,14 @@ body {
   border-bottom: 1px solid var(--ds-border);
   background: var(--ds-surface);
   flex-shrink: 0;
+  padding: 0 0.5rem;
+  gap: 0.25rem;
 }
 
 .validator-page .dashboard-tab {
   flex: 1;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--ds-muted);
   text-align: center;
@@ -535,17 +546,20 @@ body {
   border: none;
   background: transparent;
   border-bottom: 2px solid transparent;
-  transition: color var(--ds-duration), border-color var(--ds-duration);
+  border-radius: var(--ds-radius-sm) var(--ds-radius-sm) 0 0;
+  transition: color var(--ds-duration), border-color var(--ds-duration), background-color var(--ds-duration);
 }
 
 .validator-page .dashboard-tab:hover {
   color: var(--ds-secondary);
+  background: var(--ds-surface-hover);
 }
 
 .validator-page .dashboard-tab.active {
   color: var(--ds-accent);
   border-bottom-color: var(--ds-accent);
   font-weight: 600;
+  background: var(--ds-page);
 }
 
 .validator-page .dashboard-tab-content {
@@ -571,15 +585,20 @@ body {
 }
 
 .validator-page .issue-row .issue-line {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-family: ui-monospace, monospace;
-  color: var(--ds-accent);
+  color: var(--ds-muted);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+  background: none;
+  padding: 0;
+  border: none;
+  transition: color var(--ds-duration);
 }
 
 .validator-page .issue-row .issue-line:hover {
+  color: var(--ds-accent);
   text-decoration: underline;
 }
 
@@ -662,14 +681,87 @@ body {
   margin-top: 0.125rem;
 }
 
-/* Help popover */
-.validator-page .help-popover {
+/* Examples dropdown (editor header) */
+.validator-page .examples-dropdown-header {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.25rem;
+  min-width: 14rem;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.validator-page .examples-dropdown-header button.load-upload {
+  font-weight: 600;
+  color: var(--ds-accent);
+}
+
+.validator-page .examples-dropdown-divider {
+  height: 1px;
+  background: var(--ds-border);
+  margin: 0.25rem 0;
+}
+
+.validator-page .examples-dropdown-section-label {
+  padding: 0.375rem 0.75rem 0.125rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ds-muted);
+}
+
+.validator-page .examples-dropdown-header button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--ds-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--ds-duration);
+}
+
+.validator-page .examples-dropdown-header button:hover {
+  background: var(--ds-surface-hover);
+}
+
+.validator-page .examples-dropdown-header button .examples-desc {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--ds-muted);
+  margin-top: 0.125rem;
+}
+
+/* Feedback popover */
+.feedback-popover {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
-  width: 16rem;
-  padding: 0.875rem;
+  width: 20rem;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+}
+
+/* Help popover */
+.validator-page .help-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  width: 18rem;
+  padding: 1rem 1.125rem;
   background: var(--ds-surface);
   border: 1px solid var(--ds-border);
   border-radius: var(--ds-radius-md);
