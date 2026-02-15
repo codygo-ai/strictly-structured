@@ -30,15 +30,18 @@ export function registerFixSchemaPrompt(server: McpServer): void {
 
       const markers = validateSchemaForRuleSet(schema, ruleSet);
       const fixResult = fixSchemaForRuleSet(schema, ruleSet);
+      const postFixMarkers = validateSchemaForRuleSet(fixResult.fixedSchema, ruleSet);
       const rulesText = formatRuleSetAsText(ruleSet);
-      const errorsText = formatMarkersAsText(markers);
+      const errorsText = markers.length > 0
+        ? formatMarkersAsText(markers)
+        : "Schema is not valid JSON.";
 
       const appliedFixesList = fixResult.appliedFixes.length > 0
         ? fixResult.appliedFixes.map((f, i) => `${i + 1}. ${f}`).join("\n")
         : "None";
 
-      const remainingIssuesList = fixResult.remainingIssues.length > 0
-        ? fixResult.remainingIssues.map((r, i) => `${i + 1}. ${r}`).join("\n")
+      const remainingIssuesList = postFixMarkers.length > 0
+        ? formatMarkersAsText(postFixMarkers)
         : "None";
 
       const prompt = [

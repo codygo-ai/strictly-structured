@@ -32,9 +32,14 @@ export function registerExplainErrorsPrompt(server: McpServer): void {
         };
       }
 
+      let isValidJson = true;
+      try { JSON.parse(schema); } catch { isValidJson = false; }
+
       const providerSections = ruleSets.map((ruleSet) => {
-        const markers = validateSchemaForRuleSet(schema, ruleSet);
-        const errorsText = formatMarkersAsText(markers);
+        const markers = isValidJson ? validateSchemaForRuleSet(schema, ruleSet) : [];
+        const errorsText = isValidJson
+          ? formatMarkersAsText(markers)
+          : "Schema is not valid JSON. Fix JSON syntax before validating against provider rules.";
         const rulesText = formatRuleSetAsText(ruleSet);
 
         return [
