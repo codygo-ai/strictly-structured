@@ -1,8 +1,8 @@
 /**
- * Group meta-schema test samples. Each test case lives in its own JSON file under
- * data/group-meta-schema-tests/{groupId}/{slug}.json. File format: _meta (name, description,
- * expectation, expected, expectErrorPattern?) plus the schema at top level. buildSamples() is
- * used only by scripts/emit-group-meta-schema-test-files.ts to emit those files.
+ * Rule-set meta-schema test samples. Each test case is a JSON file under
+ * data/group-meta-schema-tests/{ruleSetId}/{slug}.json containing _meta plus a schema.
+ * These schemas are validated against the per–rule-set meta-schema in validation tests.
+ * buildSamples() is used only by the emit script. See docs/VOCABULARY.md.
  */
 
 import * as fs from "fs";
@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 export type SampleExpected = "valid" | "invalid";
 
 export interface GroupMetaSchemaSample {
-  groupId: string;
+  ruleSetId: string;
   description: string;
   doc: Record<string, unknown>;
   expected: SampleExpected;
@@ -37,7 +37,7 @@ function loadSamplesFromFiles(): GroupMetaSchemaSample[] {
       const meta = _meta as Record<string, unknown>;
       const expectErrorPattern = meta.expectErrorPattern as string | undefined;
       samples.push({
-        groupId: meta.groupId as string,
+        ruleSetId: meta.ruleSetId as string,
         description: meta.description as string,
         doc,
         expected: meta.expected as SampleExpected,
@@ -140,7 +140,7 @@ export function buildSamples(): GroupMetaSchemaSample[] {
     ["object with multiple string formats", obj({ dt: { type: "string", format: "date-time" }, u: { type: "string", format: "uuid" }, ip4: { type: "string", format: "ipv4" } }, ["dt", "u", "ip4"])],
   ];
   for (const [desc, doc] of gptValid) {
-    samples.push({ groupId: gpt, description: `valid: ${desc}`, doc: root(doc), expected: "valid" });
+    samples.push({ ruleSetId: gpt, description: `valid: ${desc}`, doc: root(doc), expected: "valid" });
   }
 
   const gptInvalid: Array<[string, Doc, RegExp | string]> = [
@@ -167,7 +167,7 @@ export function buildSamples(): GroupMetaSchemaSample[] {
     ["unevaluatedProperties", obj({ o: { type: "object", unevaluatedProperties: false, additionalProperties: false } }, ["o"]), /additional propert|unevaluatedProperties/i],
   ];
   for (const [desc, doc, err] of gptInvalid) {
-    samples.push({ groupId: gpt, description: `invalid: ${desc}`, doc: root(doc), expected: "invalid", expectError: err });
+    samples.push({ ruleSetId: gpt, description: `invalid: ${desc}`, doc: root(doc), expected: "invalid", expectError: err });
   }
 
   // ---- CLAUDE-4-5: object root, no pattern/format/minLength/maxLength, no number constraints except description, no minItems/maxItems ----
@@ -207,7 +207,7 @@ export function buildSamples(): GroupMetaSchemaSample[] {
     ["const null", obj({ n: { type: "null", const: null } }, ["n"])],
   ];
   for (const [desc, doc] of claudeValid) {
-    samples.push({ groupId: claude, description: `valid: ${desc}`, doc: root(doc), expected: "valid" });
+    samples.push({ ruleSetId: claude, description: `valid: ${desc}`, doc: root(doc), expected: "valid" });
   }
 
   const claudeInvalid: Array<[string, Doc, RegExp | string]> = [
@@ -234,7 +234,7 @@ export function buildSamples(): GroupMetaSchemaSample[] {
     ["exclusiveMaximum integer", obj({ i: { type: "integer", exclusiveMaximum: 10 } }), /additional propert|exclusiveMaximum/i],
   ];
   for (const [desc, doc, err] of claudeInvalid) {
-    samples.push({ groupId: claude, description: `invalid: ${desc}`, doc: root(doc), expected: "invalid", expectError: err });
+    samples.push({ ruleSetId: claude, description: `invalid: ${desc}`, doc: root(doc), expected: "invalid", expectError: err });
   }
 
   // ---- GEMINI-2-5: object or array root, format (date-time, date, time), min/max number, prefixItems, minItems, maxItems, title, no $defs (only $ref) ----
@@ -279,7 +279,7 @@ export function buildSamples(): GroupMetaSchemaSample[] {
     ["definitions ref in array", { type: "array", items: { $ref: "#/definitions/Item" }, definitions: { Item: { type: "object", properties: { x: { type: "string" } }, additionalProperties: false } } }],
   ];
   for (const [desc, doc] of geminiValid) {
-    samples.push({ groupId: gemini, description: `valid: ${desc}`, doc: root(doc), expected: "valid" });
+    samples.push({ ruleSetId: gemini, description: `valid: ${desc}`, doc: root(doc), expected: "valid" });
   }
 
   const geminiInvalid: Array<[string, Doc, RegExp | string]> = [
@@ -302,7 +302,7 @@ export function buildSamples(): GroupMetaSchemaSample[] {
     ["unevaluatedProperties", obj({ o: { type: "object", unevaluatedProperties: false, additionalProperties: false } }), /additional propert|unevaluatedProperties/i],
   ];
   for (const [desc, doc, err] of geminiInvalid) {
-    samples.push({ groupId: gemini, description: `invalid: ${desc}`, doc: root(doc), expected: "invalid", expectError: err });
+    samples.push({ ruleSetId: gemini, description: `invalid: ${desc}`, doc: root(doc), expected: "invalid", expectError: err });
   }
 
   return samples;

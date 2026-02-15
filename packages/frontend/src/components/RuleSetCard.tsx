@@ -1,10 +1,10 @@
 "use client";
 
 import type {
-  StructuredOutputGroup,
-  StructuredOutputGroupsMeta,
-  GroupLimits,
-} from "~/types/structuredOutputGroups";
+  SchemaRuleSet,
+  SchemaRuleSetsMeta,
+  SizeLimits,
+} from "~/types/schemaRuleSets";
 
 function SeverityIcon({
   severity,
@@ -46,7 +46,7 @@ function camelCaseToLabel(key: string): string {
 }
 
 function limitsToRows(
-  limits: GroupLimits
+  limits: SizeLimits
 ): { label: string; value: string }[] {
   return Object.entries(limits)
     .filter(([key]) => key !== "notes")
@@ -56,18 +56,18 @@ function limitsToRows(
     }));
 }
 
-export function GroupCard({
-  group,
+export function RuleSetCard({
+  ruleSet,
   meta,
 }: {
-  group: StructuredOutputGroup;
-  meta: StructuredOutputGroupsMeta;
+  ruleSet: SchemaRuleSet;
+  meta: SchemaRuleSetsMeta;
 }) {
-  const modelsStr = group.models.join(", ");
-  const limitsRows = limitsToRows(group.limits);
-  const badgeClass = meta.providerBadgeClasses[group.providerId] ?? "";
+  const modelsStr = ruleSet.models.join(", ");
+  const limitsRows = limitsToRows(ruleSet.sizeLimits);
+  const badgeClass = meta.providerBadgeClasses[ruleSet.providerId] ?? "";
   const unsupportedKeywords = Object.fromEntries(
-    group.supportedTypes
+    ruleSet.supportedTypes
       .filter((st) => st.unsupportedKeywords && st.unsupportedKeywords.length > 0)
       .map((st) => [st.type, st.unsupportedKeywords!])
   );
@@ -76,16 +76,16 @@ export function GroupCard({
     <div className="bg-surface border border-border rounded-[10px] p-6 mb-5">
       <div className="flex justify-between items-start mb-1">
         <div className="text-[17px] font-bold text-primary">
-          {group.groupName}
+          {ruleSet.displayName}
         </div>
         <div
           className={`text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded ${badgeClass}`}
         >
-          {group.groupName}
+          {ruleSet.displayName}
         </div>
       </div>
       <div className="text-[13px] text-secondary mb-2.5 leading-snug">
-        {group.description}
+        {ruleSet.description}
       </div>
       <div className="text-[11.5px] text-muted mb-4 font-mono leading-snug">
         {modelsStr}
@@ -97,7 +97,7 @@ export function GroupCard({
             Constraints
           </div>
           <div className="flex flex-col gap-2">
-            {group.hardConstraints.map((c, i) => (
+            {ruleSet.requirements.map((c, i) => (
               <div key={i} className="flex gap-1.5 items-start">
                 <div className="mt-0.5 shrink-0">
                   <SeverityIcon severity={c.severity} />
@@ -135,7 +135,7 @@ export function GroupCard({
           <div className="text-[10px] font-bold tracking-wider uppercase text-heading-supported mb-2.5 pb-1 border-b border-pill-supported-bg">
             Supported Keywords
           </div>
-          {group.supportedTypes.map((st) => (
+          {ruleSet.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2">
               <div className="text-[11px] font-semibold text-secondary mb-0.5 font-mono">
                 {st.type}
@@ -178,7 +178,7 @@ export function GroupCard({
             Behaviors
           </div>
           <div className="flex flex-col gap-1">
-            {Object.entries(group.behaviors)
+            {Object.entries(ruleSet.behaviors)
               .filter(([k]) => k !== "unknownKeywordsBehavior")
               .map(([label, val]) => (
                 <div
@@ -198,7 +198,7 @@ export function GroupCard({
                 </div>
               ))}
             <div className="text-[10.5px] text-muted mt-0.5">
-              Unknown kw → {String(group.behaviors.unknownKeywordsBehavior ?? "—")}
+              Unknown kw → {String(ruleSet.behaviors.unknownKeywordsBehavior ?? "—")}
             </div>
           </div>
         </div>
@@ -207,12 +207,12 @@ export function GroupCard({
       <div className="mt-4 text-[10px] text-muted text-right">
         Source:{" "}
         <a
-          href={group.docUrl}
+          href={ruleSet.docUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-secondary hover:underline"
         >
-          {group.docUrl.replace(/^https?:\/\//, "")}
+          {ruleSet.docUrl.replace(/^https?:\/\//, "")}
         </a>
       </div>
     </div>

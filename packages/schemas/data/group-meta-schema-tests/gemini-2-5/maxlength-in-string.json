@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "maxLength in string",
     "description": "invalid: maxLength in string",
     "expectation": "invalid: error must match additional propert|maxLength",

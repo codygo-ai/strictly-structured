@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "github-discussion",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – github-discussion",
     "expectation": "unknown (validate per group to set expected)",

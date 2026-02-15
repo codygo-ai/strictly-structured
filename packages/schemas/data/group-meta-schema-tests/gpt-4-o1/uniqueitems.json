@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "uniqueItems",
     "description": "invalid: uniqueItems",
     "expectation": "invalid: error must match additional propert|uniqueItems",

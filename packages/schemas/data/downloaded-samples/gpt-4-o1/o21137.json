@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "G-Cloud 7 SaaS Service Schema",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o21137",
     "expectation": "unknown (validate per group to set expected)",

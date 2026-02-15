@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "multipleOf in integer",
     "description": "invalid: multipleOf in integer",
     "expectation": "invalid: error must match additional propert|multipleOf",

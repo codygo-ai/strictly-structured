@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "TopoJSON bounding box",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o63365",
     "expectation": "unknown (validate per group to set expected)",

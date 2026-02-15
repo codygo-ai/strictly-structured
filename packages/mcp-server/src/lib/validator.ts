@@ -1,5 +1,5 @@
 import jsonSourceMap from "json-source-map";
-import type { StructuredOutputGroup } from "./groups";
+import type { SchemaRuleSet } from "./groups";
 
 export interface SchemaMarker {
   startLineNumber: number;
@@ -69,7 +69,7 @@ const COMPOSITION_KEYWORDS = new Set([
 const STRUCTURAL_KEYWORDS = new Set(["type"]);
 
 function buildSupportedKeywordsByType(
-  supportedTypes: StructuredOutputGroup["supportedTypes"]
+  supportedTypes: SchemaRuleSet["supportedTypes"]
 ): Map<string, Set<string>> {
   return new Map(
     supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)])
@@ -106,11 +106,11 @@ function pointerToMarker(
   };
 }
 
-export function validateSchemaForGroup(
+export function validateSchemaForRuleSet(
   raw: string,
-  group: StructuredOutputGroup | undefined
+  ruleSet: SchemaRuleSet | undefined
 ): SchemaMarker[] {
-  if (!group) return [];
+  if (!ruleSet) return [];
 
   let parsed: { data: unknown; pointers: PointerMap };
   try {
@@ -123,17 +123,17 @@ export function validateSchemaForGroup(
   if (data === null || typeof data !== "object") return [];
 
   const rules: ValidatorRules = {
-    rootType: group.rootType,
-    rootAnyOfAllowed: group.rootAnyOfAllowed,
-    allFieldsRequired: group.allFieldsRequired,
-    additionalPropertiesMustBeFalse: group.additionalPropertiesMustBeFalse,
-    additionalPropertiesFalseRecommended: group.additionalPropertiesFalseRecommended,
-    supportedStringFormats: group.stringFormats ?? [],
+    rootType: ruleSet.rootType,
+    rootAnyOfAllowed: ruleSet.rootAnyOfAllowed,
+    allFieldsRequired: ruleSet.allFieldsRequired,
+    additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse,
+    additionalPropertiesFalseRecommended: ruleSet.additionalPropertiesFalseRecommended,
+    supportedStringFormats: ruleSet.stringFormats ?? [],
     limits: {
-      maxProperties: group.limits.maxProperties,
-      maxNestingDepth: group.limits.maxNestingDepth,
-      maxStringLengthNamesEnums: group.limits.maxStringLengthNamesEnums ?? null,
-      maxEnumValues: group.limits.maxEnumValues ?? null,
+      maxProperties: ruleSet.sizeLimits.maxProperties,
+      maxNestingDepth: ruleSet.sizeLimits.maxNestingDepth,
+      maxStringLengthNamesEnums: ruleSet.sizeLimits.maxStringLengthNamesEnums ?? null,
+      maxEnumValues: ruleSet.sizeLimits.maxEnumValues ?? null,
     },
   };
 
@@ -141,9 +141,9 @@ export function validateSchemaForGroup(
     rules,
     pointers,
     markers: [],
-    supportedComposition: new Set(group.composition?.supported ?? []),
-    supportedKeywordsByType: buildSupportedKeywordsByType(group.supportedTypes),
-    supportedTypesSet: new Set(group.supportedTypes.map((st) => st.type)),
+    supportedComposition: new Set(ruleSet.composition?.supported ?? []),
+    supportedKeywordsByType: buildSupportedKeywordsByType(ruleSet.supportedTypes),
+    supportedTypesSet: new Set(ruleSet.supportedTypes.map((st) => st.type)),
     totalProperties: 0,
     maxDepthSeen: 0,
     totalEnumValues: 0,

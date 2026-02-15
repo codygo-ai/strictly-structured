@@ -2,11 +2,11 @@
   "name": "@ssv/schemas",
   "version": "0.0.0",
   "private": true,
-  "description": "Canonical structured_output_groups data and CLI to generate artifacts for consumers",
+  "description": "Canonical schema rule sets data and CLI to generate artifacts for consumers",
   "type": "module",
   "exports": {
     "./compat-types": "./src/compat-types.ts",
-    "./data/groups": "./data/structured_output_groups.json"
+    "./data/rule-sets": "./data/schema_rule_sets.json"
   },
   "scripts": {
     "generate": "tsx src/cli.ts",

@@ -1,7 +1,7 @@
 /**
  * Downloads 70 JSON schema samples per model group from the JSONSchemaBench dataset
- * (Hugging Face: epfl-dlab/JSONSchemaBench). Saves to data/downloaded-samples/{groupId}/.
- * Use as basis for test cases; _meta.expected is "unknown" until validated per group.
+ * (Hugging Face: epfl-dlab/JSONSchemaBench). Saves to data/downloaded-samples/{ruleSetId}/.
+ * Use as basis for test cases; _meta.expected is "unknown" until validated per rule set.
  *
  * Run: pnpm --filter @ssv/schemas exec tsx scripts/download-json-schema-samples.ts
  */
@@ -95,19 +95,19 @@ function main(): void {
       const total = schemas.length;
       const perGroup = SAMPLES_PER_GROUP;
       for (let g = 0; g < GROUPS.length; g++) {
-        const groupId = GROUPS[g];
+        const ruleSetId = GROUPS[g];
         const start = g * perGroup;
         const end = Math.min(start + perGroup, total);
         const slice = schemas.slice(start, end);
-        const dir = path.join(OUT_DIR, groupId);
+        const dir = path.join(OUT_DIR, ruleSetId);
 
         for (const { unique_id, doc } of slice) {
           const name = (doc.title as string) || unique_id;
           const meta = {
-            groupId,
+            ruleSetId,
             name: typeof name === "string" ? name : unique_id,
             description: `downloaded: JSONSchemaBench (${DATASET}) – ${unique_id}`,
-            expectation: "unknown (validate per group to set expected)",
+            expectation: "unknown (validate per rule set to set expected)",
             expected: "unknown" as const,
             source: DATASET,
             unique_id,
@@ -122,9 +122,9 @@ function main(): void {
           }
           fs.writeFileSync(filePath, JSON.stringify(content, null, 2), "utf-8");
         }
-        console.log(`${groupId}: ${slice.length} samples -> ${dir}`);
+        console.log(`${ruleSetId}: ${slice.length} samples -> ${dir}`);
       }
-      console.log(`Done. Total: ${total} schemas, ${perGroup} per group.`);
+      console.log(`Done. Total: ${total} schemas, ${perGroup} per rule set.`);
     })
     .catch((err) => {
       console.error(err);

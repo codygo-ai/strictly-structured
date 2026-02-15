@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "generate_invoice_e75167d8",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – generate_invoice_e75167d8",
     "expectation": "unknown (validate per group to set expected)",

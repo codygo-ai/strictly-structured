@@ -1,6 +1,15 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm --filter @ssv/*)", "WebFetch(*)", "Bash(*)"],
-    "additionalDirectories": ["./.claude", "../codygo-ai/json-scehma-val*"]
+    "allow": [
+      "Bash(pnpm --filter @ssv/*)",
+      "WebFetch(*)",
+      "Bash(*)"
+    ],
+    "additionalDirectories": [
+      "./.claude",
+      "../codygo-ai/json-scehma-val*",
+      "/Users/danikenan/Projects/codygo-ai/json-scehma-validaor-dark-mode-support",
+      "/Users/danikenan/.cursor/worktrees/json-scehma-validaor/codegen/packages/codegen"
+    ]
   }
 }

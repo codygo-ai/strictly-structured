@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "kb_665_Normalized",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – kb_665_Normalized",
     "expectation": "unknown (validate per group to set expected)",

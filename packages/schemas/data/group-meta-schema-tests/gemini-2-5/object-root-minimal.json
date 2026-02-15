@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "object root minimal",
     "description": "valid: object root minimal",
     "expectation": "valid",

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "object with multiple string formats",
     "description": "valid: object with multiple string formats",
     "expectation": "valid",

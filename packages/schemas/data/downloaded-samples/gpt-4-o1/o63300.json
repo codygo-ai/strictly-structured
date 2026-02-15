@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "Auspice config file to be supplied to `augur export v2`",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o63300",
     "expectation": "unknown (validate per group to set expected)",

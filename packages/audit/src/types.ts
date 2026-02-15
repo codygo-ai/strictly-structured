@@ -46,11 +46,11 @@ interface SchemaEditedEvent extends AuditEventBase {
   };
 }
 
-interface GroupSelectedEvent extends AuditEventBase {
-  readonly kind: "group.selected";
+interface RuleSetSelectedEvent extends AuditEventBase {
+  readonly kind: "ruleSet.selected";
   readonly source: "frontend";
   readonly data: {
-    readonly groupId: string;
+    readonly ruleSetId: string;
     readonly providerId: string;
   };
 }
@@ -59,7 +59,7 @@ interface ClientValidationEvent extends AuditEventBase {
   readonly kind: "client.validation";
   readonly source: "frontend";
   readonly data: {
-    readonly groupId: string;
+    readonly ruleSetId: string;
     readonly schemaHash: string;
     readonly markerCount: number;
     readonly errorCount: number;
@@ -136,7 +136,7 @@ interface SchemaLoadedEvent extends AuditEventBase {
 
 type FrontendEvent =
   | SchemaEditedEvent
-  | GroupSelectedEvent
+  | RuleSetSelectedEvent
   | ClientValidationEvent
   | ServerValidateRequestedEvent
   | ServerValidateCompletedEvent
@@ -317,7 +317,7 @@ export type {
   ErrorCategory,
   AuditEventBase,
   SchemaEditedEvent,
-  GroupSelectedEvent,
+  RuleSetSelectedEvent,
   ClientValidationEvent,
   ServerValidateRequestedEvent,
   ServerValidateCompletedEvent,

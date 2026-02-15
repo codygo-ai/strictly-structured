@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "create_calendar_event_f33c7e77",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – create_calendar_event_f33c7e77",
     "expectation": "unknown (validate per group to set expected)",

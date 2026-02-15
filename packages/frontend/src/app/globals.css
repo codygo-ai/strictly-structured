@@ -207,7 +207,7 @@ body {
   font-weight: 400;
 }
 
-.validator-page .model-bar {
+.validator-page .provider-bar {
   background: var(--ds-surface);
   border-bottom: 1px solid var(--ds-border);
   padding: 0.75rem var(--ds-content-x);
@@ -216,7 +216,7 @@ body {
   flex-shrink: 0;
 }
 
-.validator-page .model-btn {
+.validator-page .provider-btn {
   cursor: pointer;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -231,27 +231,27 @@ body {
   gap: 0.5rem;
 }
 
-.validator-page .model-btn:hover {
+.validator-page .provider-btn:hover {
   background: var(--ds-surface-hover);
   color: var(--ds-primary);
 }
 
-.validator-page .model-btn.selected {
+.validator-page .provider-btn.selected {
   color: var(--ds-primary);
   font-weight: 600;
   background: var(--ds-surface-active);
   border-color: var(--ds-border-focus);
 }
 
-.validator-page .model-btn .model-btn-icon {
+.validator-page .provider-btn .provider-btn-icon {
   color: var(--ds-muted);
 }
 
-.validator-page .model-btn:hover .model-btn-icon {
+.validator-page .provider-btn:hover .provider-btn-icon {
   color: var(--ds-secondary);
 }
 
-.validator-page .model-btn.selected .model-btn-icon {
+.validator-page .provider-btn.selected .provider-btn-icon {
   color: var(--ds-accent);
 }
 

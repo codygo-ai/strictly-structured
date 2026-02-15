@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "Pipeline schema",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – service-schema",
     "expectation": "unknown (validate per group to set expected)",

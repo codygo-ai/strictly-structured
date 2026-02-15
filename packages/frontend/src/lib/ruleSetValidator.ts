@@ -1,5 +1,5 @@
 import jsonSourceMap from "json-source-map";
-import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
+import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 
 export interface SchemaMarker {
   startLineNumber: number;
@@ -17,7 +17,7 @@ interface ValidatorRules {
   additionalPropertiesMustBeFalse: boolean;
   additionalPropertiesFalseRecommended?: boolean;
   supportedStringFormats: string[];
-  limits?: {
+  sizeLimits?: {
     maxProperties?: number | null;
     maxNestingDepth?: number | null;
     maxStringLengthNamesEnums?: number | null;
@@ -74,7 +74,7 @@ const COMPOSITION_KEYWORDS = new Set([
 const STRUCTURAL_KEYWORDS = new Set(["type"]);
 
 function buildSupportedKeywordsByType(
-  supportedTypes: StructuredOutputGroup["supportedTypes"]
+  supportedTypes: SchemaRuleSet["supportedTypes"]
 ): Map<string, Set<string>> {
   return new Map(
     supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)])
@@ -111,11 +111,11 @@ function pointerToMarker(
   };
 }
 
-export function validateSchemaForGroup(
+export function validateSchemaForRuleSet(
   raw: string,
-  group: StructuredOutputGroup | undefined
+  ruleSet: SchemaRuleSet | undefined
 ): SchemaMarker[] {
-  if (!group) return [];
+  if (!ruleSet) return [];
 
   let parsed: { data: unknown; pointers: PointerMap };
   try {
@@ -128,17 +128,17 @@ export function validateSchemaForGroup(
   if (data === null || typeof data !== "object") return [];
 
   const rules: ValidatorRules = {
-    rootType: group.rootType,
-    rootAnyOfAllowed: group.rootAnyOfAllowed,
-    allFieldsRequired: group.allFieldsRequired,
-    additionalPropertiesMustBeFalse: group.additionalPropertiesMustBeFalse,
-    additionalPropertiesFalseRecommended: group.additionalPropertiesFalseRecommended,
-    supportedStringFormats: group.stringFormats ?? [],
-    limits: {
-      maxProperties: group.limits.maxProperties,
-      maxNestingDepth: group.limits.maxNestingDepth,
-      maxStringLengthNamesEnums: group.limits.maxStringLengthNamesEnums ?? null,
-      maxEnumValues: group.limits.maxEnumValues ?? null,
+    rootType: ruleSet.rootType,
+    rootAnyOfAllowed: ruleSet.rootAnyOfAllowed,
+    allFieldsRequired: ruleSet.allFieldsRequired,
+    additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse,
+    additionalPropertiesFalseRecommended: ruleSet.additionalPropertiesFalseRecommended,
+    supportedStringFormats: ruleSet.stringFormats ?? [],
+    sizeLimits: {
+      maxProperties: ruleSet.sizeLimits.maxProperties,
+      maxNestingDepth: ruleSet.sizeLimits.maxNestingDepth,
+      maxStringLengthNamesEnums: ruleSet.sizeLimits.maxStringLengthNamesEnums ?? null,
+      maxEnumValues: ruleSet.sizeLimits.maxEnumValues ?? null,
     },
   };
 
@@ -146,9 +146,9 @@ export function validateSchemaForGroup(
     rules,
     pointers,
     markers: [],
-    supportedComposition: new Set(group.composition?.supported ?? []),
-    supportedKeywordsByType: buildSupportedKeywordsByType(group.supportedTypes),
-    supportedTypesSet: new Set(group.supportedTypes.map((st) => st.type)),
+    supportedComposition: new Set(ruleSet.composition?.supported ?? []),
+    supportedKeywordsByType: buildSupportedKeywordsByType(ruleSet.supportedTypes),
+    supportedTypesSet: new Set(ruleSet.supportedTypes.map((st) => st.type)),
     totalProperties: 0,
     maxDepthSeen: 0,
     totalEnumValues: 0,
@@ -522,64 +522,64 @@ function recurseChildren(
 }
 
 function checkQuantitativeLimits(ctx: WalkContext): void {
-  const limits = ctx.rules.limits;
-  if (!limits) return;
+  const sizeLimits = ctx.rules.sizeLimits;
+  if (!sizeLimits) return;
 
   if (
-    typeof limits.maxProperties === "number" &&
-    ctx.totalProperties > limits.maxProperties
+    typeof sizeLimits.maxProperties === "number" &&
+    ctx.totalProperties > sizeLimits.maxProperties
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
         "",
         "",
-        `Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${limits.maxProperties}`,
+        `Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${sizeLimits.maxProperties}`,
         "error"
       )
     );
   }
 
   if (
-    typeof limits.maxNestingDepth === "number" &&
-    ctx.maxDepthSeen > limits.maxNestingDepth
+    typeof sizeLimits.maxNestingDepth === "number" &&
+    ctx.maxDepthSeen > sizeLimits.maxNestingDepth
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
         "",
         "",
-        `Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${limits.maxNestingDepth}`,
+        `Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${sizeLimits.maxNestingDepth}`,
         "error"
       )
     );
   }
 
   if (
-    typeof limits.maxEnumValues === "number" &&
-    ctx.totalEnumValues > limits.maxEnumValues
+    typeof sizeLimits.maxEnumValues === "number" &&
+    ctx.totalEnumValues > sizeLimits.maxEnumValues
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
         "",
         "",
-        `Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${limits.maxEnumValues}`,
+        `Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${sizeLimits.maxEnumValues}`,
         "error"
       )
     );
   }
 
   if (
-    typeof limits.maxStringLengthNamesEnums === "number" &&
-    ctx.totalStringLengthNamesEnums > limits.maxStringLengthNamesEnums
+    typeof sizeLimits.maxStringLengthNamesEnums === "number" &&
+    ctx.totalStringLengthNamesEnums > sizeLimits.maxStringLengthNamesEnums
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
         "",
         "",
-        `Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${limits.maxStringLengthNamesEnums}`,
+        `Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${sizeLimits.maxStringLengthNamesEnums}`,
         "error"
       )
     );

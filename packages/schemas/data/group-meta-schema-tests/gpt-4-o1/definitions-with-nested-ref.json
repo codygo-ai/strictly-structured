@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "definitions with nested ref",
     "description": "valid: definitions with nested ref",
     "expectation": "valid",

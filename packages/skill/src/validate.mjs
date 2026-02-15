@@ -79,23 +79,23 @@ function buildSupportedKeywordsByType(supportedTypes) {
   return new Map(supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)]));
 }
 
-function validateSchemaForGroup(s, group) {
+function validateSchemaForRuleSet(s, ruleSet) {
   if (s === null || typeof s !== "object") {
     return { valid: false, errors: ["Schema must be an object"], warnings: [] };
   }
 
   const rules = {
-    rootType: group.rootType,
-    rootAnyOfAllowed: group.rootAnyOfAllowed,
-    allFieldsRequired: group.allFieldsRequired,
-    additionalPropertiesMustBeFalse: group.additionalPropertiesMustBeFalse,
-    additionalPropertiesFalseRecommended: group.additionalPropertiesFalseRecommended,
-    supportedStringFormats: group.stringFormats ?? [],
+    rootType: ruleSet.rootType,
+    rootAnyOfAllowed: ruleSet.rootAnyOfAllowed,
+    allFieldsRequired: ruleSet.allFieldsRequired,
+    additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse,
+    additionalPropertiesFalseRecommended: ruleSet.additionalPropertiesFalseRecommended,
+    supportedStringFormats: ruleSet.stringFormats ?? [],
     limits: {
-      maxProperties: group.limits?.maxProperties ?? null,
-      maxNestingDepth: group.limits?.maxNestingDepth ?? null,
-      maxStringLengthNamesEnums: group.limits?.maxStringLengthNamesEnums ?? null,
-      maxEnumValues: group.limits?.maxEnumValues ?? null,
+      maxProperties: ruleSet.sizeLimits?.maxProperties ?? null,
+      maxNestingDepth: ruleSet.sizeLimits?.maxNestingDepth ?? null,
+      maxStringLengthNamesEnums: ruleSet.sizeLimits?.maxStringLengthNamesEnums ?? null,
+      maxEnumValues: ruleSet.sizeLimits?.maxEnumValues ?? null,
     },
   };
 
@@ -103,9 +103,9 @@ function validateSchemaForGroup(s, group) {
     rules,
     errors: [],
     warnings: [],
-    supportedComposition: new Set(group.composition?.supported ?? []),
-    supportedKeywordsByType: buildSupportedKeywordsByType(group.supportedTypes),
-    supportedTypesSet: new Set(group.supportedTypes.map((st) => st.type)),
+    supportedComposition: new Set(ruleSet.composition?.supported ?? []),
+    supportedKeywordsByType: buildSupportedKeywordsByType(ruleSet.supportedTypes),
+    supportedTypesSet: new Set(ruleSet.supportedTypes.map((st) => st.type)),
     totalProperties: 0,
     maxDepthSeen: 0,
     totalEnumValues: 0,
@@ -316,21 +316,21 @@ function checkQuantitativeLimits(ctx) {
 
 // --- Run validation ---
 
-let groups = rulesData.groups;
+let ruleSets = rulesData.ruleSets;
 if (providerFilter) {
-  groups = groups.filter((g) => g.providerId === providerFilter);
-  if (groups.length === 0) {
+  ruleSets = ruleSets.filter((r) => r.providerId === providerFilter);
+  if (ruleSets.length === 0) {
     console.error(JSON.stringify({ error: `Unknown provider: ${providerFilter}` }));
     process.exit(1);
   }
 }
 
-const results = groups.map((group) => {
-  const { valid, errors, warnings } = validateSchemaForGroup(schema, group);
+const results = ruleSets.map((ruleSet) => {
+  const { valid, errors, warnings } = validateSchemaForRuleSet(schema, ruleSet);
   return {
-    provider: group.providerId,
-    groupId: group.groupId,
-    groupName: group.groupName,
+    provider: ruleSet.providerId,
+    ruleSetId: ruleSet.ruleSetId,
+    displayName: ruleSet.displayName,
     valid,
     errors,
     warnings,

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "complex nested",
     "description": "valid: complex nested",
     "expectation": "valid",

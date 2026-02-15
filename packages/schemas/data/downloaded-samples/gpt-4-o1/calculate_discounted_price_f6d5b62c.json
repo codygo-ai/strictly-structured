@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "calculate_discounted_price_f6d5b62c",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_discounted_price_f6d5b62c",
     "expectation": "unknown (validate per group to set expected)",

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "sp_3_Normalized",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – sp_3_Normalized",
     "expectation": "unknown (validate per group to set expected)",

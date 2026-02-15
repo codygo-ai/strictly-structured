@@ -1,4 +1,4 @@
-import type { StructuredOutputGroup } from "~/types/structuredOutputGroups";
+import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 
 // ── Public types ──────────────────────────────────────────────────────
 
@@ -80,24 +80,24 @@ const CONSTRAINT_TEMPLATES: Record<string, (v: unknown) => string> = {
 
 // ── Entry point ───────────────────────────────────────────────────────
 
-export function fixSchemaForGroup(
+export function fixSchemaForRuleSet(
   schema: JsonNode,
-  group: StructuredOutputGroup,
+  ruleSet: SchemaRuleSet,
 ): FixResult {
   const fixed = structuredClone(schema);
 
   const ctx: FixContext = {
-    supportedComposition: new Set(group.composition?.supported ?? []),
+    supportedComposition: new Set(ruleSet.composition?.supported ?? []),
     supportedKeywordsByType: new Map(
-      group.supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)]),
+      ruleSet.supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)]),
     ),
-    supportedTypesSet: new Set(group.supportedTypes.map((st) => st.type)),
-    supportedStringFormats: group.stringFormats ?? [],
-    rootType: Array.isArray(group.rootType) ? group.rootType : [group.rootType],
-    rootAnyOfAllowed: group.rootAnyOfAllowed,
-    allFieldsRequired: group.allFieldsRequired,
-    additionalPropertiesMustBeFalse: group.additionalPropertiesMustBeFalse,
-    additionalPropertiesFalseRecommended: group.additionalPropertiesFalseRecommended ?? false,
+    supportedTypesSet: new Set(ruleSet.supportedTypes.map((st) => st.type)),
+    supportedStringFormats: ruleSet.stringFormats ?? [],
+    rootType: Array.isArray(ruleSet.rootType) ? ruleSet.rootType : [ruleSet.rootType],
+    rootAnyOfAllowed: ruleSet.rootAnyOfAllowed,
+    allFieldsRequired: ruleSet.allFieldsRequired,
+    additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse,
+    additionalPropertiesFalseRecommended: ruleSet.additionalPropertiesFalseRecommended ?? false,
     fixes: [],
     unresolved: [],
   };

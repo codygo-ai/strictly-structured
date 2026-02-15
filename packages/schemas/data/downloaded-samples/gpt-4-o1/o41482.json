@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "Invocation manifest for FSL: Brain Extraction Tool (BET2)",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o41482",
     "expectation": "unknown (validate per group to set expected)",

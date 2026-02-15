@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "Describes the ANS version of this object",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o87861",
     "expectation": "unknown (validate per group to set expected)",

@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "source_groups": "packages/schemas/data/structured_output_groups.json",
-  "group_ids": [
+  "source_ruleSets": "packages/schemas/data/schema_rule_sets.json",
+  "ruleSetIds": [
     "gpt-4-o1",
     "claude-4-5",
     "gemini-2-5"

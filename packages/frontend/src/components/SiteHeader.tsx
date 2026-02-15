@@ -11,8 +11,8 @@ export function SiteHeader({
   subtitle?: boolean;
   current?: "validator" | "why" | "models";
 }) {
-  const linkClass = "text-sm text-primary hover:underline";
-  const activeClass = "text-sm text-accent font-medium hover:no-underline";
+  const linkClass = "text-sm text-primary hover:underline cursor-pointer";
+  const activeClass = "text-sm text-accent font-medium hover:no-underline cursor-default";
 
   return (
     <header className="validator-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -43,25 +43,38 @@ export function SiteHeader({
       </div>
       <div className="flex items-center gap-4 self-start sm:self-center">
         <nav className="flex items-center gap-4">
-          <Link
-            href="/"
-            className={`relative ${current === "validator" ? activeClass : linkClass}`}
-          >
-            <span className="relative z-10">Validator</span>
-            <BetaBadge />
-          </Link>
-          <Link
-            href="/why"
-            className={current === "why" ? activeClass : linkClass}
-          >
-            Why use this?
-          </Link>
-          <Link
-            href="/models"
-            className={current === "models" ? activeClass : linkClass}
-          >
-            Model support
-          </Link>
+          {current === "validator" ? (
+            <span
+              className={`relative ${activeClass}`}
+              aria-current="page"
+            >
+              <span className="relative z-10">Validator</span>
+              <BetaBadge />
+            </span>
+          ) : (
+            <Link href="/" className={`relative ${linkClass}`}>
+              <span className="relative z-10">Validator</span>
+              <BetaBadge />
+            </Link>
+          )}
+          {current === "why" ? (
+            <span className={activeClass} aria-current="page">
+              Why use this?
+            </span>
+          ) : (
+            <Link href="/why" className={linkClass}>
+              Why use this?
+            </Link>
+          )}
+          {current === "models" ? (
+            <span className={activeClass} aria-current="page">
+              Model support
+            </span>
+          ) : (
+            <Link href="/models" className={linkClass}>
+              Model support
+            </Link>
+          )}
           <FeedbackLink />
         </nav>
         <ThemeToggle />

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "Invocation manifest for FreeSurfer (v6.0.1): Recon-All",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o41474",
     "expectation": "unknown (validate per group to set expected)",

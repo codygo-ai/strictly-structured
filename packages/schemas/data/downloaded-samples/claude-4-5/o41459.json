@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "Invocation manifest for SciTran: DICOM MR Classifier",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o41459",
     "expectation": "unknown (validate per group to set expected)",

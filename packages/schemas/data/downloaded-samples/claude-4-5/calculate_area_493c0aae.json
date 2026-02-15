@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "calculate_area_493c0aae",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – calculate_area_493c0aae",
     "expectation": "unknown (validate per group to set expected)",

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "o81587",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – o81587",
     "expectation": "unknown (validate per group to set expected)",

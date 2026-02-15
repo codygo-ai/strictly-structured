@@ -15,7 +15,7 @@ const args = process.argv.slice(2);
 const outDirIdx = args.indexOf("--out-dir");
 const outDir = outDirIdx !== -1 ? args[outDirIdx + 1] : join(__dirname, "dist");
 
-const rulesSource = join(__dirname, "..", "schemas", "data", "structured_output_groups.json");
+const rulesSource = join(__dirname, "..", "schemas", "data", "schema_rule_sets.json");
 const skillDir = join(__dirname, "skills", "validate-schema");
 const validateScript = join(__dirname, "src", "validate.mjs");
 
@@ -47,7 +47,7 @@ cpSync(
 cpSync(validateScript, join(pluginSkillDir, "scripts", "validate.mjs"));
 
 // Copy rules JSON
-cpSync(rulesSource, join(pluginSkillDir, "rules", "structured_output_groups.json"));
+cpSync(rulesSource, join(pluginSkillDir, "rules", "schema_rule_sets.json"));
 
 // Copy reference docs
 cpSync(

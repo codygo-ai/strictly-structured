@@ -1,12 +1,12 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getGroupsByProviders, getMeta } from "../lib/groups";
+import { getRuleSetsByProviders, getRuleSetsMeta } from "../lib/groups";
 import type { ProviderId } from "../lib/types";
 
 export function registerListGroupsTool(server: McpServer): void {
   server.tool(
     "list_groups",
-    "List available LLM provider groups and their models for structured output schema validation.",
+    "List available LLM provider rule sets and their models for structured output schema validation.",
     {
       provider: z
         .enum(["openai", "anthropic", "gemini"])
@@ -15,18 +15,18 @@ export function registerListGroupsTool(server: McpServer): void {
     },
     async ({ provider }) => {
       const providers = provider ? [provider as ProviderId] : undefined;
-      const groups = getGroupsByProviders(providers);
-      const meta = getMeta();
+      const ruleSets = getRuleSetsByProviders(providers);
+      const meta = getRuleSetsMeta();
 
       const result = {
-        groups: groups.map((g) => ({
-          groupId: g.groupId,
-          groupName: g.groupName,
-          provider: g.provider,
-          providerId: g.providerId,
-          models: g.models,
-          description: g.description,
-          docUrl: g.docUrl,
+        ruleSets: ruleSets.map((r) => ({
+          ruleSetId: r.ruleSetId,
+          displayName: r.displayName,
+          provider: r.provider,
+          providerId: r.providerId,
+          models: r.models,
+          description: r.description,
+          docUrl: r.docUrl,
         })),
         meta: {
           version: meta.version,

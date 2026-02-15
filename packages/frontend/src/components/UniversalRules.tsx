@@ -1,6 +1,6 @@
 "use client";
 
-import type { UniversalRules as UniversalRulesType } from "~/types/structuredOutputGroups";
+import type { UniversalRules as UniversalRulesType } from "~/types/schemaRuleSets";
 
 function Pill({
   children,

@@ -6,14 +6,14 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import {
-  validateSchemaForGroup,
-  getGroupIds,
-  type GroupsData,
+  validateSchemaForRuleSet,
+  getRuleSetIds,
+  type RuleSetsData,
 } from "./validate.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
-const GROUPS_PATH = path.join(PACKAGE_ROOT, "data", "structured_output_groups.json");
+const RULE_SETS_PATH = path.join(PACKAGE_ROOT, "data", "schema_rule_sets.json");
 const SAMPLES_DIR = path.join(PACKAGE_ROOT, "samples");
 const FRAGMENTS_PATH = path.join(SAMPLES_DIR, "fragments.json");
 const RULE_MATRIX_PATH = path.join(SAMPLES_DIR, "rule-matrix.json");
@@ -29,7 +29,7 @@ interface RuleRow {
 
 interface RuleMatrix {
   version: string;
-  source_groups: string;
+  source_ruleSets: string;
   rows: RuleRow[];
 }
 
@@ -86,8 +86,8 @@ function pathFor(fragmentId: string, variant?: Record<string, unknown>): string 
 }
 
 function main(): void {
-  const groupsData = loadJson<GroupsData>(GROUPS_PATH);
-  const groupIds = getGroupIds(groupsData);
+  const ruleSetsData = loadJson<RuleSetsData>(RULE_SETS_PATH);
+  const ruleSetIds = getRuleSetIds(ruleSetsData);
   const fragments = loadJson<Record<string, Record<string, unknown>>>(FRAGMENTS_PATH);
   const matrix = loadJson<RuleMatrix>(RULE_MATRIX_PATH);
 
@@ -107,9 +107,9 @@ function main(): void {
     const schema = resolveSchema(fragment, row.variant);
     const relPath = pathFor(row.fragment_id, row.variant);
     const expected: Record<string, "valid" | "invalid"> = {};
-    for (const gid of groupIds) {
-      const result = validateSchemaForGroup(schema, gid, groupsData);
-      expected[gid] = result.valid ? "valid" : "invalid";
+    for (const rid of ruleSetIds) {
+      const result = validateSchemaForRuleSet(schema, rid, ruleSetsData);
+      expected[rid] = result.valid ? "valid" : "invalid";
     }
 
     if (!written.has(relPath)) {
@@ -134,8 +134,8 @@ function main(): void {
     JSON.stringify(
       {
         version: "1.0",
-        source_groups: matrix.source_groups,
-        group_ids: groupIds,
+        source_ruleSets: matrix.source_ruleSets,
+        ruleSetIds: ruleSetIds,
         generated_at: new Date().toISOString(),
         samples: manifest,
       },

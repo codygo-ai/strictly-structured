@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { StructuredOutputGroup, GroupLimits } from "~/types/structuredOutputGroups";
+import type { SchemaRuleSet, SizeLimits } from "~/types/schemaRuleSets";
 
 function SeverityIcon({ severity }: { severity: "error" | "warning" | "info" }) {
   if (severity === "error")
@@ -74,7 +74,7 @@ function camelCaseToLabel(key: string): string {
 }
 
 function limitsToRows(
-  limits: GroupLimits
+  limits: SizeLimits
 ): { label: string; value: string }[] {
   return Object.entries(limits)
     .filter(([key]) => key !== "notes")
@@ -90,15 +90,15 @@ function formatBehaviorValue(val: string | boolean): "ok" | "no" | "unknown" {
   return "unknown";
 }
 
-export function RightPane({ group }: { group: StructuredOutputGroup }) {
-  const modelsStr = group.models.join(", ");
-  const limitsRows = limitsToRows(group.limits);
+export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
+  const modelsStr = ruleSet.models.join(", ");
+  const limitsRows = limitsToRows(ruleSet.sizeLimits);
   const unknownKw =
-    typeof group.behaviors.unknownKeywordsBehavior === "string"
-      ? group.behaviors.unknownKeywordsBehavior
+    typeof ruleSet.behaviors.unknownKeywordsBehavior === "string"
+      ? ruleSet.behaviors.unknownKeywordsBehavior
       : "—";
   const unsupportedKeywords = Object.fromEntries(
-    group.supportedTypes
+    ruleSet.supportedTypes
       .filter((st) => st.unsupportedKeywords && st.unsupportedKeywords.length > 0)
       .map((st) => [st.type, st.unsupportedKeywords!])
   );
@@ -107,11 +107,11 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
     <div className="w-full h-full flex flex-col py-5 px-5.5 text-[13.5px] text-primary leading-[1.55] font-sans">
       <div className="shrink-0">
         <div className="text-base font-bold text-primary mb-1">
-          {group.provider}&apos;s {group.groupName}
+          {ruleSet.provider}&apos;s {ruleSet.displayName}
         </div>
         <Collapsible title="Description & models" defaultOpen className="mt-0">
           <div className="text-[12.5px] text-muted mb-3 leading-snug">
-            {group.description}
+            {ruleSet.description}
           </div>
           <div className="text-[11.5px] text-muted font-mono leading-snug">
             {modelsStr}
@@ -120,9 +120,9 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto">
-        <Collapsible title="Hard Constraints" defaultOpen>
+        <Collapsible title="Requirements" defaultOpen>
           <div className="flex flex-col gap-2.5">
-            {group.hardConstraints.map((c, i) => (
+            {ruleSet.requirements.map((c, i) => (
               <div key={i} className="flex gap-2 items-start">
                 <div className="mt-0.5 shrink-0">
                   <SeverityIcon severity={c.severity} />
@@ -139,7 +139,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
         </Collapsible>
 
         <Collapsible title="Supported Keywords" defaultOpen>
-          {group.supportedTypes.map((st) => (
+          {ruleSet.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2.5">
               <div className="text-xs font-semibold text-secondary mb-1 font-mono">
                 {st.type}
@@ -151,9 +151,9 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
                   </Pill>
                 ))}
               </div>
-              {group.stringFormats && group.stringFormats.length > 0 && st.type === "string" && (
+              {ruleSet.stringFormats && ruleSet.stringFormats.length > 0 && st.type === "string" && (
                 <div className="text-[11px] text-muted mt-1 ml-0.5">
-                  Formats: {group.stringFormats.join(", ")}
+                  Formats: {ruleSet.stringFormats.join(", ")}
                 </div>
               )}
               {st.notes && (
@@ -197,7 +197,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
 
         <Collapsible title="Behaviors">
           <div className="flex flex-col gap-1">
-            {Object.entries(group.behaviors)
+            {Object.entries(ruleSet.behaviors)
               .filter(([k]) => k !== "unknownKeywordsBehavior")
               .map(([label, val]) => {
                 const status = formatBehaviorValue(val);
@@ -237,9 +237,9 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
           </div>
         </Collapsible>
 
-        <Collapsible title="Best Practices">
+        <Collapsible title="Tips">
           <div className="flex flex-col gap-1.5">
-            {group.bestPractices.map((p, i) => (
+            {ruleSet.tips.map((p, i) => (
               <div
                 key={i}
                 className="text-xs text-secondary flex gap-2 items-start"

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "contains",
     "description": "invalid: contains",
     "expectation": "invalid: error must match additional propert|contains",

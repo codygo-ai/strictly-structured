@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "object with required and additionalProperties false",
     "description": "valid: object with required and additionalProperties false",
     "expectation": "valid",

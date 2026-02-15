@@ -1,11 +1,11 @@
-import type { StructuredOutputGroup } from "./groups";
+import type { SchemaRuleSet } from "./groups";
 import type { FixResult } from "./types";
 
 type SchemaNode = Record<string, unknown>;
 
-export function fixSchemaForGroup(
+export function fixSchemaForRuleSet(
   raw: string,
-  group: StructuredOutputGroup
+  ruleSet: SchemaRuleSet
 ): FixResult {
   let schema: SchemaNode;
   try {
@@ -17,14 +17,14 @@ export function fixSchemaForGroup(
   const appliedFixes: string[] = [];
   const remainingIssues: string[] = [];
 
-  const supportedComposition = new Set(group.composition?.supported ?? []);
+  const supportedComposition = new Set(ruleSet.composition?.supported ?? []);
   const supportedKeywordsByType = new Map(
-    group.supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)])
+    ruleSet.supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)])
   );
 
   // Fix root type
   const rootType = resolveType(schema);
-  const allowedRoots = Array.isArray(group.rootType) ? group.rootType : [group.rootType];
+  const allowedRoots = Array.isArray(ruleSet.rootType) ? ruleSet.rootType : [ruleSet.rootType];
   if (rootType && !allowedRoots.includes(rootType)) {
     schema = {
       type: "object",
@@ -35,7 +35,7 @@ export function fixSchemaForGroup(
     appliedFixes.push(`Wrapped root "${rootType}" in an object with "data" property`);
   }
 
-  fixNode(schema, "", group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+  fixNode(schema, "", ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
 
   return {
     fixedSchema: JSON.stringify(schema, undefined, 2),
@@ -47,7 +47,7 @@ export function fixSchemaForGroup(
 function fixNode(
   node: SchemaNode,
   path: string,
-  group: StructuredOutputGroup,
+  ruleSet: SchemaRuleSet,
   supportedComposition: Set<string>,
   supportedKeywordsByType: Map<string, Set<string>>,
   appliedFixes: string[],
@@ -58,7 +58,7 @@ function fixNode(
   // Fix additionalProperties
   if (
     (nodeType === "object" || node["properties"] !== undefined) &&
-    group.additionalPropertiesMustBeFalse &&
+    ruleSet.additionalPropertiesMustBeFalse &&
     node["additionalProperties"] !== false
   ) {
     node["additionalProperties"] = false;
@@ -67,7 +67,7 @@ function fixNode(
 
   // Fix required
   if (
-    group.allFieldsRequired &&
+    ruleSet.allFieldsRequired &&
     node["properties"] !== undefined &&
     typeof node["properties"] === "object"
   ) {
@@ -122,19 +122,19 @@ function fixNode(
     const props = node["properties"] as Record<string, unknown>;
     for (const [key, value] of Object.entries(props)) {
       if (value && typeof value === "object") {
-        fixNode(value as SchemaNode, `${path}/properties/${key}`, group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+        fixNode(value as SchemaNode, `${path}/properties/${key}`, ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
       }
     }
   }
 
   if (node["items"] && typeof node["items"] === "object") {
-    fixNode(node["items"] as SchemaNode, `${path}/items`, group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+    fixNode(node["items"] as SchemaNode, `${path}/items`, ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
   }
 
   if (Array.isArray(node["prefixItems"])) {
     (node["prefixItems"] as unknown[]).forEach((item, i) => {
       if (item && typeof item === "object") {
-        fixNode(item as SchemaNode, `${path}/prefixItems/${i}`, group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+        fixNode(item as SchemaNode, `${path}/prefixItems/${i}`, ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
       }
     });
   }
@@ -142,7 +142,7 @@ function fixNode(
   if (Array.isArray(node["anyOf"])) {
     (node["anyOf"] as unknown[]).forEach((branch, i) => {
       if (branch && typeof branch === "object") {
-        fixNode(branch as SchemaNode, `${path}/anyOf/${i}`, group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+        fixNode(branch as SchemaNode, `${path}/anyOf/${i}`, ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
       }
     });
   }
@@ -151,13 +151,13 @@ function fixNode(
     const defs = node["$defs"] as Record<string, unknown>;
     for (const [key, value] of Object.entries(defs)) {
       if (value && typeof value === "object") {
-        fixNode(value as SchemaNode, `${path}/$defs/${key}`, group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+        fixNode(value as SchemaNode, `${path}/$defs/${key}`, ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
       }
     }
   }
 
   if (node["additionalProperties"] && typeof node["additionalProperties"] === "object") {
-    fixNode(node["additionalProperties"] as SchemaNode, `${path}/additionalProperties`, group, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
+    fixNode(node["additionalProperties"] as SchemaNode, `${path}/additionalProperties`, ruleSet, supportedComposition, supportedKeywordsByType, appliedFixes, remainingIssues);
   }
 }
 

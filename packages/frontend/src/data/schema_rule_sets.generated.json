@@ -248,10 +248,54 @@
       ]
     }
   },
-  "groups": [
+  "ruleSets": [
     {
-      "groupId": "gpt-4-o1",
-      "groupName": "GPT (4+, o1+)",
+      "ruleSetId": "gpt-4-o1",
+      "displayName": "GPT (4+, o1+)",
+      "requirements": [
+        {
+          "rule": "Root type must be object",
+          "detail": "The top-level schema type must be \"object\". Arrays, strings, or other types cannot be root.",
+          "severity": "error"
+        },
+        {
+          "rule": "Root-level anyOf is NOT allowed",
+          "detail": "The root object itself cannot use anyOf. anyOf is only allowed on nested properties.",
+          "severity": "error"
+        },
+        {
+          "rule": "All properties must be listed in required",
+          "detail": "Every property defined in \"properties\" must appear in the \"required\" array. Optional fields must use nullable type instead: {\"type\": [\"string\", \"null\"]}.",
+          "severity": "error"
+        },
+        {
+          "rule": "additionalProperties must be false",
+          "detail": "Every object in the schema (root and nested) must have \"additionalProperties\": false.",
+          "severity": "error"
+        },
+        {
+          "rule": "Key ordering is preserved",
+          "detail": "Output keys match the order defined in the schema's \"properties\" object.",
+          "severity": "info"
+        }
+      ],
+      "sizeLimits": {
+        "maxProperties": 5000,
+        "maxNestingDepth": 10,
+        "maxStringLengthNamesEnums": 120000,
+        "maxEnumValues": 1000,
+        "maxEnumStringLengthOver250Values": 15000,
+        "notes": null
+      },
+      "tips": [
+        "Use Pydantic (Python) or Zod (TypeScript) for schema generation via SDK.",
+        "For optional fields, mark as required but make nullable: {\"type\": [\"string\", \"null\"]}.",
+        "Use description fields to guide model output quality.",
+        "Use enum for classification tasks with fixed categories.",
+        "Keep schemas as simple as possible; complexity increases latency.",
+        "Use $ref/$defs to reduce duplication in complex schemas.",
+        "Set max_tokens high enough to avoid truncated output (stop_reason: \"max_tokens\" means invalid output)."
+      ],
       "provider": "OpenAI",
       "providerId": "openai",
       "docUrl": "https://platform.openai.com/docs/guides/structured-outputs",
@@ -292,41 +336,88 @@
           "parameters": "<your_schema>"
         }
       },
-
       "supportedTypes": [
         {
           "type": "string",
-          "supportedKeywords": ["enum", "const", "description", "pattern", "format"],
-          "unsupportedKeywords": ["minLength", "maxLength"],
+          "supportedKeywords": [
+            "enum",
+            "const",
+            "description",
+            "pattern",
+            "format"
+          ],
+          "unsupportedKeywords": [
+            "minLength",
+            "maxLength"
+          ],
           "notes": "pattern and format are NOT supported on fine-tuned models."
         },
         {
           "type": "number",
-          "supportedKeywords": ["description", "multipleOf", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"],
+          "supportedKeywords": [
+            "description",
+            "multipleOf",
+            "minimum",
+            "maximum",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ],
           "unsupportedKeywords": [],
           "notes": "Numeric constraints NOT supported on fine-tuned models."
         },
         {
           "type": "integer",
-          "supportedKeywords": ["description", "multipleOf", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"],
+          "supportedKeywords": [
+            "description",
+            "multipleOf",
+            "minimum",
+            "maximum",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ],
           "unsupportedKeywords": [],
           "notes": "Same constraint restrictions as number for fine-tuned models."
         },
         {
           "type": "boolean",
-          "supportedKeywords": ["description"],
+          "supportedKeywords": [
+            "description"
+          ],
           "unsupportedKeywords": []
         },
         {
           "type": "object",
-          "supportedKeywords": ["properties", "required", "additionalProperties", "description"],
-          "unsupportedKeywords": ["patternProperties", "unevaluatedProperties", "propertyNames", "minProperties", "maxProperties"],
+          "supportedKeywords": [
+            "properties",
+            "required",
+            "additionalProperties",
+            "description"
+          ],
+          "unsupportedKeywords": [
+            "patternProperties",
+            "unevaluatedProperties",
+            "propertyNames",
+            "minProperties",
+            "maxProperties"
+          ],
           "notes": "additionalProperties MUST be false. All properties MUST be in required."
         },
         {
           "type": "array",
-          "supportedKeywords": ["items", "description", "minItems", "maxItems"],
-          "unsupportedKeywords": ["unevaluatedItems", "contains", "minContains", "maxContains", "uniqueItems", "prefixItems"],
+          "supportedKeywords": [
+            "items",
+            "description",
+            "minItems",
+            "maxItems"
+          ],
+          "unsupportedKeywords": [
+            "unevaluatedItems",
+            "contains",
+            "minContains",
+            "maxContains",
+            "uniqueItems",
+            "prefixItems"
+          ],
           "notes": "minItems/maxItems NOT supported on fine-tuned models."
         },
         {
@@ -336,20 +427,33 @@
           "notes": "Used in type arrays for nullable: {\"type\": [\"string\", \"null\"]}"
         }
       ],
-      "stringFormats": ["date-time", "time", "date", "duration", "hostname", "ipv4", "ipv6", "uuid"],
+      "stringFormats": [
+        "date-time",
+        "time",
+        "date",
+        "duration",
+        "hostname",
+        "ipv4",
+        "ipv6",
+        "uuid"
+      ],
       "composition": {
-        "supported": ["anyOf", "$ref", "$defs"],
-        "unsupported": ["allOf", "oneOf", "not", "if", "then", "else", "dependentRequired", "dependentSchemas"]
+        "supported": [
+          "anyOf",
+          "$ref",
+          "$defs"
+        ],
+        "unsupported": [
+          "allOf",
+          "oneOf",
+          "not",
+          "if",
+          "then",
+          "else",
+          "dependentRequired",
+          "dependentSchemas"
+        ]
       },
-      "limits": {
-        "maxProperties": 5000,
-        "maxNestingDepth": 10,
-        "maxStringLengthNamesEnums": 120000,
-        "maxEnumValues": 1000,
-        "maxEnumStringLengthOver250Values": 15000,
-        "notes": null
-      },
-
       "rootType": "object",
       "rootAnyOfAllowed": false,
       "allFieldsRequired": true,
@@ -391,50 +495,47 @@
         {
           "path": "**.string",
           "check": "no_keywords",
-          "keywords": ["minLength", "maxLength"]
+          "keywords": [
+            "minLength",
+            "maxLength"
+          ]
         },
         {
           "path": "**.object",
           "check": "no_keywords",
-          "keywords": ["patternProperties", "unevaluatedProperties", "propertyNames", "minProperties", "maxProperties"]
+          "keywords": [
+            "patternProperties",
+            "unevaluatedProperties",
+            "propertyNames",
+            "minProperties",
+            "maxProperties"
+          ]
         },
         {
           "path": "**.array",
           "check": "no_keywords",
-          "keywords": ["unevaluatedItems", "contains", "minContains", "maxContains", "uniqueItems", "prefixItems"]
+          "keywords": [
+            "unevaluatedItems",
+            "contains",
+            "minContains",
+            "maxContains",
+            "uniqueItems",
+            "prefixItems"
+          ]
         },
         {
           "path": "**",
           "check": "no_composition",
-          "keywords": ["allOf", "oneOf", "not", "if", "then", "else", "dependentRequired", "dependentSchemas"]
-        }
-      ],
-
-      "hardConstraints": [
-        {
-          "rule": "Root type must be object",
-          "detail": "The top-level schema type must be \"object\". Arrays, strings, or other types cannot be root.",
-          "severity": "error"
-        },
-        {
-          "rule": "Root-level anyOf is NOT allowed",
-          "detail": "The root object itself cannot use anyOf. anyOf is only allowed on nested properties.",
-          "severity": "error"
-        },
-        {
-          "rule": "All properties must be listed in required",
-          "detail": "Every property defined in \"properties\" must appear in the \"required\" array. Optional fields must use nullable type instead: {\"type\": [\"string\", \"null\"]}.",
-          "severity": "error"
-        },
-        {
-          "rule": "additionalProperties must be false",
-          "detail": "Every object in the schema (root and nested) must have \"additionalProperties\": false.",
-          "severity": "error"
-        },
-        {
-          "rule": "Key ordering is preserved",
-          "detail": "Output keys match the order defined in the schema's \"properties\" object.",
-          "severity": "info"
+          "keywords": [
+            "allOf",
+            "oneOf",
+            "not",
+            "if",
+            "then",
+            "else",
+            "dependentRequired",
+            "dependentSchemas"
+          ]
         }
       ],
       "nullableMechanism": "Type array: [\"T\", \"null\"] — e.g. {\"type\": [\"string\", \"null\"]}",
@@ -444,20 +545,48 @@
         "streaming": true,
         "citationsCompatible": true,
         "unknownKeywordsBehavior": "Returns 400 error"
-      },
-      "bestPractices": [
-        "Use Pydantic (Python) or Zod (TypeScript) for schema generation via SDK.",
-        "For optional fields, mark as required but make nullable: {\"type\": [\"string\", \"null\"]}.",
-        "Use description fields to guide model output quality.",
-        "Use enum for classification tasks with fixed categories.",
-        "Keep schemas as simple as possible; complexity increases latency.",
-        "Use $ref/$defs to reduce duplication in complex schemas.",
-        "Set max_tokens high enough to avoid truncated output (stop_reason: \"max_tokens\" means invalid output)."
-      ]
+      }
     },
     {
-      "groupId": "claude-4-5",
-      "groupName": "Claude (4.5+)",
+      "ruleSetId": "claude-4-5",
+      "displayName": "Claude (4.5+)",
+      "requirements": [
+        {
+          "rule": "Root type must be object",
+          "detail": "The top-level schema type must be \"object\".",
+          "severity": "error"
+        },
+        {
+          "rule": "additionalProperties: false is recommended",
+          "detail": "Not mandatory (unlike OpenAI), but strongly recommended for reliable results. SDK auto-adds it.",
+          "severity": "warning"
+        },
+        {
+          "rule": "Fields do NOT all need to be required",
+          "detail": "Unlike OpenAI, optional fields are natively supported. Omit from \"required\" array.",
+          "severity": "info"
+        },
+        {
+          "rule": "Key ordering is preserved",
+          "detail": "Output keys match the order defined in the schema.",
+          "severity": "info"
+        }
+      ],
+      "sizeLimits": {
+        "maxProperties": null,
+        "maxNestingDepth": null,
+        "recursiveDepth": "limited",
+        "notes": "Complexity-limited; no published hard numbers. Overly complex schemas return 400."
+      },
+      "tips": [
+        "Use Pydantic (Python) or Zod (TypeScript) via SDK helpers (.parse() method).",
+        "Use transform_schema() helper when manually building schemas with .create().",
+        "Put value constraints in description fields since numeric/string constraints aren't enforced.",
+        "Use additionalProperties: false for predictable output.",
+        "Warm schema cache by sending dummy request during deployment.",
+        "Set max_tokens high enough — truncated output (stop_reason: \"max_tokens\") won't match schema.",
+        "Cannot combine with citations or message prefilling."
+      ],
       "provider": "Anthropic",
       "providerId": "anthropic",
       "docUrl": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
@@ -490,40 +619,87 @@
           "inputSchema": "<your_schema>"
         }
       },
-
       "supportedTypes": [
         {
           "type": "string",
-          "supportedKeywords": ["enum", "const", "description"],
-          "unsupportedKeywords": ["minLength", "maxLength", "pattern", "format"],
+          "supportedKeywords": [
+            "enum",
+            "const",
+            "description"
+          ],
+          "unsupportedKeywords": [
+            "minLength",
+            "maxLength",
+            "pattern",
+            "format"
+          ],
           "notes": "No pattern, format, minLength, maxLength support. SDK moves unsupported constraints to description."
         },
         {
           "type": "number",
-          "supportedKeywords": ["description"],
-          "unsupportedKeywords": ["minimum", "maximum", "multipleOf", "exclusiveMinimum", "exclusiveMaximum"],
+          "supportedKeywords": [
+            "description"
+          ],
+          "unsupportedKeywords": [
+            "minimum",
+            "maximum",
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ],
           "notes": "No minimum, maximum, multipleOf, exclusiveMin/Max. SDK moves constraints to description."
         },
         {
           "type": "integer",
-          "supportedKeywords": ["description"],
-          "unsupportedKeywords": ["minimum", "maximum", "multipleOf", "exclusiveMinimum", "exclusiveMaximum"],
+          "supportedKeywords": [
+            "description"
+          ],
+          "unsupportedKeywords": [
+            "minimum",
+            "maximum",
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ],
           "notes": "Same limitations as number."
         },
         {
           "type": "boolean",
-          "supportedKeywords": ["description"],
+          "supportedKeywords": [
+            "description"
+          ],
           "unsupportedKeywords": []
         },
         {
           "type": "object",
-          "supportedKeywords": ["properties", "required", "additionalProperties", "description"],
-          "unsupportedKeywords": ["patternProperties", "unevaluatedProperties", "propertyNames", "minProperties", "maxProperties"]
+          "supportedKeywords": [
+            "properties",
+            "required",
+            "additionalProperties",
+            "description"
+          ],
+          "unsupportedKeywords": [
+            "patternProperties",
+            "unevaluatedProperties",
+            "propertyNames",
+            "minProperties",
+            "maxProperties"
+          ]
         },
         {
           "type": "array",
-          "supportedKeywords": ["items", "description"],
-          "unsupportedKeywords": ["minItems", "maxItems", "prefixItems", "uniqueItems", "unevaluatedItems", "contains"],
+          "supportedKeywords": [
+            "items",
+            "description"
+          ],
+          "unsupportedKeywords": [
+            "minItems",
+            "maxItems",
+            "prefixItems",
+            "uniqueItems",
+            "unevaluatedItems",
+            "contains"
+          ],
           "notes": "No minItems, maxItems. SDK moves to description."
         },
         {
@@ -535,16 +711,17 @@
       ],
       "stringFormats": [],
       "composition": {
-        "supported": ["anyOf", "$ref", "$defs"],
-        "unsupported": ["allOf", "oneOf", "not"]
+        "supported": [
+          "anyOf",
+          "$ref",
+          "$defs"
+        ],
+        "unsupported": [
+          "allOf",
+          "oneOf",
+          "not"
+        ]
       },
-      "limits": {
-        "maxProperties": null,
-        "maxNestingDepth": null,
-        "recursiveDepth": "limited",
-        "notes": "Complexity-limited; no published hard numbers. Overly complex schemas return 400."
-      },
-
       "rootType": "object",
       "rootAnyOfAllowed": false,
       "allFieldsRequired": false,
@@ -562,60 +739,71 @@
         {
           "path": "**.string",
           "check": "no_keywords",
-          "keywords": ["minLength", "maxLength", "pattern", "format"]
+          "keywords": [
+            "minLength",
+            "maxLength",
+            "pattern",
+            "format"
+          ]
         },
         {
           "path": "**.number",
           "check": "no_keywords",
-          "keywords": ["minimum", "maximum", "multipleOf", "exclusiveMinimum", "exclusiveMaximum"]
+          "keywords": [
+            "minimum",
+            "maximum",
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ]
         },
         {
           "path": "**.integer",
           "check": "no_keywords",
-          "keywords": ["minimum", "maximum", "multipleOf", "exclusiveMinimum", "exclusiveMaximum"]
+          "keywords": [
+            "minimum",
+            "maximum",
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ]
         },
         {
           "path": "**.array",
           "check": "no_keywords",
-          "keywords": ["minItems", "maxItems", "prefixItems", "uniqueItems", "unevaluatedItems", "contains"]
+          "keywords": [
+            "minItems",
+            "maxItems",
+            "prefixItems",
+            "uniqueItems",
+            "unevaluatedItems",
+            "contains"
+          ]
         },
         {
           "path": "**.object",
           "check": "no_keywords",
-          "keywords": ["patternProperties", "unevaluatedProperties", "propertyNames", "minProperties", "maxProperties"]
+          "keywords": [
+            "patternProperties",
+            "unevaluatedProperties",
+            "propertyNames",
+            "minProperties",
+            "maxProperties"
+          ]
         },
         {
           "path": "**",
           "check": "no_composition",
-          "keywords": ["allOf", "oneOf", "not"]
+          "keywords": [
+            "allOf",
+            "oneOf",
+            "not"
+          ]
         },
         {
           "path": "**.object",
           "check": "recommend_additional_properties_false",
           "value": true
-        }
-      ],
-
-      "hardConstraints": [
-        {
-          "rule": "Root type must be object",
-          "detail": "The top-level schema type must be \"object\".",
-          "severity": "error"
-        },
-        {
-          "rule": "additionalProperties: false is recommended",
-          "detail": "Not mandatory (unlike OpenAI), but strongly recommended for reliable results. SDK auto-adds it.",
-          "severity": "warning"
-        },
-        {
-          "rule": "Fields do NOT all need to be required",
-          "detail": "Unlike OpenAI, optional fields are natively supported. Omit from \"required\" array.",
-          "severity": "info"
-        },
-        {
-          "rule": "Key ordering is preserved",
-          "detail": "Output keys match the order defined in the schema.",
-          "severity": "info"
         }
       ],
       "nullableMechanism": "Type array: [\"T\", \"null\"] — e.g. {\"type\": [\"string\", \"null\"]}",
@@ -628,20 +816,47 @@
         "messagePrefillingCompatible": false,
         "sdkAutoTransforms": "Python/TS SDKs remove unsupported keywords, add them to description, add additionalProperties:false, validate response against original schema.",
         "unknownKeywordsBehavior": "SDK handles; raw API may error on invalid schemas"
-      },
-      "bestPractices": [
-        "Use Pydantic (Python) or Zod (TypeScript) via SDK helpers (.parse() method).",
-        "Use transform_schema() helper when manually building schemas with .create().",
-        "Put value constraints in description fields since numeric/string constraints aren't enforced.",
-        "Use additionalProperties: false for predictable output.",
-        "Warm schema cache by sending dummy request during deployment.",
-        "Set max_tokens high enough — truncated output (stop_reason: \"max_tokens\") won't match schema.",
-        "Cannot combine with citations or message prefilling."
-      ]
+      }
     },
     {
-      "groupId": "gemini-2-5",
-      "groupName": "Gemini (2.5+)",
+      "ruleSetId": "gemini-2-5",
+      "displayName": "Gemini (2.5+)",
+      "requirements": [
+        {
+          "rule": "Root type can be object OR array",
+          "detail": "Unlike OpenAI and Anthropic, Gemini allows array as root type.",
+          "severity": "info"
+        },
+        {
+          "rule": "Fields do NOT all need to be required",
+          "detail": "Optional fields are natively supported.",
+          "severity": "info"
+        },
+        {
+          "rule": "additionalProperties is optional",
+          "detail": "Supported but not required. Can be boolean or schema.",
+          "severity": "info"
+        },
+        {
+          "rule": "Key ordering matches schema",
+          "detail": "Gemini 2.5+ preserves property order from schema. For Gemini 2.0, use propertyOrdering field explicitly.",
+          "severity": "info"
+        }
+      ],
+      "sizeLimits": {
+        "maxProperties": null,
+        "maxNestingDepth": null,
+        "notes": "Complexity-limited; no hard numbers published. Complex schemas may be rejected with InvalidArgument: 400. Reduce: property name length, enum count, optional property count, nesting depth, array flattening."
+      },
+      "tips": [
+        "Use Pydantic (Python) or Zod (TypeScript) with responseJsonSchema.",
+        "Use description and title fields to guide model output.",
+        "Use enum for classification with fixed categories.",
+        "For Gemini 2.0 models, add explicit propertyOrdering field to control key order.",
+        "Keep schemas simple — long property names, deep nesting, many enums increase rejection risk.",
+        "Validate output in application code — structured output guarantees syntax, not semantic correctness.",
+        "Use responseJsonSchema (not responseSchema) for standard JSON Schema support on 2.5+ models."
+      ],
       "provider": "Google",
       "providerId": "gemini",
       "docUrl": "https://ai.google.dev/gemini-api/docs/structured-output",
@@ -669,41 +884,91 @@
         },
         "functionCalling": "Uses standard function declaration with schema in parameters field"
       },
-
       "supportedTypes": [
         {
           "type": "string",
-          "supportedKeywords": ["enum", "format", "description", "title"],
-          "unsupportedKeywords": ["minLength", "maxLength", "pattern"],
+          "supportedKeywords": [
+            "enum",
+            "format",
+            "description",
+            "title"
+          ],
+          "unsupportedKeywords": [
+            "minLength",
+            "maxLength",
+            "pattern"
+          ],
           "notes": "No pattern, minLength, maxLength support."
         },
         {
           "type": "number",
-          "supportedKeywords": ["enum", "minimum", "maximum", "description", "title"],
-          "unsupportedKeywords": ["multipleOf", "exclusiveMinimum", "exclusiveMaximum"],
+          "supportedKeywords": [
+            "enum",
+            "minimum",
+            "maximum",
+            "description",
+            "title"
+          ],
+          "unsupportedKeywords": [
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ],
           "notes": "No multipleOf, exclusiveMinimum, exclusiveMaximum."
         },
         {
           "type": "integer",
-          "supportedKeywords": ["enum", "minimum", "maximum", "description", "title"],
-          "unsupportedKeywords": ["multipleOf", "exclusiveMinimum", "exclusiveMaximum"],
+          "supportedKeywords": [
+            "enum",
+            "minimum",
+            "maximum",
+            "description",
+            "title"
+          ],
+          "unsupportedKeywords": [
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ],
           "notes": "Same as number."
         },
         {
           "type": "boolean",
-          "supportedKeywords": ["description", "title"],
+          "supportedKeywords": [
+            "description",
+            "title"
+          ],
           "unsupportedKeywords": []
         },
         {
           "type": "object",
-          "supportedKeywords": ["properties", "required", "additionalProperties", "description", "title"],
-          "unsupportedKeywords": ["patternProperties", "unevaluatedProperties"],
+          "supportedKeywords": [
+            "properties",
+            "required",
+            "additionalProperties",
+            "description",
+            "title"
+          ],
+          "unsupportedKeywords": [
+            "patternProperties",
+            "unevaluatedProperties"
+          ],
           "notes": "additionalProperties can be boolean or schema."
         },
         {
           "type": "array",
-          "supportedKeywords": ["items", "prefixItems", "minItems", "maxItems", "description", "title"],
-          "unsupportedKeywords": ["uniqueItems", "contains"],
+          "supportedKeywords": [
+            "items",
+            "prefixItems",
+            "minItems",
+            "maxItems",
+            "description",
+            "title"
+          ],
+          "unsupportedKeywords": [
+            "uniqueItems",
+            "contains"
+          ],
           "notes": "prefixItems enables tuple-like structures."
         },
         {
@@ -713,19 +978,28 @@
           "notes": "Used in type arrays for nullable: {\"type\": [\"string\", \"null\"]}"
         }
       ],
-      "stringFormats": ["date-time", "date", "time"],
+      "stringFormats": [
+        "date-time",
+        "date",
+        "time"
+      ],
       "composition": {
-        "supported": ["anyOf", "$ref", "$defs"],
-        "unsupported": ["allOf", "oneOf", "not"],
+        "supported": [
+          "anyOf",
+          "$ref",
+          "$defs"
+        ],
+        "unsupported": [
+          "allOf",
+          "oneOf",
+          "not"
+        ],
         "notes": "$defs supported via $ref. anyOf added in November 2025 update."
       },
-      "limits": {
-        "maxProperties": null,
-        "maxNestingDepth": null,
-        "notes": "Complexity-limited; no hard numbers published. Complex schemas may be rejected with InvalidArgument: 400. Reduce: property name length, enum count, optional property count, nesting depth, array flattening."
-      },
-
-      "rootType": ["object", "array"],
+      "rootType": [
+        "object",
+        "array"
+      ],
       "rootAnyOfAllowed": false,
       "allFieldsRequired": false,
       "additionalPropertiesMustBeFalse": false,
@@ -735,65 +1009,71 @@
         {
           "path": "$",
           "check": "type_in",
-          "value": ["object", "array"]
+          "value": [
+            "object",
+            "array"
+          ]
         },
         {
           "path": "**.string",
           "check": "no_keywords",
-          "keywords": ["minLength", "maxLength", "pattern"]
+          "keywords": [
+            "minLength",
+            "maxLength",
+            "pattern"
+          ]
         },
         {
           "path": "**.number",
           "check": "no_keywords",
-          "keywords": ["multipleOf", "exclusiveMinimum", "exclusiveMaximum"]
+          "keywords": [
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ]
         },
         {
           "path": "**.integer",
           "check": "no_keywords",
-          "keywords": ["multipleOf", "exclusiveMinimum", "exclusiveMaximum"]
+          "keywords": [
+            "multipleOf",
+            "exclusiveMinimum",
+            "exclusiveMaximum"
+          ]
         },
         {
           "path": "**.array",
           "check": "no_keywords",
-          "keywords": ["uniqueItems", "contains"]
+          "keywords": [
+            "uniqueItems",
+            "contains"
+          ]
         },
         {
           "path": "**.object",
           "check": "no_keywords",
-          "keywords": ["patternProperties", "unevaluatedProperties"]
+          "keywords": [
+            "patternProperties",
+            "unevaluatedProperties"
+          ]
         },
         {
           "path": "**",
           "check": "no_composition",
-          "keywords": ["allOf", "oneOf", "not"]
+          "keywords": [
+            "allOf",
+            "oneOf",
+            "not"
+          ]
         },
         {
           "path": "**.string.format",
           "check": "value_in",
-          "value": ["date-time", "date", "time"]
-        }
-      ],
-
-      "hardConstraints": [
-        {
-          "rule": "Root type can be object OR array",
-          "detail": "Unlike OpenAI and Anthropic, Gemini allows array as root type.",
-          "severity": "info"
-        },
-        {
-          "rule": "Fields do NOT all need to be required",
-          "detail": "Optional fields are natively supported.",
-          "severity": "info"
-        },
-        {
-          "rule": "additionalProperties is optional",
-          "detail": "Supported but not required. Can be boolean or schema.",
-          "severity": "info"
-        },
-        {
-          "rule": "Key ordering matches schema",
-          "detail": "Gemini 2.5+ preserves property order from schema. For Gemini 2.0, use propertyOrdering field explicitly.",
-          "severity": "info"
+          "value": [
+            "date-time",
+            "date",
+            "time"
+          ]
         }
       ],
       "nullableMechanism": "Type array: [\"T\", \"null\"] — e.g. {\"type\": [\"string\", \"null\"]}",
@@ -804,16 +1084,7 @@
         "citationsCompatible": true,
         "toolsCombinable": "Gemini 3 preview: combine structured outputs with Google Search, URL Context, Code Execution, File Search.",
         "unknownKeywordsBehavior": "Silently ignored"
-      },
-      "bestPractices": [
-        "Use Pydantic (Python) or Zod (TypeScript) with responseJsonSchema.",
-        "Use description and title fields to guide model output.",
-        "Use enum for classification with fixed categories.",
-        "For Gemini 2.0 models, add explicit propertyOrdering field to control key order.",
-        "Keep schemas simple — long property names, deep nesting, many enums increase rejection risk.",
-        "Validate output in application code — structured output guarantees syntax, not semantic correctness.",
-        "Use responseJsonSchema (not responseSchema) for standard JSON Schema support on 2.5+ models."
-      ]
+      }
     }
   ]
 }

@@ -1,65 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import type { StructuredOutputGroupsData } from "~/types/structuredOutputGroups";
-import groupsDataJson from "~/data/structured_output_groups.generated.json";
+import type { SchemaRuleSetsData } from "~/types/schemaRuleSets";
+import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
 import { ComparisonTable } from "~/components/ComparisonTable";
-import { GroupCard } from "~/components/GroupCard";
+import { RuleSetCard } from "~/components/RuleSetCard";
 import { UniversalRules } from "~/components/UniversalRules";
 
-const groupsData = groupsDataJson as unknown as StructuredOutputGroupsData;
+const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 
 if (
-  !groupsData.meta?.comparisonColumns ||
-  !Array.isArray(groupsData.meta.comparisonColumns) ||
-  groupsData.meta.comparisonColumns.length === 0
+  !ruleSetsData.meta?.comparisonColumns ||
+  !Array.isArray(ruleSetsData.meta.comparisonColumns) ||
+  ruleSetsData.meta.comparisonColumns.length === 0
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.comparisonColumns is required and must be a non-empty array."
+    "schema_rule_sets.json: meta.comparisonColumns is required and must be a non-empty array."
   );
 }
 if (
-  !groupsData.meta?.comparisonRows ||
-  !Array.isArray(groupsData.meta.comparisonRows) ||
-  groupsData.meta.comparisonRows.length === 0
+  !ruleSetsData.meta?.comparisonRows ||
+  !Array.isArray(ruleSetsData.meta.comparisonRows) ||
+  ruleSetsData.meta.comparisonRows.length === 0
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.comparisonRows is required and must be a non-empty array."
+    "schema_rule_sets.json: meta.comparisonRows is required and must be a non-empty array."
   );
 }
-if (typeof groupsData.meta?.sourcesDisplay !== "string") {
+if (typeof ruleSetsData.meta?.sourcesDisplay !== "string") {
   throw new Error(
-    "structured_output_groups.json: meta.sourcesDisplay is required."
-  );
-}
-if (
-  !groupsData.meta?.providerBadgeClasses ||
-  typeof groupsData.meta.providerBadgeClasses !== "object"
-) {
-  throw new Error(
-    "structured_output_groups.json: meta.providerBadgeClasses is required."
+    "schema_rule_sets.json: meta.sourcesDisplay is required."
   );
 }
 if (
-  !groupsData.meta?.comparisonLegend ||
-  typeof groupsData.meta.comparisonLegend !== "object"
+  !ruleSetsData.meta?.providerBadgeClasses ||
+  typeof ruleSetsData.meta.providerBadgeClasses !== "object"
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.comparisonLegend is required."
+    "schema_rule_sets.json: meta.providerBadgeClasses is required."
   );
 }
 if (
-  !groupsData.meta?.universal ||
-  !Array.isArray(groupsData.meta.universal.alwaysSupported) ||
-  !Array.isArray(groupsData.meta.universal.neverSupported)
+  !ruleSetsData.meta?.comparisonLegend ||
+  typeof ruleSetsData.meta.comparisonLegend !== "object"
 ) {
   throw new Error(
-    "structured_output_groups.json: meta.universal with alwaysSupported and neverSupported arrays is required."
+    "schema_rule_sets.json: meta.comparisonLegend is required."
+  );
+}
+if (
+  !ruleSetsData.meta?.universal ||
+  !Array.isArray(ruleSetsData.meta.universal.alwaysSupported) ||
+  !Array.isArray(ruleSetsData.meta.universal.neverSupported)
+) {
+  throw new Error(
+    "schema_rule_sets.json: meta.universal with alwaysSupported and neverSupported arrays is required."
   );
 }
 
-const GROUPS = groupsData.groups;
-const META = groupsData.meta;
+const RULE_SETS = ruleSetsData.ruleSets;
+const META = ruleSetsData.meta;
 
 export default function ModelSupportPage() {
   return (
@@ -89,12 +89,12 @@ export default function ModelSupportPage() {
         columns={META.comparisonColumns}
         rows={META.comparisonRows}
         legend={META.comparisonLegend}
-        groups={GROUPS}
+        ruleSets={RULE_SETS}
       />
       </section>
 
-      {GROUPS.map((group) => (
-        <GroupCard key={group.groupId} group={group} meta={META} />
+      {RULE_SETS.map((ruleSet) => (
+        <RuleSetCard key={ruleSet.ruleSetId} ruleSet={ruleSet} meta={META} />
       ))}
 
       <UniversalRules data={META.universal} />

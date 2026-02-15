@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "if then else",
     "description": "invalid: if then else",
     "expectation": "invalid: error must match additional propert|if|then|else",

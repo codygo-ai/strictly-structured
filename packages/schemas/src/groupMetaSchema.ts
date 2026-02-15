@@ -1,8 +1,9 @@
 /**
- * Builds a group meta-schema as a subset of the draft-07 JSON Schema meta-schema:
- * start from the full draft-07 meta-schema and restrict by removing unsupported
- * keywords and applying group-specific root rules. Uses unified group structure;
- * errors if supportedTypes is missing. No I/O; pure functions (base schema passed in).
+ * Builds a per–rule-set meta-schema (a schema that validates other schemas).
+ * Starts from the draft-07 meta-schema and restricts it by removing unsupported
+ * keywords and applying rule-set-specific root rules. Errors if supportedTypes
+ * is missing. No I/O; pure functions (base meta-schema passed in).
+ * See docs/VOCABULARY.md: "schema" = describes data; "meta-schema" = validates schemas.
  */
 
 const DRAFT_07 = "http://json-schema.org/draft-07/schema#";
@@ -70,7 +71,7 @@ export function normalizeGroupInput(
   const g = group as unknown as UnifiedGroupLike;
   if (!g.supportedTypes || !Array.isArray(g.supportedTypes)) {
     throw new Error(
-      "Group is missing supportedTypes; cannot generate group meta-schema."
+      "Rule set is missing supportedTypes; cannot build meta-schema."
     );
   }
   const rootTypeRaw = g.rootType;
@@ -119,9 +120,8 @@ function allUnsupportedKeywords(input: GroupMetaSchemaInput): Set<string> {
 }
 
 /**
- * Returns a group meta-schema that is a subset of the draft-07 meta-schema:
- * same structure and size as the base, with unsupported keywords removed and
- * group-specific root rules applied.
+ * Returns a meta-schema (subset of draft-07) with unsupported keywords removed
+ * and rule-set-specific root rules applied.
  */
 export function buildGroupMetaSchema(
   baseMetaSchema: Record<string, unknown>,

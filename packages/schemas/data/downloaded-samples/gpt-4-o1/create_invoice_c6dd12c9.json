@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "create_invoice_c6dd12c9",
     "description": "downloaded: JSONSchemaBench (epfl-dlab/JSONSchemaBench) – create_invoice_c6dd12c9",
     "expectation": "unknown (validate per group to set expected)",

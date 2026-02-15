@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gpt-4-o1",
+    "ruleSetId": "gpt-4-o1",
     "name": "nullable via type array",
     "description": "valid: nullable via type array",
     "expectation": "valid",

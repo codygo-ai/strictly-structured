@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "gemini-2-5",
+    "ruleSetId": "gemini-2-5",
     "name": "integer minimum maximum",
     "description": "valid: integer minimum maximum",
     "expectation": "valid",

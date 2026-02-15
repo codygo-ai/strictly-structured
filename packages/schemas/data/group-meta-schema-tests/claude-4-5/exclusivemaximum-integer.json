@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "groupId": "claude-4-5",
+    "ruleSetId": "claude-4-5",
     "name": "exclusiveMaximum integer",
     "description": "invalid: exclusiveMaximum integer",
     "expectation": "invalid: error must match additional propert|exclusiveMaximum",
