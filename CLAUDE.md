@@ -45,10 +45,6 @@ For reference, the full lifecycle of a non-trivial task:
 
 Steps 2–5 flow automatically. The only user interaction points are: approving the plan (step 1), choosing branch/worktree options (step 2), and confirming PR creation (step 5).
 
-## Dev Tips
-
-- **Reset onboarding hint:** The first-visit banner is dismissed via `localStorage`. To see it again during development, run `localStorage.removeItem("ssv-onboarding-dismissed")` in the browser console and refresh.
-
 ## Self-Improvement Protocol
 
 At the end of each completed task (not every turn), if any of these occurred:
