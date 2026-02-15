@@ -11,7 +11,7 @@ interface ProviderIconProps {
   provider: ProviderId;
   size?: number;
   className?: string;
-  /** Apply brand color (default true). Set false to inherit parent color. */
+  /** Apply brand color. Set true to use provider color, false to inherit parent color. */
   colored?: boolean;
 }
 

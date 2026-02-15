@@ -16,6 +16,23 @@ export function registerValidateSchemaTool(server: McpServer): void {
         .describe("Provider rule sets to validate against. Defaults to all providers if omitted."),
     },
     async ({ schema, providers }) => {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(schema);
+      } catch {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: "Invalid JSON", results: [], summary: "Input is not valid JSON." }, undefined, 2) }],
+          isError: true,
+        };
+      }
+
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: "Schema must be a JSON object", results: [], summary: "Schema must be a JSON object, not a primitive or array." }, undefined, 2) }],
+          isError: true,
+        };
+      }
+
       const ruleSets = getRuleSetsByProviders(providers as ProviderId[] | undefined);
       const results: ProviderValidationResult[] = ruleSets.map((ruleSet) => {
         const markers = validateSchemaForRuleSet(schema, ruleSet);

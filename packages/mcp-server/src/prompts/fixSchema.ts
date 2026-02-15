@@ -30,16 +30,22 @@ export function registerFixSchemaPrompt(server: McpServer): void {
 
       const markers = validateSchemaForRuleSet(schema, ruleSet);
 
-      let parsed: Record<string, unknown>;
+      let parsed: unknown;
       try {
-        parsed = JSON.parse(schema) as Record<string, unknown>;
+        parsed = JSON.parse(schema);
       } catch {
         return {
           messages: [{ role: "user" as const, content: { type: "text" as const, text: "Schema is not valid JSON." } }],
         };
       }
 
-      const fixResult = fixSchemaForRuleSet(parsed, ruleSet);
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        return {
+          messages: [{ role: "user" as const, content: { type: "text" as const, text: "Schema must be a JSON object, not a primitive or array." } }],
+        };
+      }
+
+      const fixResult = fixSchemaForRuleSet(parsed as Record<string, unknown>, ruleSet);
       const fixedSchemaStr = JSON.stringify(fixResult.fixedSchema, undefined, 2);
       const postFixMarkers = validateSchemaForRuleSet(fixedSchemaStr, ruleSet);
       const rulesText = formatRuleSetAsText(ruleSet);

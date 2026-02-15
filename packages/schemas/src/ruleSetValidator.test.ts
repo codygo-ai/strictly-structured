@@ -57,8 +57,8 @@ describe("ruleSetValidator", () => {
   const ruleSetsMap = loadRuleSets();
   const samples = loadSamples();
 
-  it("has at least 150 samples", () => {
-    expect(samples.length).toBeGreaterThanOrEqual(150);
+  it("has at least 175 samples", () => {
+    expect(samples.length).toBeGreaterThanOrEqual(175);
   });
 
   for (const sample of samples) {

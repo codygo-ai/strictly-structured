@@ -23,9 +23,9 @@ export function registerFixSchemaTool(server: McpServer): void {
         };
       }
 
-      let parsed: Record<string, unknown>;
+      let parsed: unknown;
       try {
-        parsed = JSON.parse(schema) as Record<string, unknown>;
+        parsed = JSON.parse(schema);
       } catch {
         return {
           content: [{ type: "text" as const, text: JSON.stringify({ error: "Invalid JSON", fixedSchema: schema, appliedFixes: [], remainingIssues: ["Invalid JSON"] }) }],
@@ -33,7 +33,14 @@ export function registerFixSchemaTool(server: McpServer): void {
         };
       }
 
-      const result = fixSchemaForRuleSet(parsed, ruleSet);
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: "Schema must be a JSON object", fixedSchema: schema, appliedFixes: [], remainingIssues: ["Schema must be a JSON object"] }) }],
+          isError: true,
+        };
+      }
+
+      const result = fixSchemaForRuleSet(parsed as Record<string, unknown>, ruleSet);
 
       return {
         content: [{ type: "text" as const, text: JSON.stringify({
