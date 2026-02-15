@@ -42,6 +42,9 @@ export function CompatibilityDashboard({
   const sidebarRef = useRef<HTMLElement>(null);
   const [width, setWidth] = useState<number | null>(null);
 
+  const MIN_SIDEBAR_WIDTH = 420;
+  const KEYBOARD_RESIZE_STEP = 20;
+
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     const sidebar = sidebarRef.current;
@@ -54,17 +57,30 @@ export function CompatibilityDashboard({
 
     const onMove = (ev: PointerEvent) => {
       const delta = startX - ev.clientX;
-      const minWidth = 420;
-      setWidth(Math.max(minWidth, startWidth + delta));
+      setWidth(Math.max(MIN_SIDEBAR_WIDTH, startWidth + delta));
     };
 
-    const onUp = () => {
+    const cleanup = () => {
       el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerup", onUp);
+      el.removeEventListener("pointerup", cleanup);
+      el.removeEventListener("pointercancel", cleanup);
+      el.removeEventListener("lostpointercapture", cleanup);
     };
 
     el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerup", onUp);
+    el.addEventListener("pointerup", cleanup);
+    el.addEventListener("pointercancel", cleanup);
+    el.addEventListener("lostpointercapture", cleanup);
+  }, []);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const sidebar = sidebarRef.current;
+    if (!sidebar) return;
+    const currentWidth = sidebar.getBoundingClientRect().width;
+    const delta = e.key === "ArrowLeft" ? -KEYBOARD_RESIZE_STEP : KEYBOARD_RESIZE_STEP;
+    setWidth(Math.max(MIN_SIDEBAR_WIDTH, currentWidth + delta));
   }, []);
 
   const selectedRuleSet = useMemo(
@@ -82,8 +98,13 @@ export function CompatibilityDashboard({
     >
       {/* Resize grip */}
       <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize sidebar"
+        tabIndex={0}
         className="sidebar-resize-handle"
         onPointerDown={handlePointerDown}
+        onKeyDown={handleKeyDown}
       />
       {/* Status cards */}
       <div className="status-cards">

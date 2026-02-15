@@ -117,14 +117,15 @@
   width: 6px;
   height: 100%;
   cursor: col-resize;
+  touch-action: none;
   z-index: 10;
-  background: transparent;
+  background-color: transparent;
   transition: background-color var(--ds-duration);
 }
 
 .validator-page .sidebar-resize-handle:hover,
 .validator-page .sidebar-resize-handle:active {
-  background: var(--ds-accent);
+  background-color: var(--ds-accent);
   opacity: 0.4;
 }
 
