@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import type { SchemaMarker } from "~/lib/ruleSetValidator";
+import metaSchema from "~/data/json-schema-meta.json";
 
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -67,6 +68,7 @@ export function SchemaEditor({
           {
             uri: META_SCHEMA_URI,
             fileMatch: [EDITOR_MODEL_PATH],
+            schema: metaSchema,
           },
         ],
       });
