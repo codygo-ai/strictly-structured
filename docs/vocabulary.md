@@ -24,18 +24,17 @@ This project uses three terms that must stay consistent to avoid confusion.
 **What it is:** A JSON Schema document that **validates other schemas** (a “schema for schemas”). It defines what a valid JSON Schema document may contain.
 
 **Standards:**
-- **Draft-07 meta-schema** – The official JSON Schema draft-07 definition. We keep a copy as `packages/schemas/data/draft-07-meta-schema.json`.
+- **Aggregated meta-schema** – A hybrid Draft-07 / 2020-12 JSON Schema definition covering keywords from both drafts. Kept as `packages/schemas/data/versionAggregatedJsonSchema.json`. Used by Monaco (frontend) and AJV (MCP server) for structural validation before provider-specific checks.
 
 **In this project:**
-- We build a **per–rule-set meta-schema**: a restricted subset of draft-07 that says “for this provider, a valid schema may only use these keywords.” Each file under `rule-set-meta-schemas/<ruleSetId>.generated.json` is such a meta-schema.
-- We use it to validate that a **schema** (the user’s document) is valid *for that rule set* when we run AJV (e.g. in tests). Our main validation path uses custom logic (`validateSchemaForRuleSet`) that does not load these files; the generated meta-schemas are for tools like Monaco or external validators.
+- The aggregated meta-schema validates that a **schema** is structurally valid JSON Schema (correct use of keywords, types, etc.).
+- Provider-specific rule validation is handled by `validateSchemaForRuleSet` (custom logic in `@ssv/schemas`), which checks the schema against data-driven rules in `schemaRuleSets.json`.
 
-**Use the word “meta-schema” when:** Referring to:
-- `draft-07-meta-schema.json`
-- Generated files in `rule-set-meta-schemas/*.generated.json`
-- The code that *builds* those files (e.g. “builds a per–rule-set meta-schema”)
+**Use the word "meta-schema" when:** Referring to:
+- `versionAggregatedJsonSchema.json`
+- The concept of a "schema that validates other schemas"
 
-**Do not use “meta-schema” for:** The user’s schema, or the act of validating the user’s schema against provider rules (that is “schema validation”).
+**Do not use "meta-schema" for:** The user's schema, or the act of validating the user's schema against provider rules (that is "schema validation").
 
 ---
 
@@ -43,7 +42,7 @@ This project uses three terms that must stay consistent to avoid confusion.
 
 **What it is:** **Data about the dataset**, not about schemas or meta-schemas. For example: version, lastUpdated, comparison columns, legend, provider badge classes.
 
-**Where it lives:** The top-level key **`meta`** in `schema_rule_sets.json` holds this metadata. In types it appears as `SchemaRuleSetsMeta` or `data.meta`.
+**Where it lives:** The top-level key **`meta`** in `schemaRuleSets.json` holds this metadata. In types it appears as `SchemaRuleSetsMeta` or `data.meta`.
 
 **Use the word “metadata” when:** Referring to that object or to “info about the rule sets dataset.” In code/comments you can say “the `meta` object” or “dataset metadata” to be explicit.
 
@@ -56,13 +55,13 @@ This project uses three terms that must stay consistent to avoid confusion.
 | Term        | Meaning                          | Examples |
 |------------|-----------------------------------|----------|
 | **schema** | JSON Schema that describes data   | User’s schema, `validate_schema` input, sample schemas |
-| **meta-schema** | JSON Schema that validates schemas | `draft-07-meta-schema.json`, `rule-set-meta-schemas/*.generated.json` |
-| **metadata** | Data about the rule sets dataset  | `schema_rule_sets.json` top-level `meta` |
+| **meta-schema** | JSON Schema that validates schemas | `versionAggregatedJsonSchema.json` |
+| **metadata** | Data about the rule sets dataset  | `schemaRuleSets.json` top-level `meta` |
 
 ---
 
 ## Naming in code and paths
 
 - **Schema** – e.g. `validateSchemaForRuleSet`, “schema editor,” “paste a schema.”
-- **Meta-schema** – e.g. `rule-set-meta-schemas/`, `draft-07-meta-schema.json`, “build a per–rule-set meta-schema,” “meta-schema validation” (validating a schema against a meta-schema).
+- **Meta-schema** – e.g. `versionAggregatedJsonSchema.json`, "meta-schema validation" (validating a schema against a meta-schema).
 - **Metadata** – e.g. “dataset metadata,” “the `meta` object,” `SchemaRuleSetsMeta`.

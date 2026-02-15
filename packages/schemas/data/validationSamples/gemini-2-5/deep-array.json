@@ -11,8 +11,6 @@
     "type": "array",
     "items": {
       "type": "integer"
-    },
-    "additionalProperties": false
-  },
-  "additionalProperties": false
+    }
+  }
 }

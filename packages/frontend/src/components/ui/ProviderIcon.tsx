@@ -1,5 +1,5 @@
 import { OpenAIIcon, ClaudeIcon, GeminiIcon } from "~/components/icons";
-import type { ProviderId } from "~/types/schemaRuleSets";
+import type { ProviderId } from "@ssv/schemas/types";
 
 const PROVIDER_COLORS: Record<ProviderId, string> = {
   openai: "var(--ds-primary)",

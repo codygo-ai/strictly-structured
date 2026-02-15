@@ -4,7 +4,7 @@ import Link from "next/link";
 import type {
   SchemaRuleSet,
   SchemaRuleSetsMeta,
-} from "~/types/schemaRuleSets";
+} from "@ssv/schemas/types";
 import { SeverityIcon } from "~/components/SeverityIcon";
 import { Pill } from "~/components/ui";
 import { camelCaseToLabel, limitsToRows } from "~/lib/format";

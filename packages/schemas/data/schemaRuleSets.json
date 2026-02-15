@@ -355,6 +355,7 @@
         {
           "type": "number",
           "supportedKeywords": [
+            "const",
             "description",
             "multipleOf",
             "minimum",
@@ -368,6 +369,7 @@
         {
           "type": "integer",
           "supportedKeywords": [
+            "const",
             "description",
             "multipleOf",
             "minimum",
@@ -381,6 +383,7 @@
         {
           "type": "boolean",
           "supportedKeywords": [
+            "const",
             "description"
           ],
           "unsupportedKeywords": []
@@ -638,6 +641,7 @@
         {
           "type": "number",
           "supportedKeywords": [
+            "const",
             "description"
           ],
           "unsupportedKeywords": [
@@ -652,6 +656,7 @@
         {
           "type": "integer",
           "supportedKeywords": [
+            "const",
             "description"
           ],
           "unsupportedKeywords": [
@@ -666,6 +671,7 @@
         {
           "type": "boolean",
           "supportedKeywords": [
+            "const",
             "description"
           ],
           "unsupportedKeywords": []
@@ -704,7 +710,9 @@
         },
         {
           "type": "null",
-          "supportedKeywords": [],
+          "supportedKeywords": [
+            "const"
+          ],
           "unsupportedKeywords": [],
           "notes": "Used in type arrays for nullable: {\"type\": [\"string\", \"null\"]}"
         }

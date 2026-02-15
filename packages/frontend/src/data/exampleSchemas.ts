@@ -1,4 +1,4 @@
-import type { ProviderId } from "~/types/schemaRuleSets";
+import type { ProviderId } from "@ssv/schemas/types";
 
 export interface ExampleSchema {
   name: string;

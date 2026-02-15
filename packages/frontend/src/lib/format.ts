@@ -1,4 +1,4 @@
-import type { SizeLimits } from "~/types/schemaRuleSets";
+import type { SizeLimits } from "@ssv/schemas/types";
 
 export function camelCaseToLabel(key: string): string {
   return key

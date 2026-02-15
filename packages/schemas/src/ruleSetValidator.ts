@@ -1,5 +1,5 @@
 import jsonSourceMap from "json-source-map";
-import type { SchemaRuleSet } from "./groups";
+import type { SchemaRuleSet } from "./types.js";
 
 export interface SchemaMarker {
   startLineNumber: number;
@@ -17,7 +17,7 @@ interface ValidatorRules {
   additionalPropertiesMustBeFalse: boolean;
   additionalPropertiesFalseRecommended?: boolean;
   supportedStringFormats: string[];
-  limits?: {
+  sizeLimits?: {
     maxProperties?: number | null;
     maxNestingDepth?: number | null;
     maxStringLengthNamesEnums?: number | null;
@@ -52,6 +52,10 @@ interface WalkContext {
   totalStringLengthNamesEnums: number;
 }
 
+/**
+ * Composition / applicator keywords.
+ * Checked via the composition check, skipped by the per-type keyword check.
+ */
 const COMPOSITION_KEYWORDS = new Set([
   "anyOf",
   "allOf",
@@ -64,8 +68,10 @@ const COMPOSITION_KEYWORDS = new Set([
   "dependentSchemas",
   "$ref",
   "$defs",
+  "definitions",
 ]);
 
+/** Structural keywords valid on any node regardless of type or provider. */
 const STRUCTURAL_KEYWORDS = new Set(["type"]);
 
 function buildSupportedKeywordsByType(
@@ -120,7 +126,7 @@ export function validateSchemaForRuleSet(
   }
 
   const { data, pointers } = parsed;
-  if (data === null || typeof data !== "object") return [];
+  if (data === null || typeof data !== "object" || Array.isArray(data)) return [];
 
   const rules: ValidatorRules = {
     rootType: ruleSet.rootType,
@@ -129,7 +135,7 @@ export function validateSchemaForRuleSet(
     additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse,
     additionalPropertiesFalseRecommended: ruleSet.additionalPropertiesFalseRecommended,
     supportedStringFormats: ruleSet.stringFormats ?? [],
-    limits: {
+    sizeLimits: {
       maxProperties: ruleSet.sizeLimits.maxProperties,
       maxNestingDepth: ruleSet.sizeLimits.maxNestingDepth,
       maxStringLengthNamesEnums: ruleSet.sizeLimits.maxStringLengthNamesEnums ?? null,
@@ -167,6 +173,8 @@ function walkNode(
 
   const nodeType = resolveType(node);
 
+  // Flag multi-type unions like ["string", "number"] — providers only support
+  // nullable via ["T", "null"], not arbitrary unions.
   const rawType = node["type"];
   if (Array.isArray(rawType)) {
     const nonNull = rawType.filter((v) => v !== "null");
@@ -233,6 +241,8 @@ function checkRootConstraints(
     );
   }
 
+  // Only flag root-specific anyOf restriction when anyOf is otherwise supported.
+  // If anyOf is globally unsupported, checkNodeKeywords handles it.
   if (
     !rules.rootAnyOfAllowed &&
     node["anyOf"] !== undefined &&
@@ -250,6 +260,12 @@ function checkRootConstraints(
   }
 }
 
+/**
+ * Unified keyword check: iterates every key on the node once.
+ *  - Structural keywords (just `type`): always allowed.
+ *  - Composition keywords: checked against supportedCompositionKeywords.
+ *  - Everything else: checked against the type-specific supported set.
+ */
 function checkNodeKeywords(
   node: Record<string, unknown>,
   nodeType: string | null,
@@ -266,10 +282,13 @@ function checkNodeKeywords(
     if (STRUCTURAL_KEYWORDS.has(key)) continue;
 
     if (COMPOSITION_KEYWORDS.has(key)) {
+      // Root anyOf is handled by checkRootConstraints when anyOf is supported
       if (isRoot && key === "anyOf" && supportedComposition.has("anyOf")) {
         continue;
       }
-      if (!supportedComposition.has(key)) {
+      // Treat "definitions" (Draft-07) as an alias for "$defs" (2020-12)
+      const compositionKey = key === "definitions" ? "$defs" : key;
+      if (!supportedComposition.has(compositionKey)) {
         markers.push(
           pointerToMarker(
             pointers,
@@ -283,6 +302,7 @@ function checkNodeKeywords(
       continue;
     }
 
+    // Per-type check — only when we know the type
     if (typeSupported && !typeSupported.has(key)) {
       markers.push(
         pointerToMarker(
@@ -374,6 +394,8 @@ function checkStringFormat(
   ctx: WalkContext
 ): void {
   const formats = ctx.rules.supportedStringFormats;
+  // If formats list is empty, the format keyword itself is unsupported —
+  // already flagged by checkNodeKeywords (format won't be in supportedStringKeywords).
   if (!formats || formats.length === 0) return;
 
   if (!formats.includes(format)) {
@@ -457,6 +479,7 @@ function recurseChildren(
     });
   }
 
+  // anyOf branches don't increase structural depth
   if (Array.isArray(node["anyOf"])) {
     (node["anyOf"] as unknown[]).forEach((branch, i) => {
       if (branch && typeof branch === "object") {
@@ -471,17 +494,20 @@ function recurseChildren(
     });
   }
 
-  if (node["$defs"] && typeof node["$defs"] === "object") {
-    const defs = node["$defs"] as Record<string, unknown>;
-    for (const [key, value] of Object.entries(defs)) {
-      if (value && typeof value === "object") {
-        walkNode(
-          value as Record<string, unknown>,
-          `${pointer}/$defs/${escapePointer(key)}`,
-          0,
-          false,
-          ctx
-        );
+  // $defs / definitions are definitions, not structural nesting
+  for (const defsKey of ["$defs", "definitions"] as const) {
+    if (node[defsKey] && typeof node[defsKey] === "object") {
+      const defs = node[defsKey] as Record<string, unknown>;
+      for (const [key, value] of Object.entries(defs)) {
+        if (value && typeof value === "object") {
+          walkNode(
+            value as Record<string, unknown>,
+            `${pointer}/${escapePointer(defsKey)}/${escapePointer(key)}`,
+            0,
+            false,
+            ctx
+          );
+        }
       }
     }
   }
@@ -501,42 +527,66 @@ function recurseChildren(
 }
 
 function checkQuantitativeLimits(ctx: WalkContext): void {
-  const limits = ctx.rules.limits;
-  if (!limits) return;
+  const sizeLimits = ctx.rules.sizeLimits;
+  if (!sizeLimits) return;
 
   if (
-    typeof limits.maxProperties === "number" &&
-    ctx.totalProperties > limits.maxProperties
+    typeof sizeLimits.maxProperties === "number" &&
+    ctx.totalProperties > sizeLimits.maxProperties
   ) {
     ctx.markers.push(
-      pointerToMarker(ctx.pointers, "", "", `Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${limits.maxProperties}`, "error")
+      pointerToMarker(
+        ctx.pointers,
+        "",
+        "",
+        `Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${sizeLimits.maxProperties}`,
+        "error"
+      )
     );
   }
 
   if (
-    typeof limits.maxNestingDepth === "number" &&
-    ctx.maxDepthSeen > limits.maxNestingDepth
+    typeof sizeLimits.maxNestingDepth === "number" &&
+    ctx.maxDepthSeen > sizeLimits.maxNestingDepth
   ) {
     ctx.markers.push(
-      pointerToMarker(ctx.pointers, "", "", `Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${limits.maxNestingDepth}`, "error")
+      pointerToMarker(
+        ctx.pointers,
+        "",
+        "",
+        `Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${sizeLimits.maxNestingDepth}`,
+        "error"
+      )
     );
   }
 
   if (
-    typeof limits.maxEnumValues === "number" &&
-    ctx.totalEnumValues > limits.maxEnumValues
+    typeof sizeLimits.maxEnumValues === "number" &&
+    ctx.totalEnumValues > sizeLimits.maxEnumValues
   ) {
     ctx.markers.push(
-      pointerToMarker(ctx.pointers, "", "", `Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${limits.maxEnumValues}`, "error")
+      pointerToMarker(
+        ctx.pointers,
+        "",
+        "",
+        `Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${sizeLimits.maxEnumValues}`,
+        "error"
+      )
     );
   }
 
   if (
-    typeof limits.maxStringLengthNamesEnums === "number" &&
-    ctx.totalStringLengthNamesEnums > limits.maxStringLengthNamesEnums
+    typeof sizeLimits.maxStringLengthNamesEnums === "number" &&
+    ctx.totalStringLengthNamesEnums > sizeLimits.maxStringLengthNamesEnums
   ) {
     ctx.markers.push(
-      pointerToMarker(ctx.pointers, "", "", `Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${limits.maxStringLengthNamesEnums}`, "error")
+      pointerToMarker(
+        ctx.pointers,
+        "",
+        "",
+        `Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${sizeLimits.maxStringLengthNamesEnums}`,
+        "error"
+      )
     );
   }
 }

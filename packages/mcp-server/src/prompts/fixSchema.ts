@@ -1,8 +1,8 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getRuleSetByProvider } from "../lib/groups";
-import { validateSchemaForRuleSet } from "../lib/validator";
-import { fixSchemaForRuleSet } from "../lib/fixer";
+import { validateSchemaForRuleSet } from "@ssv/schemas/ruleSetValidator";
+import { fixSchemaForRuleSet } from "@ssv/schemas/ruleSetFixer";
 import { formatRuleSetAsText, formatMarkersAsText } from "../lib/formatRules";
 import type { ProviderId } from "../lib/types";
 
@@ -29,15 +29,26 @@ export function registerFixSchemaPrompt(server: McpServer): void {
       }
 
       const markers = validateSchemaForRuleSet(schema, ruleSet);
-      const fixResult = fixSchemaForRuleSet(schema, ruleSet);
-      const postFixMarkers = validateSchemaForRuleSet(fixResult.fixedSchema, ruleSet);
+
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(schema) as Record<string, unknown>;
+      } catch {
+        return {
+          messages: [{ role: "user" as const, content: { type: "text" as const, text: "Schema is not valid JSON." } }],
+        };
+      }
+
+      const fixResult = fixSchemaForRuleSet(parsed, ruleSet);
+      const fixedSchemaStr = JSON.stringify(fixResult.fixedSchema, undefined, 2);
+      const postFixMarkers = validateSchemaForRuleSet(fixedSchemaStr, ruleSet);
       const rulesText = formatRuleSetAsText(ruleSet);
       const errorsText = markers.length > 0
         ? formatMarkersAsText(markers)
         : "Schema is not valid JSON.";
 
       const appliedFixesList = fixResult.appliedFixes.length > 0
-        ? fixResult.appliedFixes.map((f, i) => `${i + 1}. ${f}`).join("\n")
+        ? fixResult.appliedFixes.map((f, i) => `${i + 1}. ${f.description}`).join("\n")
         : "None";
 
       const remainingIssuesList = postFixMarkers.length > 0
@@ -63,7 +74,7 @@ export function registerFixSchemaPrompt(server: McpServer): void {
         "",
         "## Mechanically Fixed Schema",
         "```json",
-        fixResult.fixedSchema,
+        fixedSchemaStr,
         "```",
         "",
         "## Remaining Issues (cannot be fixed mechanically)",

@@ -9,6 +9,5 @@
   "type": "array",
   "items": {
     "type": "number"
-  },
-  "additionalProperties": false
+  }
 }

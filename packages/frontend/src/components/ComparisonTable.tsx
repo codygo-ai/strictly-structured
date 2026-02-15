@@ -6,7 +6,7 @@ import type {
   ComparisonRow,
   ProviderId,
   SchemaRuleSet,
-} from "~/types/schemaRuleSets";
+} from "@ssv/schemas/types";
 import { ProviderIcon } from "~/components/ui";
 
 const TABLE_ICON_SIZE = 18;

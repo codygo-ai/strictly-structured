@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
 import type { ValidationResult } from "~/lib/providers/types";
 import { ValidationResults } from "~/components/ValidationResults";
 import { Button } from "~/components/ui";

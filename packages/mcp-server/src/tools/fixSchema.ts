@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getRuleSetByProvider } from "../lib/groups";
-import { fixSchemaForRuleSet } from "../lib/fixer";
+import { fixSchemaForRuleSet } from "@ssv/schemas/ruleSetFixer";
 import type { ProviderId } from "../lib/types";
 
 export function registerFixSchemaTool(server: McpServer): void {
@@ -23,10 +23,24 @@ export function registerFixSchemaTool(server: McpServer): void {
         };
       }
 
-      const result = fixSchemaForRuleSet(schema, ruleSet);
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(schema) as Record<string, unknown>;
+      } catch {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: "Invalid JSON", fixedSchema: schema, appliedFixes: [], remainingIssues: ["Invalid JSON"] }) }],
+          isError: true,
+        };
+      }
+
+      const result = fixSchemaForRuleSet(parsed, ruleSet);
 
       return {
-        content: [{ type: "text" as const, text: JSON.stringify(result, undefined, 2) }],
+        content: [{ type: "text" as const, text: JSON.stringify({
+          fixedSchema: JSON.stringify(result.fixedSchema, undefined, 2),
+          appliedFixes: result.appliedFixes.map((f) => f.description),
+          remainingIssues: result.unresolvedErrors.map((e) => e.message),
+        }, undefined, 2) }],
       };
     }
   );

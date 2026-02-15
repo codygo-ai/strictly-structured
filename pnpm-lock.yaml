@@ -119,6 +119,9 @@ importers:
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@ssv/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -192,9 +195,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.0
         version: 1.26.0(zod@3.25.76)
-      json-source-map:
-        specifier: ^0.6.1
-        version: 0.6.1
+      '@ssv/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       zod:
         specifier: ^3.24.0
         version: 3.25.76
@@ -202,9 +205,6 @@ importers:
       '@ssv/eslint-config':
         specifier: workspace:*
         version: link:../../devops/eslint-config
-      '@ssv/schemas':
-        specifier: workspace:*
-        version: link:../schemas
       '@ssv/tsconfig':
         specifier: workspace:*
         version: link:../../devops/tsconfig
@@ -222,6 +222,10 @@ importers:
         version: 5.9.3
 
   packages/schemas:
+    dependencies:
+      json-source-map:
+        specifier: ^0.6.1
+        version: 0.6.1
     devDependencies:
       '@ssv/eslint-config':
         specifier: workspace:*
@@ -232,12 +236,6 @@ importers:
       '@types/node':
         specifier: ^22.15.0
         version: 22.19.11
-      ajv:
-        specifier: ^8.17.1
-        version: 8.17.1
-      ajv-formats:
-        specifier: ^3.0.1
-        version: 3.0.1(ajv@8.17.1)
       eslint:
         specifier: ^9.39.1
         version: 9.39.2(jiti@2.6.1)

@@ -1,6 +1,6 @@
 "use client";
 
-import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
 import { SeverityIcon } from "~/components/SeverityIcon";
 import { Pill, Collapsible } from "~/components/ui";
 import { camelCaseToLabel, limitsToRows } from "~/lib/format";

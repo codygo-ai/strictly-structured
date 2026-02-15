@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { SchemaRuleSetsData } from "~/types/schemaRuleSets";
-import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
+import type { SchemaRuleSetsData } from "@ssv/schemas/types";
+import ruleSetsDataJson from "@ssv/schemas/data/schemaRuleSets.json";
 import { ComparisonTable } from "~/components/ComparisonTable";
 import { RuleSetCard } from "~/components/RuleSetCard";
 import { UniversalRules } from "~/components/UniversalRules";

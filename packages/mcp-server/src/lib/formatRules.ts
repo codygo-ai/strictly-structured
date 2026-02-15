@@ -1,5 +1,5 @@
-import type { SchemaRuleSet } from "./groups";
-import type { SchemaMarker } from "./validator";
+import type { SchemaRuleSet } from "@ssv/schemas/types";
+import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
 
 export function formatRuleSetAsText(ruleSet: SchemaRuleSet): string {
   const sections: string[] = [];
