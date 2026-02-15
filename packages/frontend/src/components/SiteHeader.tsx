@@ -63,9 +63,11 @@ export function SiteHeader({
               Model support
             </Link>
           )}
-          <FeedbackWidget />
         </nav>
-        <ThemeToggle />
+        <div className="flex items-center gap-0.5 ml-1 pl-3 border-l border-border">
+          <FeedbackWidget />
+          <ThemeToggle />
+        </div>
         <UserAvatarMenu />
       </div>
     </header>

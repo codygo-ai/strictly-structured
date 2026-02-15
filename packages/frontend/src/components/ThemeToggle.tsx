@@ -19,14 +19,14 @@ export function ThemeToggle() {
   }
 
   if (!mounted) {
-    return <div className="size-8" />;
+    return <div className="size-7" />;
   }
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      className="flex size-8 cursor-pointer items-center justify-center rounded-md text-secondary transition-colors hover:bg-surface-hover hover:text-primary"
+      className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-hover hover:text-primary"
       title={theme === "dark" ? "Dark" : "Light"}
     >
       {theme === "dark" ? (

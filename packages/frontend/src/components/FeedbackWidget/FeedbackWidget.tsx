@@ -112,10 +112,13 @@ export function FeedbackWidget() {
             setOpen(true);
           }
         }}
-        className="text-sm text-primary hover:underline cursor-pointer"
+        className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-hover hover:text-primary"
+        title="Send feedback"
         aria-expanded={open}
       >
-        Feedback
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
       </button>
       {open && (
         <div className="feedback-popover feedback-slide-in">
