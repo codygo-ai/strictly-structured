@@ -24,8 +24,8 @@ interface CompatibilityDashboardProps {
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "issues", label: "Issues" },
-  { id: "server-test", label: "Server Test" },
   { id: "reference", label: "Reference" },
+  { id: "server-test", label: "Server Test" },
 ];
 
 export function CompatibilityDashboard({

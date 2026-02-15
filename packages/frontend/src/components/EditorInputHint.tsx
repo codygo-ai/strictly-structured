@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
+import { CopyIcon } from "~/components/icons/CopyIcon";
+import { DownloadIcon } from "~/components/icons/DownloadIcon";
 
 interface EditorInputHintProps {
   schema: string;
@@ -15,10 +17,8 @@ export function EditorInputHint({
   fileInputRef,
 }: EditorInputHintProps) {
   const [loadOpen, setLoadOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const loadRef = useRef<HTMLSpanElement>(null);
-  const menuRef = useRef<HTMLSpanElement>(null);
 
   const handleExampleSelect = useCallback(
     (s: string) => {
@@ -41,7 +41,6 @@ export function EditorInputHint({
     } catch {
       // silent
     }
-    setMenuOpen(false);
   }, [schema]);
 
   const handleDownload = useCallback(() => {
@@ -52,13 +51,7 @@ export function EditorInputHint({
     a.download = "schema.json";
     a.click();
     URL.revokeObjectURL(url);
-    setMenuOpen(false);
   }, [schema]);
-
-  const handleClear = useCallback(() => {
-    onSchemaChange("{}");
-    setMenuOpen(false);
-  }, [onSchemaChange]);
 
   // Click-outside for load dropdown
   useEffect(() => {
@@ -72,20 +65,8 @@ export function EditorInputHint({
     return () => document.removeEventListener("mousedown", handler);
   }, [loadOpen]);
 
-  // Click-outside for kebab menu
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [menuOpen]);
-
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-muted whitespace-nowrap">
+    <span className="inline-flex items-center gap-3 text-xs text-muted whitespace-nowrap">
       <span className="relative" ref={loadRef}>
         <button
           type="button"
@@ -115,32 +96,24 @@ export function EditorInputHint({
           </div>
         )}
       </span>
-      <span className="mx-2 text-border select-none">|</span>
-      <span className="relative" ref={menuRef}>
-        <button
-          type="button"
-          className="text-secondary hover:text-primary cursor-pointer transition-colors leading-none text-base font-bold"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="More actions"
-          aria-expanded={menuOpen}
-        >
-          &#x22EE;
-        </button>
-        {menuOpen && (
-          <div className="examples-dropdown-header">
-            <button type="button" onClick={handleCopy}>
-              {copied ? "Copied!" : "Copy schema"}
-            </button>
-            <button type="button" onClick={handleDownload}>
-              Download JSON
-            </button>
-            <div className="examples-dropdown-divider" />
-            <button type="button" onClick={handleClear}>
-              Clear editor
-            </button>
-          </div>
-        )}
-      </span>
+      <button
+        type="button"
+        className="text-muted hover:text-primary cursor-pointer transition-colors"
+        onClick={handleCopy}
+        aria-label="Copy schema"
+        title="Copy schema"
+      >
+        {copied ? "✓" : <CopyIcon width={14} height={14} />}
+      </button>
+      <button
+        type="button"
+        className="text-muted hover:text-primary cursor-pointer transition-colors"
+        onClick={handleDownload}
+        aria-label="Download JSON"
+        title="Download JSON"
+      >
+        <DownloadIcon width={14} height={14} />
+      </button>
     </span>
   );
 }

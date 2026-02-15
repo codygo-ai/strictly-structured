@@ -5,6 +5,8 @@ import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 import type { SchemaMarker } from "~/lib/ruleSetValidator";
 import { fixSchemaForRuleSet, type FixResult } from "~/lib/schemaFixer";
 import { SeverityIcon } from "~/components/SeverityIcon";
+import { CopyIcon } from "~/components/icons/CopyIcon";
+import { DownloadIcon } from "~/components/icons/DownloadIcon";
 
 interface IssuesTabProps {
   markers: SchemaMarker[];
@@ -26,13 +28,34 @@ export function IssuesTab({
   fixResult,
 }: IssuesTabProps) {
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(schema);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // silent
+    }
+  }, [schema]);
+
+  const handleDownload = useCallback(() => {
+    const blob = new Blob([schema], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "schema.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [schema]);
 
   const sorted = [...markers].sort(
     (a, b) =>
       (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3),
   );
 
-  const errorCount = markers.filter((m) => m.severity === "error").length;
+  const fixableCount = markers.filter((m) => m.severity === "error" || m.severity === "warning").length;
 
   const handleFixAll = useCallback(() => {
     setError(null);
@@ -98,6 +121,24 @@ export function IssuesTab({
             </div>
           </div>
         )}
+        <div className="flex items-center gap-3 pt-2 border-t border-border">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
+            onClick={handleCopy}
+          >
+            <CopyIcon width={14} height={14} className="shrink-0" />
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
+            onClick={handleDownload}
+          >
+            <DownloadIcon width={14} height={14} className="shrink-0" />
+            Download
+          </button>
+        </div>
       </div>
     );
   }
@@ -105,10 +146,39 @@ export function IssuesTab({
   // No markers
   if (sorted.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <span className="text-success text-2xl mb-2">&#x2713;</span>
-        <p className="text-sm text-secondary font-medium">Compatible with {ruleSet.displayName}</p>
-        <p className="text-xs text-muted mt-1">No issues found</p>
+      <div className="rounded-md bg-surface-subtle p-3 border border-border">
+        <div className="flex flex-col items-center justify-center pt-10 text-center">
+          <span className="text-success text-2xl mb-2">&#x2713;</span>
+          <p className="text-sm text-secondary font-medium">Compatible with {ruleSet.displayName}</p>
+          <p className="text-xs text-muted mt-1">No issues found</p>
+          <p className="text-xs  text-start text-muted mt-20 mb-2">
+            You can safely use this schema with{" "}
+            {ruleSet.models.map((m, i) => (
+              <span key={m}>
+                {i > 0 && (i === ruleSet.models.length - 1 ? " and " : ", ")}
+                <span className="font-medium text-secondary">{m}</span>
+              </span>
+            ))}
+          </p>
+        </div>
+        <div className="flex items-center gap-3 pt-2 border-t border-border">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
+            onClick={handleCopy}
+          >
+            <CopyIcon width={14} height={14} className="shrink-0" />
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
+            onClick={handleDownload}
+          >
+            <DownloadIcon width={14} height={14} className="shrink-0" />
+            Download
+          </button>
+        </div>
       </div>
     );
   }
@@ -129,14 +199,14 @@ export function IssuesTab({
         </div>
       ))}
 
-      {errorCount > 0 && (
+      {fixableCount > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
           <button
             type="button"
             className="primary-btn"
             onClick={handleFixAll}
           >
-            Fix all {errorCount} issue{errorCount !== 1 ? "s" : ""}
+            Fix all {fixableCount} issue{fixableCount !== 1 ? "s" : ""}
           </button>
           {error && (
             <p className="text-xs text-error mt-2">{error}</p>

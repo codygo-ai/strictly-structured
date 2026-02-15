@@ -60,10 +60,10 @@ export function RuleSetStatusCard({
   return (
     <button
       type="button"
-      className={`status-card ${selected ? "selected" : ""} status-${statusClass}`}
+      className={`status-card ${selected ? "selected" : ""}`}
       onClick={onClick}
     >
-      <div className="status-card-header">
+      <div className="status-card-provider">
         <ProviderIcon provider={ruleSet.providerId} />
         <span>{ruleSet.displayName}</span>
       </div>
