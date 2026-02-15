@@ -180,7 +180,7 @@ export function FeedbackWidget() {
                 type="text"
                 value={honeypot}
                 onChange={(e) => setHoneypot(e.target.value)}
-                className="absolute -left-[9999px] opacity-0"
+                className="absolute -left-2499.75 opacity-0"
                 tabIndex={-1}
                 autoComplete="off"
                 aria-hidden="true"
