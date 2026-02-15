@@ -19,7 +19,7 @@ export function ProviderIcon({
   provider,
   size = 16,
   className = "shrink-0",
-  colored = true,
+  colored = false,
 }: ProviderIconProps) {
   const style = colored ? { color: PROVIDER_COLORS[provider] } : undefined;
 

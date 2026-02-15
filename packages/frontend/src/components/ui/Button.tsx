@@ -29,7 +29,7 @@ export function Button({
           "gap-1.5 px-2.5 py-1.5 text-xs font-medium text-secondary bg-surface border border-border rounded-sm",
           "hover:text-primary hover:bg-surface-hover hover:border-accent",
           "transition-[background-color,color,border-color] duration-200",
-          active && "text-success border-success",
+          active && "text-success border-success hover:border-success",
         ],
         variant === "ghost" && [
           "gap-1.5 text-xs text-muted hover:text-primary",
