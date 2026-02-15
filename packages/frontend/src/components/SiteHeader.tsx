@@ -3,50 +3,41 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
-import { BetaBadge } from "~/components/BetaBadge";
 import { FeedbackWidget } from "~/components/FeedbackWidget";
 import { HelpPopover } from "~/components/HelpPopover";
 import { ThemeToggle } from "~/components/ThemeToggle";
+import { SiteLogo } from "~/components/SiteLogo";
 
 export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
   const pathname = usePathname();
-  const current = pathname.startsWith("/why")
-    ? "why"
-    : pathname.startsWith("/models")
-      ? "models"
-      : "playground";
+  const current = pathname.startsWith("/terms")
+    ? "terms"
+    : pathname.startsWith("/why")
+      ? "why"
+      : pathname.startsWith("/models")
+        ? "models"
+        : "playground";
 
   const linkClass = "text-sm text-secondary hover:text-primary transition-colors cursor-pointer";
   const activeClass = "text-sm text-accent cursor-default";
 
   return (
     <header className="validator-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <div className="block">
-        <h1 className="validator-title">
-          <span className="font-bold text-primary">
-            Strictly Structured
-          </span>
-
-          <span className="text-sm text-secondary">
-            {" "}
-            by{" "}
-            <a
-              href="https://codygo.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent hover:underline"
-            >
-              Codygo
-            </a>
-          </span>
-
-          <BetaBadge />
-        </h1>
-        {subtitle && (
-          <p className="validator-subtitle mt-1">
-            Validate, auto-fix, edit and optimize structured output schemas for any LLM
-          </p>
-        )}
+      <div className="flex items-center gap-3">
+        <SiteLogo className="h-7 w-7 text-primary opacity-80" />
+        <div>
+          <h1 className="validator-title flex items-center gap-2">
+            <span className="font-bold text-primary">Strictly Structured</span>
+            <span className="text-[0.6rem] font-semibold uppercase tracking-wider text-accent border border-accent/30 rounded px-1.5 py-0.5 leading-none">
+              Beta
+            </span>
+          </h1>
+          {subtitle && (
+            <p className="validator-subtitle mt-0.5">
+              Validate, auto-fix &amp; optimize structured output schemas for any LLM
+            </p>
+          )}
+        </div>
       </div>
       <div className="flex items-center gap-4 self-start sm:self-center">
         <nav className="flex items-center gap-4">
@@ -75,6 +66,15 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
           ) : (
             <Link href="/why" className={linkClass}>
               See Why
+            </Link>
+          )}
+          {current === "terms" ? (
+            <span className={activeClass} aria-current="page">
+              Terms
+            </span>
+          ) : (
+            <Link href="/terms" className={linkClass}>
+              Terms
             </Link>
           )}
         </nav>
