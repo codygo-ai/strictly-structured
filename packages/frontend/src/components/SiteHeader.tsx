@@ -24,7 +24,7 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
   return (
     <header className="validator-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div className="flex items-center gap-3">
-        <SiteLogo className="h-7 w-7 text-primary opacity-80" />
+        <SiteLogo className="h-[2.503rem] w-[2.503rem] text-primary opacity-80" />
         <div>
           <h1 className="validator-title flex items-center gap-2">
             <span className="font-bold text-primary">Strictly Structured</span>
@@ -33,7 +33,7 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
             </span>
           </h1>
           {subtitle && (
-            <p className="validator-subtitle mt-0.5">
+            <p className="validator-subtitle -mt-1.5">
               Validate, auto-fix &amp; optimize structured output schemas for any LLM
             </p>
           )}
