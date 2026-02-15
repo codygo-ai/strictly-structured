@@ -11,6 +11,7 @@ import {
 
 /** Firebase client config (public; safe to embed). */
 const firebaseConfig = {
+  // cspell:disable-next-line
   apiKey: "AIzaSyCxkbcNcv0LvseHtMu5fsh3UixX4q_6fBM",
   authDomain: "codygo-website.firebaseapp.com",
   projectId: "codygo-website",

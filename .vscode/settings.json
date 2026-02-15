@@ -16,5 +16,24 @@
   "[javascriptreact]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "cSpell.words": ["ssv"]
+  "cSpell.words": [
+    "appspot",
+    "Codygo",
+    "dlab",
+    "finetuned",
+    "firebaseapp",
+    "firebaserc",
+    "firestore",
+    "gcloudignore",
+    "Glaiveai",
+    "huggingface",
+    "modelcontextprotocol",
+    "predeploy",
+    "propert",
+    "Pydantic",
+    "ssv",
+    "streamable",
+    "wordmark",
+    "worktree"
+  ]
 }
