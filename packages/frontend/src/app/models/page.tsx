@@ -99,7 +99,7 @@ export default function ModelSupportPage() {
 
       <UniversalRules data={META.universal} />
 
-      <div className="mt-6 text-[11px] text-[#bbb] text-center">
+      <div className="mt-6 text-[11px] text-muted text-center">
         Last verified: {META.lastUpdated} · Sources: {META.sourcesDisplay}
         official documentation
       </div>

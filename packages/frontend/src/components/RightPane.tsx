@@ -5,10 +5,10 @@ import type { SchemaRuleSet, SizeLimits } from "~/types/schemaRuleSets";
 
 function SeverityIcon({ severity }: { severity: "error" | "warning" | "info" }) {
   if (severity === "error")
-    return <span className="text-[13px] font-bold text-[#dc3545]">✕</span>;
+    return <span className="text-[13px] font-bold text-error">&#x2715;</span>;
   if (severity === "warning")
-    return <span className="text-[13px] font-bold text-[#e8a317]">⚠</span>;
-  return <span className="text-[13px] font-bold text-[#5b8ad0]">ℹ</span>;
+    return <span className="text-[13px] font-bold text-warning">&#x26A0;</span>;
+  return <span className="text-[13px] font-bold text-accent">&#x2139;</span>;
 }
 
 function Pill({
@@ -18,22 +18,15 @@ function Pill({
   children: React.ReactNode;
   variant?: "supported" | "unsupported" | "default";
 }) {
-  const bg =
+  const classes =
     variant === "supported"
-      ? "#e8f5e9"
+      ? "bg-pill-supported-bg text-pill-supported-text"
       : variant === "unsupported"
-        ? "#fce4ec"
-        : "#f0f1f3";
-  const color =
-    variant === "supported"
-      ? "#2e7d32"
-      : variant === "unsupported"
-        ? "#b71c1c"
-        : "#444";
+        ? "bg-pill-unsupported-bg text-pill-unsupported-text"
+        : "bg-surface-hover text-secondary";
   return (
     <span
-      className="inline-block px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap"
-      style={{ borderRadius: 4, background: bg, color }}
+      className={`inline-block rounded-sm px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap ${classes}`}
     >
       {children}
     </span>
@@ -57,8 +50,8 @@ function Collapsible({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-1.5 text-[10.5px] font-bold tracking-wider uppercase text-[#8a8f98] mt-5 mb-0 pb-1.5 border-b border-transparent hover:border-[#ebedf0] bg-transparent border-none cursor-pointer p-0"
-        style={{ borderBottomColor: open ? "#ebedf0" : "transparent" }}
+        className="w-full flex items-center gap-1.5 text-[10.5px] font-bold tracking-wider uppercase text-muted mt-5 mb-0 pb-1.5 border-b border-transparent hover:border-border bg-transparent border-none cursor-pointer p-0"
+        style={{ borderBottomColor: open ? "var(--ds-border)" : "transparent" }}
       >
         <span
           className="inline-block text-[9px] transition-transform duration-200"
@@ -111,16 +104,16 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
   );
 
   return (
-    <div className="w-full h-full flex flex-col py-5 px-5.5 text-[13.5px] text-[#2c2c2c] leading-[1.55] font-sans">
+    <div className="w-full h-full flex flex-col py-5 px-5.5 text-[13.5px] text-primary leading-[1.55] font-sans">
       <div className="shrink-0">
-        <div className="text-base font-bold text-[#1a1a1a] mb-1">
+        <div className="text-base font-bold text-primary mb-1">
           {ruleSet.provider}&apos;s {ruleSet.displayName}
         </div>
         <Collapsible title="Description & models" defaultOpen className="mt-0">
-          <div className="text-[12.5px] text-[#7a7f88] mb-3 leading-snug">
+          <div className="text-[12.5px] text-muted mb-3 leading-snug">
             {ruleSet.description}
           </div>
-          <div className="text-[11.5px] text-[#999] font-mono leading-snug">
+          <div className="text-[11.5px] text-muted font-mono leading-snug">
             {modelsStr}
           </div>
         </Collapsible>
@@ -135,10 +128,10 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
                   <SeverityIcon severity={c.severity} />
                 </div>
                 <div>
-                  <div className="font-semibold text-[13px] text-[#1a1a1a]">
+                  <div className="font-semibold text-[13px] text-primary">
                     {c.rule}
                   </div>
-                  <div className="text-[11.5px] text-[#888] mt-0.5">{c.detail}</div>
+                  <div className="text-[11.5px] text-muted mt-0.5">{c.detail}</div>
                 </div>
               </div>
             ))}
@@ -148,7 +141,7 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         <Collapsible title="Supported Keywords" defaultOpen>
           {ruleSet.supportedTypes.map((st) => (
             <div key={st.type} className="mb-2.5">
-              <div className="text-xs font-semibold text-[#555] mb-1 font-mono">
+              <div className="text-xs font-semibold text-secondary mb-1 font-mono">
                 {st.type}
               </div>
               <div className="flex flex-wrap gap-0">
@@ -159,13 +152,13 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
                 ))}
               </div>
               {ruleSet.stringFormats && ruleSet.stringFormats.length > 0 && st.type === "string" && (
-                <div className="text-[11px] text-[#888] mt-1 ml-0.5">
+                <div className="text-[11px] text-muted mt-1 ml-0.5">
                   Formats: {ruleSet.stringFormats.join(", ")}
                 </div>
               )}
               {st.notes && (
-                <div className="text-[11px] text-[#c68a00] mt-0.5 ml-0.5 flex items-center gap-1">
-                  <span className="text-[10px]">⚠</span> {st.notes}
+                <div className="text-[11px] text-warning mt-0.5 ml-0.5 flex items-center gap-1">
+                  <span className="text-[10px]">&#x26A0;</span> {st.notes}
                 </div>
               )}
             </div>
@@ -175,7 +168,7 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         <Collapsible title="Unsupported Keywords">
           {Object.entries(unsupportedKeywords).map(([type, kws]) => (
             <div key={type} className="mb-2">
-              <div className="text-xs font-semibold text-[#555] mb-1 font-mono">
+              <div className="text-xs font-semibold text-secondary mb-1 font-mono">
                 {type}
               </div>
               <div className="flex flex-wrap gap-0">
@@ -193,8 +186,8 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
           <div className="grid gap-1.5 gap-x-4 grid-cols-[1fr_auto]">
             {limitsRows.map((l, i) => (
               <div key={i} className="contents">
-                <div className="text-[12.5px] text-[#555]">{l.label}</div>
-                <div className="text-[12.5px] font-semibold text-[#1a1a1a] text-right font-mono">
+                <div className="text-[12.5px] text-secondary">{l.label}</div>
+                <div className="text-[12.5px] font-semibold text-primary text-right font-mono">
                   {l.value}
                 </div>
               </div>
@@ -214,33 +207,31 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
                     className="flex items-center gap-2 text-[12.5px]"
                   >
                     {status === "ok" && (
-                      <span className="text-[#2a9d5c]">✓</span>
+                      <span className="text-success">&#x2713;</span>
                     )}
-                    {status === "no" && <span className="text-[#dc3545]">✗</span>}
+                    {status === "no" && <span className="text-error">&#x2717;</span>}
                     {status === "unknown" && (
-                      <span className="text-[#888]">?</span>
+                      <span className="text-muted">?</span>
                     )}
                     <span
                       className={
                         status === "ok"
-                          ? "text-[#333]"
-                          : status === "no"
-                            ? "text-[#999]"
-                            : "text-[#888]"
+                          ? "text-primary"
+                          : "text-muted"
                       }
                     >
                       {camelCaseToLabel(label)}
                     </span>
                     {status === "unknown" && (
-                      <span className="text-[11px] text-[#aaa]">
+                      <span className="text-[11px] text-muted">
                         (undocumented)
                       </span>
                     )}
                   </div>
                 );
               })}
-            <div className="text-[11.5px] text-[#888] mt-1">
-              Unknown keywords →{" "}
+            <div className="text-[11.5px] text-muted mt-1">
+              Unknown keywords &#x2192;{" "}
               <span className="font-mono text-[11px]">{unknownKw}</span>
             </div>
           </div>
@@ -251,10 +242,10 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
             {ruleSet.tips.map((p, i) => (
               <div
                 key={i}
-                className="text-xs text-[#555] flex gap-2 items-start"
+                className="text-xs text-secondary flex gap-2 items-start"
               >
-                <span className="text-[#5b8ad0] shrink-0 mt-0.5 text-[8px]">
-                  ●
+                <span className="text-accent shrink-0 mt-0.5 text-[8px]">
+                  &#x25CF;
                 </span>
                 <span>{p}</span>
               </div>
@@ -262,8 +253,8 @@ export function RightPane({ ruleSet }: { ruleSet: SchemaRuleSet }) {
           </div>
         </Collapsible>
 
-        <Collapsible title="Issues & Auto-Fix" defaultOpen className="mt-6 pt-3 border-t border-[#ebedf0]">
-          <div className="text-[12.5px] text-[#888] italic">
+        <Collapsible title="Issues & Auto-Fix" defaultOpen className="mt-6 pt-3 border-t border-border">
+          <div className="text-[12.5px] text-muted italic">
             Paste or edit a schema to see validation results.
           </div>
         </Collapsible>

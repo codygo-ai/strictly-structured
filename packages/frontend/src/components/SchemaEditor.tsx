@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 import { validateSchemaForRuleSet } from "~/lib/ruleSetValidator";
 import type { AuditEventKind } from "@ssv/audit/browser";
@@ -18,7 +19,6 @@ interface SchemaEditorProps {
   onChange: (value: string) => void;
   selectedRuleSet: SchemaRuleSet | null;
   fillHeight?: boolean;
-  editorTheme?: "light" | "dark";
   onAuditEvent?: (kind: AuditEventKind, data: Record<string, unknown>) => void;
 }
 
@@ -41,10 +41,10 @@ export function SchemaEditor({
   onChange,
   selectedRuleSet,
   fillHeight = false,
-  editorTheme = "dark",
   onAuditEvent,
 }: SchemaEditorProps) {
-  const isLight = editorTheme === "light";
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const monacoRef = useRef<any>(null);
@@ -142,16 +142,8 @@ export function SchemaEditor({
     <div
       className={
         fillHeight
-          ? `flex-1 min-h-0 rounded-lg overflow-hidden flex flex-col ${
-              isLight
-                ? "border border-border bg-surface"
-                : "border border-(--card-border) bg-[#1e1e1e]"
-            }`
-          : `rounded-lg overflow-hidden min-h-[280px] ${
-              isLight
-                ? "border border-border bg-surface"
-                : "border border-(--card-border) bg-[#1e1e1e]"
-            }`
+          ? "flex-1 min-h-0 rounded-lg overflow-hidden flex flex-col border border-border bg-surface"
+          : "rounded-lg overflow-hidden min-h-[280px] border border-border bg-surface"
       }
     >
       <Monaco
@@ -162,7 +154,7 @@ export function SchemaEditor({
         onChange={(v) => onChange(v ?? "")}
         beforeMount={handleBeforeMount}
         onMount={handleMount}
-        theme={isLight ? "vs" : "vs-dark"}
+        theme={isDark ? "vs-dark" : "vs"}
         options={{
           minimap: { enabled: false },
           fontSize: 13,

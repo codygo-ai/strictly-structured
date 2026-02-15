@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor } from "~/components/SchemaEditor";
 import { ValidationResults } from "~/components/ValidationResults";
@@ -59,6 +60,7 @@ function ruleSetTooltip(ruleSet: SchemaRuleSet): string {
 }
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
   const { ensureAuth } = useAuth();
   const { emit } = useAudit();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
@@ -294,7 +296,7 @@ export default function Home() {
                     language="json"
                     original={normalizedDiffOriginal}
                     modified={normalizedDiffModified!}
-                    theme="vs"
+                    theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
                     options={{
                       readOnly: true,
                       renderSideBySide: true,
@@ -349,7 +351,6 @@ export default function Home() {
                   onChange={setSchema}
                   selectedRuleSet={selectedRuleSet}
                   fillHeight
-                  editorTheme="light"
                   onAuditEvent={emit}
                 />
                 <div className="flex gap-2 flex-wrap">

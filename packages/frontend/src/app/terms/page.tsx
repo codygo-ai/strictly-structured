@@ -4,7 +4,7 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <article className="prose prose-invert max-w-none">
+    <article className="prose dark:prose-invert max-w-none">
       <h1>Terms of Use</h1>
       <p className="text-secondary">Last updated: February 14, 2026</p>
 
