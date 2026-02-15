@@ -27,6 +27,20 @@ export function registerFixCodeTool(server: McpServer): void {
       try {
         const detectedFormat = format ?? detectFormat(code);
 
+        if (detectedFormat === "json-schema") {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({
+                  error: "Input looks like JSON Schema. Use fix_schema instead, which accepts raw JSON Schema directly.",
+                }, undefined, 2),
+              },
+            ],
+            isError: true,
+          };
+        }
+
         if (detectedFormat === "pydantic") {
           return {
             content: [

@@ -99,7 +99,8 @@ function generateModel(
 
   const description = schema["description"];
   if (typeof description === "string") {
-    lines.splice(1, 0, `    """${description}"""`);
+    const safeDesc = description.replace(/"""/g, '\\"\\"\\"');
+    lines.splice(1, 0, `    """${safeDesc}"""`);
   }
 
   ctx.models.push(lines.join("\n"));

@@ -50,9 +50,10 @@ export function zodToJsonSchema(zodCode: string): ConversionResult {
 }
 
 function extractSchema(code: string, context: object): unknown {
-  // Strategy 1: IIFE — captures the return value of the last expression
-  const iifeResult = tryEval(`(function() { ${code} })()`, context);
-  if (isZodSchema(iifeResult)) return iifeResult;
+  // Strategy 1: Direct eval — the code itself is an expression like `z.object({...})`
+  // runInContext returns the completion value of the last expression
+  const directResult = tryEval(code, context);
+  if (isZodSchema(directResult)) return directResult;
 
   // Strategy 2: Named variable — find `const X = z.something(...)` and return it
   const namedMatch = code.match(/(?:const|let)\s+(\w+)\s*=\s*z\./);
@@ -63,10 +64,6 @@ function extractSchema(code: string, context: object): unknown {
     );
     if (isZodSchema(result)) return result;
   }
-
-  // Strategy 3: Direct eval — the code itself is an expression like `z.object({...})`
-  const directResult = tryEval(code, context);
-  if (isZodSchema(directResult)) return directResult;
 
   return undefined;
 }

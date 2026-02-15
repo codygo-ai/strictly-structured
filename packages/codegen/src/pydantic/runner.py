@@ -41,8 +41,63 @@ def main():
         print(json.dumps({"error": "No input provided"}))
         sys.exit(1)
 
-    # Set up restricted globals
-    restricted_globals = {"__builtins__": __builtins__}
+    # Set up restricted builtins — only safe functions exposed to user code
+    safe_builtins = {
+        "__import__": safe_import,
+        "__build_class__": __builtins__.__build_class__,
+        "True": True,
+        "False": False,
+        "None": None,
+        "isinstance": isinstance,
+        "issubclass": issubclass,
+        "type": type,
+        "super": super,
+        "len": len,
+        "range": range,
+        "enumerate": enumerate,
+        "zip": zip,
+        "map": map,
+        "filter": filter,
+        "list": list,
+        "dict": dict,
+        "set": set,
+        "frozenset": frozenset,
+        "tuple": tuple,
+        "str": str,
+        "int": int,
+        "float": float,
+        "bool": bool,
+        "bytes": bytes,
+        "property": property,
+        "staticmethod": staticmethod,
+        "classmethod": classmethod,
+        "object": object,
+        "hasattr": hasattr,
+        "getattr": getattr,
+        "setattr": setattr,
+        "sorted": sorted,
+        "reversed": reversed,
+        "min": min,
+        "max": max,
+        "abs": abs,
+        "sum": sum,
+        "round": round,
+        "repr": repr,
+        "hash": hash,
+        "id": id,
+        "callable": callable,
+        "print": print,
+        "ValueError": ValueError,
+        "TypeError": TypeError,
+        "KeyError": KeyError,
+        "IndexError": IndexError,
+        "AttributeError": AttributeError,
+        "RuntimeError": RuntimeError,
+        "StopIteration": StopIteration,
+        "NotImplementedError": NotImplementedError,
+        "Exception": Exception,
+    }
+    restricted_globals = {"__builtins__": safe_builtins}
 
     # Pre-import common modules into the namespace
     try:

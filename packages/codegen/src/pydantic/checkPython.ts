@@ -11,6 +11,8 @@ export interface PythonCheck {
 const PYTHON_CANDIDATES = ["python3", "python"];
 
 export function checkPython(): PythonCheck {
+  let bestFailure: PythonCheck | undefined;
+
   for (const cmd of PYTHON_CANDIDATES) {
     try {
       const version = execFileSync(cmd, ["--version"], {
@@ -24,13 +26,14 @@ export function checkPython(): PythonCheck {
       const major = Number(match[1]);
       const minor = Number(match[2]);
       if (major < 3 || (major === 3 && minor < 10)) {
-        return {
+        bestFailure ??= {
           available: false,
           pythonPath: cmd,
           version,
           hasPydantic: false,
           error: `Python 3.10+ required, found ${version}`,
         };
+        continue;
       }
 
       // Check pydantic is installed
@@ -47,20 +50,21 @@ export function checkPython(): PythonCheck {
           error: undefined,
         };
       } catch {
-        return {
+        bestFailure ??= {
           available: false,
           pythonPath: cmd,
           version,
           hasPydantic: false,
           error: "pydantic>=2 is not installed. Run: pip install pydantic",
         };
+        continue;
       }
     } catch {
       continue;
     }
   }
 
-  return {
+  return bestFailure ?? {
     available: false,
     pythonPath: undefined,
     version: undefined,

@@ -26,8 +26,9 @@ export function simulateOpenAiSdk(
   const changes: SdkChange[] = [];
   const gaps: SdkGap[] = [];
 
-  // 1. Dereference $refs with siblings
-  dereferenceRefsWithSiblings(transformed, "", changes);
+  // 1. Dereference $refs with siblings (pass root defs for resolution)
+  const rootDefs = (transformed["$defs"] ?? transformed["definitions"] ?? {}) as Record<string, unknown>;
+  dereferenceRefsWithSiblings(transformed, "", changes, rootDefs);
 
   // 2. Unwrap single-entry allOf
   unwrapSingleAllOf(transformed, "", changes);
@@ -143,6 +144,7 @@ function dereferenceRefsWithSiblings(
   node: Record<string, unknown>,
   path: string,
   changes: SdkChange[],
+  rootDefs: Record<string, unknown>,
 ): void {
   for (const [key, value] of Object.entries(node)) {
     if (Array.isArray(value)) {
@@ -152,6 +154,7 @@ function dereferenceRefsWithSiblings(
             item as Record<string, unknown>,
             `${path}/${key}/${i}`,
             changes,
+            rootDefs,
           );
         }
       });
@@ -160,24 +163,32 @@ function dereferenceRefsWithSiblings(
       if (typeof subNode["$ref"] === "string") {
         const nonRefKeys = Object.keys(subNode).filter((k) => k !== "$ref");
         if (nonRefKeys.length > 0) {
-          // Has siblings — dereference
+          // Has siblings — dereference using root $defs
           const resolved = resolveRefs(
-            { ...node, $defs: node["$defs"] } as Record<string, unknown>,
+            { ...subNode, $defs: rootDefs },
           );
-          if (resolved[key] && typeof resolved[key] === "object") {
-            node[key] = resolved[key];
-            addChange(
-              changes,
-              `${path}/${key}`,
-              "modified",
-              `Dereferenced $ref with sibling keys: ${nonRefKeys.join(", ")}`,
-              subNode,
-              resolved[key],
-            );
-          }
+          delete resolved["$defs"];
+          node[key] = resolved;
+          addChange(
+            changes,
+            `${path}/${key}`,
+            "modified",
+            `Dereferenced $ref with sibling keys: ${nonRefKeys.join(", ")}`,
+            subNode,
+            resolved,
+          );
         }
       }
-      dereferenceRefsWithSiblings(subNode, `${path}/${key}`, changes);
+      // Recurse on the (potentially updated) node
+      const current = node[key];
+      if (current && typeof current === "object") {
+        dereferenceRefsWithSiblings(
+          current as Record<string, unknown>,
+          `${path}/${key}`,
+          changes,
+          rootDefs,
+        );
+      }
     }
   }
 }
