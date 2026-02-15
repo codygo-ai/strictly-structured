@@ -170,8 +170,8 @@ export function SchemaEditor({
     <div
       className={
         fillHeight
-          ? "flex-1 min-h-0 rounded-lg overflow-hidden flex flex-col border border-border bg-surface shadow-sm"
-          : "rounded-lg overflow-hidden min-h-[280px] border border-border bg-surface shadow-sm"
+          ? "flex-1 min-h-0 rounded-t-lg overflow-hidden flex flex-col border border-b-0 border-border bg-surface shadow-sm"
+          : "rounded-t-lg overflow-hidden min-h-[280px] border border-b-0 border-border bg-surface shadow-sm"
       }
     >
       <Monaco

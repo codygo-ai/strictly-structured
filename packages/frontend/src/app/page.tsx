@@ -7,6 +7,7 @@ import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
 
 import { EditorInputHint } from "~/components/EditorInputHint";
+import { EditorBottomBar } from "~/components/EditorBottomBar";
 import type { SchemaRuleSet, SchemaRuleSetsData } from "~/types/schemaRuleSets";
 import ruleSetsDataJson from "~/data/schema_rule_sets.generated.json";
 import { useAudit } from "~/lib/audit";
@@ -199,8 +200,8 @@ function HomeContent() {
             <span className="editor-label">Schema Editor</span>
             <EditorInputHint
               schema={schema}
-              onSchemaChange={handleSchemaChange}
               fileInputRef={fileInputRef}
+              onSchemaChange={handleSchemaChange}
             />
           </div>
           <div
@@ -223,6 +224,10 @@ function HomeContent() {
               fillHeight
               onEditorReady={handleEditorReady}
               onSchemaValidation={setHasMonacoErrors}
+            />
+            <EditorBottomBar
+              fileInputRef={fileInputRef}
+              onSchemaChange={handleSchemaChange}
             />
           </div>
         </section>
