@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Button } from "~/components/ui";
 
 interface EditorToolbarProps {
   schema: string;
@@ -39,29 +40,17 @@ export function EditorToolbar({
 
   return (
     <div className="editor-toolbar">
-      <button
-        type="button"
-        className={`editor-toolbar-btn ${copied ? "success" : ""}`}
-        onClick={handleCopy}
-      >
+      <Button variant="toolbar" active={copied} onClick={handleCopy}>
         {copied ? "Copied!" : "Copy"}
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className="editor-toolbar-btn"
-        onClick={handleDownload}
-      >
+      <Button variant="toolbar" onClick={handleDownload}>
         Download
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className="editor-toolbar-btn"
-        onClick={handleClear}
-      >
+      <Button variant="toolbar" onClick={handleClear}>
         Clear
-      </button>
+      </Button>
     </div>
   );
 }

@@ -1,77 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import type { SchemaRuleSet, SizeLimits } from "~/types/schemaRuleSets";
+import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 import { SeverityIcon } from "~/components/SeverityIcon";
-
-function Pill({
-  children,
-  variant = "default",
-}: {
-  children: React.ReactNode;
-  variant?: "supported" | "unsupported" | "default";
-}) {
-  const classes =
-    variant === "supported"
-      ? "bg-pill-supported-bg text-pill-supported-text"
-      : variant === "unsupported"
-        ? "bg-pill-unsupported-bg text-pill-unsupported-text"
-        : "bg-surface-hover text-secondary";
-  return (
-    <span
-      className={`inline-block rounded-sm px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap ${classes}`}
-    >
-      {children}
-    </span>
-  );
-}
-
-function Collapsible({
-  title,
-  defaultOpen = false,
-  children,
-}: {
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-1.5 text-[10.5px] font-bold tracking-wider uppercase text-muted mt-4 mb-0 pb-2 border-b border-transparent hover:text-secondary bg-transparent border-none cursor-pointer p-0 transition-colors"
-        style={{ borderBottomColor: open ? "var(--ds-border)" : "transparent" }}
-      >
-        <span
-          className="inline-block text-[9px] transition-transform duration-200"
-          style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
-        >
-          &#x25B6;
-        </span>
-        {title}
-      </button>
-      {open && <div className="mt-1.5">{children}</div>}
-    </div>
-  );
-}
-
-function camelCaseToLabel(key: string): string {
-  return key
-    .replace(/([A-Z])/g, " $1")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function limitsToRows(limits: SizeLimits): { label: string; value: string }[] {
-  return Object.entries(limits)
-    .filter(([key]) => key !== "notes")
-    .map(([key, value]) => ({
-      label: camelCaseToLabel(key),
-      value: value == null ? "\u2014" : String(value),
-    }));
-}
+import { Pill, Collapsible } from "~/components/ui";
+import { camelCaseToLabel, limitsToRows } from "~/lib/format";
 
 function formatBehaviorValue(val: string | boolean): "ok" | "no" | "unknown" {
   if (val === true) return "ok";

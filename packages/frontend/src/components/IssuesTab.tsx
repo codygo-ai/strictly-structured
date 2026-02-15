@@ -5,6 +5,7 @@ import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 import type { SchemaMarker } from "~/lib/ruleSetValidator";
 import { fixSchemaForRuleSet, type FixResult } from "~/lib/schemaFixer";
 import { SeverityIcon } from "~/components/SeverityIcon";
+import { Button } from "~/components/ui";
 import { CopyIcon } from "~/components/icons/CopyIcon";
 import { DownloadIcon } from "~/components/icons/DownloadIcon";
 
@@ -124,22 +125,14 @@ export function IssuesTab({
           </div>
         )}
         <div className="flex items-center gap-3 pt-2 border-t border-border">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
-            onClick={handleCopy}
-          >
+          <Button variant="ghost" onClick={handleCopy}>
             <CopyIcon width={14} height={14} className="shrink-0" />
             {copied ? "Copied!" : "Copy"}
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
-            onClick={handleDownload}
-          >
+          </Button>
+          <Button variant="ghost" onClick={handleDownload}>
             <DownloadIcon width={14} height={14} className="shrink-0" />
             Download
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -164,22 +157,14 @@ export function IssuesTab({
           </p>
         </div>
         <div className="flex items-center gap-3 pt-2 border-t border-border">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
-            onClick={handleCopy}
-          >
+          <Button variant="ghost" onClick={handleCopy}>
             <CopyIcon width={14} height={14} className="shrink-0" />
             {copied ? "Copied!" : "Copy"}
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary cursor-pointer transition-colors"
-            onClick={handleDownload}
-          >
+          </Button>
+          <Button variant="ghost" onClick={handleDownload}>
             <DownloadIcon width={14} height={14} className="shrink-0" />
             Download
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -203,13 +188,9 @@ export function IssuesTab({
 
       {isValidJsonSchema && fixableCount > 0 && (
         <div className="mt-3 pt-3 border-t border-border">
-          <button
-            type="button"
-            className="primary-btn"
-            onClick={handleFixAll}
-          >
+          <Button variant="primary" onClick={handleFixAll}>
             Fix all {fixableCount} issue{fixableCount !== 1 ? "s" : ""}
-          </button>
+          </Button>
           {error && (
             <p className="text-xs text-error mt-2">{error}</p>
           )}
