@@ -62,7 +62,7 @@ export function ServerTestTab({ schema, ruleSet }: ServerTestTabProps) {
 
   return (
     <div className="space-y-3">
-      <div>
+      <div className="rounded-md bg-surface-subtle p-3 border border-border">
         <p className="text-xs text-secondary mb-1">
           Test this schema against the real {ruleSet.provider} API
         </p>

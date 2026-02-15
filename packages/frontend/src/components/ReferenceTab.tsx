@@ -41,7 +41,7 @@ function Collapsible({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-1.5 text-[10.5px] font-bold tracking-wider uppercase text-muted mt-4 mb-0 pb-1.5 border-b border-transparent hover:border-border bg-transparent border-none cursor-pointer p-0"
+        className="w-full flex items-center gap-1.5 text-[10.5px] font-bold tracking-wider uppercase text-muted mt-4 mb-0 pb-2 border-b border-transparent hover:text-secondary bg-transparent border-none cursor-pointer p-0 transition-colors"
         style={{ borderBottomColor: open ? "var(--ds-border)" : "transparent" }}
       >
         <span
@@ -94,16 +94,16 @@ export function ReferenceTab({ ruleSet }: { ruleSet: SchemaRuleSet }) {
 
   return (
     <div className="text-[13px] text-primary leading-relaxed">
-      <Collapsible title="Description & models">
-        <div className="text-xs text-muted mb-2 leading-snug">
+      <div className="mb-3">
+        <div className="text-xs text-muted mb-1.5 leading-snug">
           {ruleSet.description}
         </div>
         <div className="text-[11px] text-muted font-mono leading-snug">
           {modelsStr}
         </div>
-      </Collapsible>
+      </div>
 
-      <Collapsible title="Requirements">
+      <Collapsible title="Requirements" defaultOpen>
         <div className="flex flex-col gap-2">
           {ruleSet.requirements.map((c, i) => (
             <div key={i} className="flex gap-2 items-start">
@@ -121,7 +121,7 @@ export function ReferenceTab({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         </div>
       </Collapsible>
 
-      <Collapsible title="Supported Keywords">
+      <Collapsible title="Supported Keywords" defaultOpen>
         {ruleSet.supportedTypes.map((st) => (
           <div key={st.type} className="mb-2">
             <div className="text-xs font-semibold text-secondary mb-1 font-mono">
@@ -150,7 +150,7 @@ export function ReferenceTab({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         ))}
       </Collapsible>
 
-      <Collapsible title="Unsupported Keywords">
+      <Collapsible title="Unsupported Keywords" defaultOpen>
         {Object.entries(unsupportedKeywords).map(([type, kws]) => (
           <div key={type} className="mb-2">
             <div className="text-xs font-semibold text-secondary mb-1 font-mono">
@@ -167,7 +167,7 @@ export function ReferenceTab({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         ))}
       </Collapsible>
 
-      <Collapsible title="Quantitative Limits">
+      <Collapsible title="Quantitative Limits" defaultOpen>
         <div className="grid gap-1.5 gap-x-4 grid-cols-[1fr_auto]">
           {limitsRows.map((l, i) => (
             <div key={i} className="contents">
@@ -180,7 +180,7 @@ export function ReferenceTab({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         </div>
       </Collapsible>
 
-      <Collapsible title="Behaviors">
+      <Collapsible title="Behaviors" defaultOpen>
         <div className="flex flex-col gap-1">
           {Object.entries(ruleSet.behaviors)
             .filter(([k]) => k !== "unknownKeywordsBehavior")
@@ -216,7 +216,7 @@ export function ReferenceTab({ ruleSet }: { ruleSet: SchemaRuleSet }) {
         </div>
       </Collapsible>
 
-      <Collapsible title="Tips">
+      <Collapsible title="Tips" defaultOpen>
         <div className="flex flex-col gap-1.5">
           {ruleSet.tips.map((p, i) => (
             <div

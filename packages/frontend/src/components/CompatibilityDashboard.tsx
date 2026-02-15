@@ -78,8 +78,8 @@ export function CompatibilityDashboard({
           >
             {tab.label}
             {tab.id === "issues" && selectedSummary && selectedSummary.errorCount > 0 && (
-              <span className="ml-1 text-error">
-                ({selectedSummary.errorCount})
+              <span className="ml-1.5 inline-flex items-center justify-center min-w-5 h-5 rounded-full bg-error/15 text-error text-[0.65rem] font-semibold px-1">
+                {selectedSummary.errorCount}
               </span>
             )}
           </button>
