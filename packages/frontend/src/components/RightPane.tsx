@@ -32,7 +32,7 @@ function Pill({
         : "#444";
   return (
     <span
-      className="inline-block px-[7px] py-0.5 mx-[3px] text-xs font-mono leading-[18px] whitespace-nowrap"
+      className="inline-block px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap"
       style={{ borderRadius: 4, background: bg, color }}
     >
       {children}
@@ -111,7 +111,7 @@ export function RightPane({ group }: { group: StructuredOutputGroup }) {
   );
 
   return (
-    <div className="w-full h-full flex flex-col py-5 px-[22px] text-[13.5px] text-[#2c2c2c] leading-[1.55] font-sans">
+    <div className="w-full h-full flex flex-col py-5 px-5.5 text-[13.5px] text-[#2c2c2c] leading-[1.55] font-sans">
       <div className="shrink-0">
         <div className="text-base font-bold text-[#1a1a1a] mb-1">
           {group.provider}&apos;s {group.groupName}

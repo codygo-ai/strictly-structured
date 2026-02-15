@@ -14,7 +14,8 @@
     "validate": "turbo run lint typecheck",
     "generate:groups": "pnpm --filter @ssv/schemas run generate -- --out-dir packages/frontend/src",
     "start": "pnpm --filter @ssv/frontend start",
-    "deploy": "pnpm run build && pnpm exec firebase deploy"
+    "deploy": "pnpm run build && pnpm exec firebase deploy",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=22.15.0",
@@ -26,8 +27,13 @@
     "concurrently": "^9.1.2",
     "eslint": "^9.39.1",
     "firebase-tools": "^14.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "turbo": "^2.3.0",
     "typescript": "^5.7.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs}": "eslint --max-warnings 0"
   },
   "packageManager": "pnpm@9.0.0"
 }

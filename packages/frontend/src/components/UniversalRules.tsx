@@ -13,7 +13,7 @@ function Pill({
   const color = variant === "supported" ? "#2e7d32" : "#b71c1c";
   return (
     <span
-      className="inline-block px-[7px] py-0.5 mx-[3px] text-xs font-mono leading-[18px] whitespace-nowrap rounded"
+      className="inline-block px-1.75 py-0.5 mx-0.75 text-xs font-mono leading-4.5 whitespace-nowrap rounded"
       style={{ background: bg, color }}
     >
       {children}

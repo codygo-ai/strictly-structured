@@ -48,7 +48,7 @@ export function ModelSelector({
             name="model-group"
             checked={selectedRepresentative === g.representative}
             onChange={() => onChange(g.representative)}
-            className="border-[var(--card-border)] bg-[var(--card)] text-[var(--accent)] focus:ring-[var(--accent)]"
+            className="border-(--card-border) bg-(--card) text-(--accent) focus:ring-(--accent)"
           />
           <span>{groupLabel(g)}</span>
         </label>
