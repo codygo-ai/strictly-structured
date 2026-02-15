@@ -14,18 +14,18 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
     ? "why"
     : pathname.startsWith("/models")
       ? "models"
-      : "validator";
+      : "playground";
 
   const linkClass = "text-sm text-secondary hover:text-primary transition-colors cursor-pointer";
-  const activeClass = "text-sm text-accent font-medium hover:no-underline cursor-default";
+  const activeClass = "text-sm text-accent cursor-default";
 
   return (
     <header className="validator-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div className="block">
         <h1 className="validator-title">
-          <Link href="/" className="font-bold text-primary hover:underline">
+          <span className="font-bold text-primary">
             Strictly Structured
-          </Link>
+          </span>
 
           <span className="text-sm text-secondary">
             {" "}
@@ -50,22 +50,31 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
       </div>
       <div className="flex items-center gap-4 self-start sm:self-center">
         <nav className="flex items-center gap-4">
-          {current === "why" ? (
+          {current === "playground" ? (
             <span className={activeClass} aria-current="page">
-              Why use this?
+              Playground
             </span>
           ) : (
-            <Link href="/why" className={linkClass}>
-              Why use this?
+            <Link href="/" className={linkClass}>
+              Playground
             </Link>
           )}
           {current === "models" ? (
             <span className={activeClass} aria-current="page">
-              Model support
+              Explore Models
             </span>
           ) : (
             <Link href="/models" className={linkClass}>
-              Model support
+              Explore Models
+            </Link>
+          )}
+          {current === "why" ? (
+            <span className={activeClass} aria-current="page">
+              See Why
+            </span>
+          ) : (
+            <Link href="/why" className={linkClass}>
+              See Why
             </Link>
           )}
         </nav>

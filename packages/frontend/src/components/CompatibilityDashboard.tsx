@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "~/lib/schemaFixer";
@@ -39,6 +39,33 @@ export function CompatibilityDashboard({
   fixResult,
 }: CompatibilityDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabId>("issues");
+  const sidebarRef = useRef<HTMLElement>(null);
+  const [width, setWidth] = useState<number | null>(null);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    const sidebar = sidebarRef.current;
+    if (!sidebar) return;
+
+    const startX = e.clientX;
+    const startWidth = sidebar.getBoundingClientRect().width;
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+
+    const onMove = (ev: PointerEvent) => {
+      const delta = startX - ev.clientX;
+      const minWidth = 420;
+      setWidth(Math.max(minWidth, startWidth + delta));
+    };
+
+    const onUp = () => {
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerup", onUp);
+    };
+
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerup", onUp);
+  }, []);
 
   const selectedRuleSet = useMemo(
     () => ruleSets.find((r) => r.ruleSetId === selectedRuleSetId),
@@ -48,7 +75,16 @@ export function CompatibilityDashboard({
   const selectedSummary = validationResults.get(selectedRuleSetId);
 
   return (
-    <aside className="sidebar">
+    <aside
+      ref={sidebarRef}
+      className="sidebar"
+      style={width ? { width } : undefined}
+    >
+      {/* Resize grip */}
+      <div
+        className="sidebar-resize-handle"
+        onPointerDown={handlePointerDown}
+      />
       {/* Status cards */}
       <div className="status-cards">
         {ruleSets.map((rs) => {

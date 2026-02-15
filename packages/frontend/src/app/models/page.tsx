@@ -66,7 +66,7 @@ export default function ModelSupportPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-primary tracking-tight">
-          Model Support
+          Explore Models
         </h1>
         <p className="mt-2 text-secondary leading-snug">
           JSON Schema support across LLM structured output providers. Each
@@ -77,7 +77,7 @@ export default function ModelSupportPage() {
           href="/"
           className="mt-4 inline-block text-sm text-accent hover:underline"
         >
-          Back to validator
+          Back to Playground
         </Link>
       </div>
 
