@@ -3,6 +3,7 @@ import { UserAvatarMenu } from "~/components/UserAvatarMenu";
 import { BetaBadge } from "~/components/BetaBadge";
 import { FeedbackLink } from "~/components/FeedbackLink";
 import { ThemeToggle } from "~/components/ThemeToggle";
+import { HelpPopover } from "~/components/HelpPopover";
 
 export function SiteHeader({
   subtitle = true,
@@ -34,6 +35,8 @@ export function SiteHeader({
               Codygo
             </a>
           </span>
+
+          <BetaBadge />
         </h1>
         {subtitle && (
           <p className="validator-subtitle mt-1">
@@ -43,20 +46,6 @@ export function SiteHeader({
       </div>
       <div className="flex items-center gap-4 self-start sm:self-center">
         <nav className="flex items-center gap-4">
-          {current === "validator" ? (
-            <span
-              className={`relative ${activeClass}`}
-              aria-current="page"
-            >
-              <span className="relative z-10">Validator</span>
-              <BetaBadge />
-            </span>
-          ) : (
-            <Link href="/" className={`relative ${linkClass}`}>
-              <span className="relative z-10">Validator</span>
-              <BetaBadge />
-            </Link>
-          )}
           {current === "why" ? (
             <span className={activeClass} aria-current="page">
               Why use this?
@@ -77,6 +66,7 @@ export function SiteHeader({
           )}
           <FeedbackLink />
         </nav>
+        <HelpPopover />
         <ThemeToggle />
         <UserAvatarMenu />
       </div>
