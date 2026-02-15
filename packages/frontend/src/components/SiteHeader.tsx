@@ -1,17 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
 import { BetaBadge } from "~/components/BetaBadge";
 import { FeedbackWidget } from "~/components/FeedbackWidget";
 import { HelpPopover } from "~/components/HelpPopover";
 import { ThemeToggle } from "~/components/ThemeToggle";
 
-export function SiteHeader({
-  subtitle = true,
-  current = "validator",
-}: {
-  subtitle?: boolean;
-  current?: "validator" | "why" | "models";
-}) {
+export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
+  const pathname = usePathname();
+  const current = pathname.startsWith("/why")
+    ? "why"
+    : pathname.startsWith("/models")
+      ? "models"
+      : "validator";
+
   const linkClass = "text-sm text-secondary hover:text-primary transition-colors cursor-pointer";
   const activeClass = "text-sm text-accent font-medium hover:no-underline cursor-default";
 

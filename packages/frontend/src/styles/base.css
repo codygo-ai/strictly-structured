@@ -5,4 +5,5 @@ body {
   background: var(--ds-page);
   color: var(--ds-primary);
   font-family: var(--font-sans);
+  scrollbar-gutter: stable;
 }

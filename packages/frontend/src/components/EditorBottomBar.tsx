@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
+import { ProviderIcon } from "~/components/ui";
 
 interface EditorBottomBarProps {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -54,22 +55,33 @@ export function EditorBottomBar({
         <span className="editor-bottom-trigger">a sample</span>
         {sample.open && (
           <div
-            className="editor-bottom-popover"
+            className="examples-dropdown-header editor-bottom-popover"
             onMouseEnter={sample.enter}
             onMouseLeave={sample.leave}
           >
-            {EXAMPLE_SCHEMAS.map((ex) => (
-              <button
-                key={ex.name}
-                type="button"
-                onClick={() => handleSample(ex.schema)}
-              >
-                <span className="editor-bottom-sample-name">{ex.name}</span>
-                <span className="editor-bottom-sample-desc">
-                  {ex.description}
-                </span>
-              </button>
-            ))}
+            <div className="examples-samples-scroll">
+              {EXAMPLE_SCHEMAS.map((ex) => (
+                <button
+                  key={ex.name}
+                  type="button"
+                  onClick={() => handleSample(ex.schema)}
+                >
+                  <span className="examples-sample-row">
+                    <span>{ex.name}</span>
+                    <span className="examples-providers">
+                      {ex.compatibleWith.length === 0
+                        ? <span className="examples-provider-tag none">none</span>
+                        : ex.compatibleWith.map((p) => (
+                          <span key={p} className={`examples-provider-tag ${p}`}>
+                            <ProviderIcon provider={p} size={13} className="" />
+                          </span>
+                        ))}
+                    </span>
+                  </span>
+                  <span className="examples-desc">{ex.description}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </span>{" "}
