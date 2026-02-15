@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
@@ -51,12 +52,17 @@ function useOnboardingHint() {
   return { visible, dismiss };
 }
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
   const { emit } = useAudit();
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
-  const [selectedRuleSetId, setSelectedRuleSetId] = useState<string>(
-    () => RULE_SETS[0]?.ruleSetId ?? "",
-  );
+  const [selectedRuleSetId, setSelectedRuleSetId] = useState<string>(() => {
+    const fromUrl = searchParams.get("ruleSet");
+    if (fromUrl && RULE_SETS.some((r) => r.ruleSetId === fromUrl)) {
+      return fromUrl;
+    }
+    return RULE_SETS[0]?.ruleSetId ?? "";
+  });
   const [fixResult, setFixResult] = useState<FixResult | null>(null);
   const editorApiRef = useRef<SchemaEditorApi | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -236,5 +242,13 @@ export default function Home() {
       </div>
 
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }
