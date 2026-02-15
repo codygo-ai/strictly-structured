@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useMemo, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { SiteHeader } from "~/components/SiteHeader";
 import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
 
@@ -178,9 +177,7 @@ function HomeContent() {
   }, []);
 
   return (
-    <div className="validator-page flex flex-col h-screen min-h-0">
-      <SiteHeader subtitle current="validator" />
-
+    <div className="validator-page flex flex-col flex-1 min-h-0">
       {/* Onboarding hint */}
       {onboarding.visible && (
         <div className="onboarding-hint">

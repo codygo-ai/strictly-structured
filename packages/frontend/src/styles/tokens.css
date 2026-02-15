@@ -61,6 +61,10 @@
   --ds-heading-supported: #2a7d4e;
   --ds-heading-unsupported: #bb3333;
 
+  /* Provider brand colours */
+  --ds-provider-anthropic: #d97706;
+  --ds-provider-gemini: #4285f4;
+
   /* Table cell colours */
   --ds-cell-ok-bg: #f0faf4;
   --ds-cell-ok-text: #2a7d4e;
@@ -112,6 +116,9 @@
   --ds-pill-unsupported-text: #f87171;
   --ds-heading-supported: #4ade80;
   --ds-heading-unsupported: #f87171;
+
+  --ds-provider-anthropic: #f59e0b;
+  --ds-provider-gemini: #60a5fa;
 
   --ds-cell-ok-bg: #112a1a;
   --ds-cell-ok-text: #4ade80;

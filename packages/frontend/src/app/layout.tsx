@@ -3,6 +3,7 @@ import "./globals.css";
 import { FirebaseAnalytics } from "~/components/FirebaseAnalytics";
 import { GoogleOneTap } from "~/components/GoogleOneTap";
 import { ThemeProvider } from "~/components/ThemeProvider";
+import { SiteHeader } from "~/components/SiteHeader";
 
 const siteName = "Codygo's Strictly Structured";
 const description =
@@ -59,10 +60,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen antialiased" suppressHydrationWarning>
+      <body className="flex flex-col h-screen antialiased" suppressHydrationWarning>
         <ThemeProvider>
           <FirebaseAnalytics />
           <GoogleOneTap />
+          <SiteHeader subtitle />
           {children}
         </ThemeProvider>
       </body>
