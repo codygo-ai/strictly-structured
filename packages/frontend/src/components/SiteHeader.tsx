@@ -2,6 +2,7 @@ import Link from "next/link";
 import { UserAvatarMenu } from "~/components/UserAvatarMenu";
 import { BetaBadge } from "~/components/BetaBadge";
 import { FeedbackLink } from "~/components/FeedbackLink";
+import { ThemeToggle } from "~/components/ThemeToggle";
 
 export function SiteHeader({
   subtitle = true,
@@ -63,6 +64,7 @@ export function SiteHeader({
           </Link>
           <FeedbackLink />
         </nav>
+        <ThemeToggle />
         <UserAvatarMenu />
       </div>
     </header>

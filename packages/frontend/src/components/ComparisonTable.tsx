@@ -51,9 +51,9 @@ function cellStyle(ok: boolean | "warn" | "partial"): {
   color: string;
   background: string;
 } {
-  if (ok === true) return { color: "#2a7d4e", background: "#f0faf4" };
-  if (ok === false) return { color: "#b33", background: "#fef5f5" };
-  return { color: "#9a6c00", background: "#fefbf0" };
+  if (ok === true) return { color: "var(--ds-cell-ok-text)", background: "var(--ds-cell-ok-bg)" };
+  if (ok === false) return { color: "var(--ds-cell-fail-text)", background: "var(--ds-cell-fail-bg)" };
+  return { color: "var(--ds-cell-warn-text)", background: "var(--ds-cell-warn-bg)" };
 }
 
 function columnLabel(columnId: ProviderId, groups: StructuredOutputGroup[]): string {
@@ -75,14 +75,14 @@ export function ComparisonTable({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-[13px]">
         <thead>
-          <tr className="border-b-2 border-[#e0e0e0]">
-            <th className="text-left py-2.5 px-3 font-semibold text-[#555] text-xs">
+          <tr className="border-b-2 border-border">
+            <th className="text-left py-2.5 px-3 font-semibold text-secondary text-xs">
               Feature
             </th>
             {columns.map((col) => (
               <th
                 key={col.id}
-                className="text-center py-2.5 px-3 font-bold text-[#1a1a1a] text-xs"
+                className="text-center py-2.5 px-3 font-bold text-primary text-xs"
               >
                 <span className="inline-flex items-center gap-1.5">
                   <ProviderIcon providerId={col.id} />
@@ -96,12 +96,12 @@ export function ComparisonTable({
           {rows.map((row, i) => (
             <tr
               key={i}
-              className="border-b border-[#f0f0f0]"
+              className="border-b border-border"
               style={{
-                background: i % 2 === 0 ? "#fff" : "#fafbfc",
+                background: i % 2 === 0 ? "var(--ds-surface)" : "var(--ds-row-alt)",
               }}
             >
-              <td className="py-2 px-3 text-[#444] font-medium text-[12.5px]">
+              <td className="py-2 px-3 text-secondary font-medium text-[12.5px]">
                 {row.feature}
               </td>
               {columns.map((col) => {
@@ -122,15 +122,15 @@ export function ComparisonTable({
           ))}
         </tbody>
       </table>
-      <div className="text-[11px] text-[#aaa] mt-2 flex gap-4">
+      <div className="text-[11px] text-muted mt-2 flex gap-4">
         <span>
-          <span style={{ color: "#2a7d4e" }}>✓</span> = {legend.supported}
+          <span className="text-cell-ok-text">&#x2713;</span> = {legend.supported}
         </span>
         <span>
-          <span style={{ color: "#b33" }}>✗</span> = {legend.unsupported}
+          <span className="text-cell-fail-text">&#x2717;</span> = {legend.unsupported}
         </span>
         <span>
-          <span style={{ color: "#9a6c00" }}>~</span> = {legend.limited}
+          <span className="text-cell-warn-text">~</span> = {legend.limited}
         </span>
         <span>* = {legend.notOnFinetuned}</span>
       </div>
