@@ -74,17 +74,30 @@ export function simulateOpenAiSdk(
         // Make previously-optional fields nullable
         for (const key of missing) {
           const prop = props[key] as Record<string, unknown> | undefined;
-          if (prop && typeof prop === "object" && typeof prop["type"] === "string") {
-            const originalType = prop["type"] as string;
-            if (originalType !== "null") {
-              prop["type"] = [originalType, "null"];
+          if (prop && typeof prop === "object" && prop["type"] !== undefined) {
+            const originalType = prop["type"];
+
+            if (typeof originalType === "string" && originalType !== "null") {
+              const newType = [originalType, "null"];
+              prop["type"] = newType;
               addChange(
                 changes,
                 `${path}/properties/${key}/type`,
                 "modified",
                 `Made "${key}" nullable (was optional, now required)`,
                 originalType,
-                [originalType, "null"],
+                newType,
+              );
+            } else if (Array.isArray(originalType) && !originalType.includes("null")) {
+              const newType = [...originalType, "null"];
+              prop["type"] = newType;
+              addChange(
+                changes,
+                `${path}/properties/${key}/type`,
+                "modified",
+                `Made "${key}" nullable (was optional, now required)`,
+                originalType,
+                newType,
               );
             }
           }

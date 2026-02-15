@@ -1,6 +1,8 @@
+import type { ProviderId } from "@ssv/schemas/types";
+
 export type InputFormat = "json-schema" | "zod" | "pydantic";
 
-export type ProviderId = "openai" | "anthropic" | "gemini";
+export type { ProviderId };
 
 export const SDK_IDS = [
   "openai-sdk",
