@@ -1,6 +1,7 @@
 "use client";
 
 import type { ValidationResult } from "~/lib/providers/types";
+import { Badge } from "~/components/ui";
 
 interface ValidationResultsProps {
   results: ValidationResult[] | null;
@@ -22,15 +23,9 @@ export function ValidationResults({ results }: ValidationResultsProps) {
               <span className="font-medium capitalize text-primary">
                 {r.provider}
               </span>
-              <span
-                className={`rounded px-2 py-0.5 text-xs font-medium ${
-                  r.ok
-                    ? "bg-success/20 text-success"
-                    : "bg-error/20 text-error"
-                }`}
-              >
+              <Badge variant={r.ok ? "success" : "error"}>
                 {r.ok ? "OK" : "Failed"}
-              </span>
+              </Badge>
             </div>
             <p className="mt-1 text-xs text-secondary">{r.model}</p>
             {r.latencyMs > 0 && (

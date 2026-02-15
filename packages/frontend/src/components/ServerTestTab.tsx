@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import type { SchemaRuleSet } from "~/types/schemaRuleSets";
 import type { ValidationResult } from "~/lib/providers/types";
 import { ValidationResults } from "~/components/ValidationResults";
+import { Button } from "~/components/ui";
 import { useAuth } from "~/lib/useAuth";
 import { useAudit, hashSchema } from "~/lib/audit";
 
@@ -72,14 +73,9 @@ export function ServerTestTab({ schema, ruleSet, isValidJsonSchema }: ServerTest
         </p>
       </div>
 
-      <button
-        type="button"
-        className="primary-btn"
-        onClick={handleTest}
-        disabled={loading || !isValidJsonSchema}
-      >
+      <Button variant="primary" onClick={handleTest} disabled={loading || !isValidJsonSchema}>
         {loading ? "Testing\u2026" : "Run server test"}
-      </button>
+      </Button>
 
       {error && (
         <p className="text-xs text-error">{error}</p>

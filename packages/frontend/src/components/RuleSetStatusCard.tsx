@@ -1,24 +1,7 @@
 "use client";
 
-import type { SchemaRuleSet, ProviderId } from "~/types/schemaRuleSets";
-import { OpenAIIcon } from "~/components/icons/OpenAIIcon";
-import { ClaudeIcon } from "~/components/icons/ClaudeIcon";
-import { GeminiIcon } from "~/components/icons/GeminiIcon";
-
-function ProviderIcon({ provider }: { provider: ProviderId }) {
-  const size = 16;
-  const className = "shrink-0";
-  switch (provider) {
-    case "openai":
-      return <OpenAIIcon className={className} width={size} height={size} />;
-    case "anthropic":
-      return <ClaudeIcon className={className} width={size} height={size} />;
-    case "gemini":
-      return <GeminiIcon className={className} width={size} height={size} />;
-    default:
-      return null;
-  }
-}
+import type { SchemaRuleSet } from "~/types/schemaRuleSets";
+import { ProviderIcon } from "~/components/ui";
 
 interface RuleSetStatusCardProps {
   ruleSet: SchemaRuleSet;

@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  OpenAIIcon,
-  ClaudeIcon,
-  GeminiIcon,
-} from "~/components/icons";
 import type {
   ComparisonColumn,
   ComparisonLegend,
@@ -12,40 +7,9 @@ import type {
   ProviderId,
   SchemaRuleSet,
 } from "~/types/schemaRuleSets";
+import { ProviderIcon } from "~/components/ui";
 
 const TABLE_ICON_SIZE = 18;
-
-function ProviderIcon({ providerId }: { providerId: ProviderId }) {
-  const className = "shrink-0 inline-block align-middle";
-  switch (providerId) {
-    case "openai":
-      return (
-        <OpenAIIcon
-          className={className}
-          width={TABLE_ICON_SIZE}
-          height={TABLE_ICON_SIZE}
-        />
-      );
-    case "anthropic":
-      return (
-        <ClaudeIcon
-          className={className}
-          width={TABLE_ICON_SIZE}
-          height={TABLE_ICON_SIZE}
-        />
-      );
-    case "gemini":
-      return (
-        <GeminiIcon
-          className={className}
-          width={TABLE_ICON_SIZE}
-          height={TABLE_ICON_SIZE}
-        />
-      );
-    default:
-      return null;
-  }
-}
 
 function cellStyle(ok: boolean | "warn" | "partial"): {
   color: string;
@@ -85,7 +49,7 @@ export function ComparisonTable({
                 className="text-center py-2.5 px-3 font-bold text-primary text-xs"
               >
                 <span className="inline-flex items-center gap-1.5">
-                  <ProviderIcon providerId={col.id} />
+                  <ProviderIcon provider={col.id} size={TABLE_ICON_SIZE} className="shrink-0 inline-block align-middle" />
                   {columnLabel(col.id, ruleSets)}
                 </span>
               </th>
