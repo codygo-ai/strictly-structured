@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
 import { ProviderIcon } from "~/components/ui";
 
@@ -11,7 +11,7 @@ interface EditorBottomBarProps {
 
 function useHoverIntent() {
   const [open, setOpen] = useState(false);
-  const timeout = useRef<ReturnType<typeof setTimeout>>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const enter = useCallback(() => {
     if (timeout.current) clearTimeout(timeout.current);
@@ -20,6 +20,12 @@ function useHoverIntent() {
 
   const leave = useCallback(() => {
     timeout.current = setTimeout(() => setOpen(false), 150);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timeout.current) clearTimeout(timeout.current);
+    };
   }, []);
 
   return { open, enter, leave } as const;
@@ -45,14 +51,14 @@ export function EditorBottomBar({
   return (
     <div className="editor-bottom-bar">
       <span className="text-muted">Drop, paste,</span>{" "}
-      <span className="editor-bottom-trigger" onClick={handleUpload}>upload</span>{" "}
+      <button type="button" className="editor-bottom-trigger" onClick={handleUpload}>upload</button>{" "}
       <span className="text-muted">or load</span>{" "}
       <span
         className="relative"
         onMouseEnter={sample.enter}
         onMouseLeave={sample.leave}
       >
-        <span className="editor-bottom-trigger">a sample</span>
+        <button type="button" className="editor-bottom-trigger" onClick={sample.enter}>a sample</button>
         {sample.open && (
           <div
             className="examples-dropdown-header editor-bottom-popover"
@@ -73,7 +79,7 @@ export function EditorBottomBar({
                         ? <span className="examples-provider-tag none">none</span>
                         : ex.compatibleWith.map((p) => (
                           <span key={p} className={`examples-provider-tag ${p}`}>
-                            <ProviderIcon provider={p} size={13} className="" />
+                            <ProviderIcon provider={p} size={13} className="" colored />
                           </span>
                         ))}
                     </span>

@@ -104,7 +104,7 @@ export function EditorInputHint({
                           ? <span className="examples-provider-tag none">none</span>
                           : ex.compatibleWith.map((p) => (
                             <span key={p} className={`examples-provider-tag ${p}`}>
-                              <ProviderIcon provider={p} size={13} className="" />
+                              <ProviderIcon provider={p} size={13} className="" colored />
                             </span>
                           ))}
                       </span>
