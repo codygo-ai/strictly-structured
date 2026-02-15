@@ -1,7 +1,0 @@
-{
-  "_meta": { "features": ["const"] },
-  "type": "object",
-  "properties": {
-    "kind": { "const": "fixed" }
-  }
-}

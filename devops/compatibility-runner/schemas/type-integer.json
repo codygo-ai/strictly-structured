@@ -1,7 +1,0 @@
-{
-  "_meta": { "features": ["type:integer"] },
-  "type": "object",
-  "properties": {
-    "value": { "type": "integer" }
-  }
-}

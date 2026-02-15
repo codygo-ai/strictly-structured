@@ -1,7 +1,0 @@
-{
-  "_meta": { "features": ["type:number"] },
-  "type": "object",
-  "properties": {
-    "value": { "type": "number" }
-  }
-}
