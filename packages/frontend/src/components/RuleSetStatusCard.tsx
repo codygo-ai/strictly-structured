@@ -24,6 +24,7 @@ interface RuleSetStatusCardProps {
   ruleSet: SchemaRuleSet;
   errorCount: number;
   warningCount: number;
+  isValidJson: boolean;
   selected: boolean;
   onClick: () => void;
 }
@@ -32,6 +33,7 @@ export function RuleSetStatusCard({
   ruleSet,
   errorCount,
   warningCount,
+  isValidJson,
   selected,
   onClick,
 }: RuleSetStatusCardProps) {
@@ -41,7 +43,10 @@ export function RuleSetStatusCard({
   let statusText: string;
   let statusClass: string;
 
-  if (hasErrors) {
+  if (!isValidJson) {
+    statusText = "Invalid JSON";
+    statusClass = "neutral";
+  } else if (hasErrors) {
     statusText = `${errorCount} issue${errorCount !== 1 ? "s" : ""}`;
     statusClass = "error";
   } else if (hasWarnings) {
@@ -63,9 +68,10 @@ export function RuleSetStatusCard({
         <span>{ruleSet.displayName}</span>
       </div>
       <div className={`status-card-status ${statusClass}`}>
-        {hasErrors && <span>&#x2717; </span>}
-        {!hasErrors && hasWarnings && <span>&#x26A0; </span>}
-        {!hasErrors && !hasWarnings && <span>&#x2713; </span>}
+        {!isValidJson && <span>&#x2014; </span>}
+        {isValidJson && hasErrors && <span>&#x2717; </span>}
+        {isValidJson && !hasErrors && hasWarnings && <span>&#x26A0; </span>}
+        {isValidJson && !hasErrors && !hasWarnings && <span>&#x2713; </span>}
         {statusText}
       </div>
     </button>

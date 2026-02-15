@@ -88,9 +88,11 @@ export function SchemaEditor({
           const model = editor.getModel();
           if (!model) return;
           const fullRange = model.getFullModelRange();
+          editor.pushUndoStop();
           editor.executeEdits("fix-all", [
             { range: fullRange, text },
           ]);
+          editor.pushUndoStop();
         },
       });
     }

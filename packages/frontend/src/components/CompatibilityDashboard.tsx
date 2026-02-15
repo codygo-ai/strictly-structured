@@ -59,6 +59,7 @@ export function CompatibilityDashboard({
               ruleSet={rs}
               errorCount={summary?.errorCount ?? 0}
               warningCount={summary?.warningCount ?? 0}
+              isValidJson={summary?.isValidJson ?? true}
               selected={rs.ruleSetId === selectedRuleSetId}
               onClick={() => onSelectRuleSet(rs.ruleSetId)}
             />

@@ -1,4 +1,4 @@
-export function SeverityIcon({ severity }: { severity: string }) {
+export function SeverityIcon({ severity }: { severity: "error" | "warning" | "info" }) {
   if (severity === "error")
     return <span className="text-error font-bold text-xs shrink-0">&#x2717;</span>;
   if (severity === "warning")

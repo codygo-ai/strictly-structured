@@ -57,7 +57,6 @@ export default function Home() {
     () => RULE_SETS[0]?.ruleSetId ?? "",
   );
   const [fixResult, setFixResult] = useState<FixResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const editorApiRef = useRef<SchemaEditorApi | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onboarding = useOnboardingHint();
@@ -89,7 +88,6 @@ export default function Home() {
   const handleSchemaChange = useCallback((newSchema: string) => {
     setSchema(newSchema);
     setFixResult(null);
-    setError(null);
   }, []);
 
   const handleFixAll = useCallback(
@@ -233,23 +231,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Error toast — only for real errors */}
-      {error && (
-        <div
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-error text-surface px-4 py-2 rounded-md shadow-lg text-sm z-50 flex items-center gap-3"
-          role="alert"
-        >
-          <span>{error}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            className="text-surface/80 hover:text-surface"
-            aria-label="Dismiss"
-          >
-            &#x2715;
-          </button>
-        </div>
-      )}
     </div>
   );
 }

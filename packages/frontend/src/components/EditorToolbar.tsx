@@ -19,9 +19,13 @@ export function EditorToolbar({
   const examplesRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(schema);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    try {
+      await navigator.clipboard.writeText(schema);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard API unavailable or permission denied — silent fail
+    }
   }, [schema]);
 
   const handleDownload = useCallback(() => {

@@ -12,6 +12,7 @@ export interface RuleSetValidationSummary {
   warningCount: number;
   infoCount: number;
   markers: SchemaMarker[];
+  isValidJson: boolean;
 }
 
 const DEBOUNCE_MS = 200;
@@ -31,6 +32,13 @@ export function useAllRuleSetsValidation(
     timerRef.current = setTimeout(() => {
       const next = new Map<string, RuleSetValidationSummary>();
 
+      let isValidJson = true;
+      try {
+        JSON.parse(schema);
+      } catch {
+        isValidJson = false;
+      }
+
       for (const rs of ruleSets) {
         const markers = validateSchemaForRuleSet(schema, rs);
         const errorCount = markers.filter((m) => m.severity === "error").length;
@@ -38,7 +46,7 @@ export function useAllRuleSetsValidation(
           (m) => m.severity === "warning",
         ).length;
         const infoCount = markers.length - errorCount - warningCount;
-        next.set(rs.ruleSetId, { errorCount, warningCount, infoCount, markers });
+        next.set(rs.ruleSetId, { errorCount, warningCount, infoCount, markers, isValidJson });
       }
 
       setResults(next);

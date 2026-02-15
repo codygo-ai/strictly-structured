@@ -24,14 +24,14 @@ export function ServerTestTab({ schema, ruleSet }: ServerTestTabProps) {
     setLoading(true);
     setResults(null);
 
-    const hash = await hashSchema(schema);
-    emit("server.validate.requested", {
-      schemaHash: hash,
-      schemaSizeBytes: new Blob([schema]).size,
-      modelIds: ruleSet.models,
-    });
-
     try {
+      const hash = await hashSchema(schema);
+      emit("server.validate.requested", {
+        schemaHash: hash,
+        schemaSizeBytes: new Blob([schema]).size,
+        modelIds: ruleSet.models,
+      });
+
       const token = await ensureAuth();
       const res = await fetch("/api/validate", {
         method: "POST",

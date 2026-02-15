@@ -564,11 +564,10 @@ body {
   padding: 0.5rem 0;
   font-size: 0.8rem;
   line-height: 1.5;
-  border-bottom: 1px solid var(--ds-border);
 }
 
-.validator-page .issue-row:last-child {
-  border-bottom: none;
+.validator-page .issue-row + .issue-row {
+  border-top: 1px solid var(--ds-border);
 }
 
 .validator-page .issue-row .issue-line {
