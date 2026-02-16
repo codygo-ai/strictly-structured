@@ -98,6 +98,7 @@ export function SchemaEditor({
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- capture onEditorReady at mount time only
   }, []);
 
   // Listen to Monaco's built-in JSON/meta-schema diagnostics

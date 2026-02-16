@@ -1,12 +1,11 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import baseConfig from '@codygo-ai/eslint-config-base';
 import reactConfig from '@codygo-ai/eslint-config-react';
 import tailwindCanonicalClasses from 'eslint-plugin-tailwind-canonical-classes';
 import globals from 'globals';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+const root = import.meta.dirname;
 
 // React-specific configs (everything in reactConfig that isn't shared with base)
 const reactOnlyConfigs = reactConfig.filter((cfg) => !baseConfig.includes(cfg));
@@ -46,6 +45,20 @@ export default [
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
+    },
+  },
+  // Next.js pages/layouts must co-export metadata alongside the component
+  {
+    files: ['packages/frontend/**/page.tsx', 'packages/frontend/**/layout.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+  // Dynamic inline styles are unavoidable for computed values (widths, colors)
+  {
+    files: ['packages/frontend/**/*.{ts,tsx}'],
+    rules: {
+      'react/forbid-dom-props': 'off',
     },
   },
   // Shared overrides for all packages
