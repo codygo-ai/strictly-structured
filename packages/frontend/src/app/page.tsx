@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef, Suspense } from "react";
+import { useReducer, useCallback, useMemo, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { SchemaEditor, type SchemaEditorApi } from "~/components/SchemaEditor";
 import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
@@ -9,9 +9,11 @@ import { EditorInputHint } from "~/components/EditorInputHint";
 import { EditorBottomBar } from "~/components/EditorBottomBar";
 import type { SchemaRuleSet, SchemaRuleSetsData } from "@ssv/schemas/types";
 import ruleSetsDataJson from "@ssv/schemas/data/schemaRuleSets.json";
-import { useAudit } from "~/lib/audit";
+import { useAudit, hashSchema } from "~/lib/audit";
+import { useAuth } from "~/lib/useAuth";
 import { useAllRuleSetsValidation } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
+import type { ValidationResult, ServerValidationState } from "~/lib/providers/types";
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
@@ -38,53 +40,157 @@ const DEFAULT_SCHEMA = `{
 }
 `;
 
+/* ─── Validator state & reducer ─────────────────────────────────────── */
+
+const INITIAL_SERVER_VALIDATION: ServerValidationState = {
+  loading: false,
+};
+
+interface ValidatorState {
+  schema: string;
+  selectedRuleSetId: string;
+  fixResult?: FixResult;
+  preFixSchema?: string;
+  lastFixedForRuleSetId?: string;
+  hasMonacoErrors: boolean;
+  serverValidation: ServerValidationState;
+}
+
+type ValidatorAction =
+  | { type: "SCHEMA_CHANGED"; schema: string }
+  | { type: "RULESET_CHANGED"; ruleSetId: string }
+  | { type: "FIX_APPLIED"; fixedSchema: string; fixResult: FixResult }
+  | { type: "FIX_UNDONE" }
+  | { type: "MONACO_ERRORS_CHANGED"; hasErrors: boolean }
+  | { type: "SERVER_VALIDATION_STARTED" }
+  | { type: "SERVER_VALIDATION_COMPLETED"; results: ValidationResult[] }
+  | { type: "SERVER_VALIDATION_FAILED"; error: string };
+
+function validatorReducer(state: ValidatorState, action: ValidatorAction): ValidatorState {
+  switch (action.type) {
+    case "SCHEMA_CHANGED":
+      return {
+        ...state,
+        schema: action.schema,
+        fixResult: undefined,
+        preFixSchema: undefined,
+        lastFixedForRuleSetId: undefined,
+        serverValidation: INITIAL_SERVER_VALIDATION,
+      };
+    case "RULESET_CHANGED":
+      return {
+        ...state,
+        selectedRuleSetId: action.ruleSetId,
+        fixResult: undefined,
+        serverValidation: INITIAL_SERVER_VALIDATION,
+      };
+    case "FIX_APPLIED":
+      return {
+        ...state,
+        preFixSchema: state.schema,
+        schema: action.fixedSchema,
+        fixResult: action.fixResult,
+        lastFixedForRuleSetId: state.selectedRuleSetId,
+      };
+    case "FIX_UNDONE":
+      return {
+        ...state,
+        schema: state.preFixSchema ?? state.schema,
+        fixResult: undefined,
+        preFixSchema: undefined,
+        lastFixedForRuleSetId: undefined,
+      };
+    case "MONACO_ERRORS_CHANGED":
+      if (state.hasMonacoErrors === action.hasErrors) return state;
+      return { ...state, hasMonacoErrors: action.hasErrors };
+    case "SERVER_VALIDATION_STARTED":
+      return {
+        ...state,
+        serverValidation: { loading: true },
+      };
+    case "SERVER_VALIDATION_COMPLETED":
+      return {
+        ...state,
+        serverValidation: { loading: false, results: action.results },
+      };
+    case "SERVER_VALIDATION_FAILED":
+      return {
+        ...state,
+        serverValidation: { loading: false, error: action.error },
+      };
+  }
+}
+
+/* ─── Onboarding hint ───────────────────────────────────────────────── */
+
 function useOnboardingHint() {
-  const [visible, setVisible] = useState(() => {
+  const [visible, setVisible] = useReducer(() => false, undefined, () => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(ONBOARDING_KEY) === null;
   });
 
   const dismiss = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, "1");
-    setVisible(false);
+    setVisible();
   }, []);
 
   return { visible, dismiss };
 }
 
+/* ─── Main page ─────────────────────────────────────────────────────── */
+
 function HomeContent() {
   const searchParams = useSearchParams();
   const { emit } = useAudit();
-  const [schema, setSchema] = useState(DEFAULT_SCHEMA);
-  const [selectedRuleSetId, setSelectedRuleSetId] = useState<string>(() => {
-    const fromUrl = searchParams.get("ruleSet");
-    if (fromUrl && RULE_SETS.some((r) => r.ruleSetId === fromUrl)) {
-      return fromUrl;
-    }
-    return RULE_SETS[0]?.ruleSetId ?? "";
-  });
-  const [fixResult, setFixResult] = useState<FixResult | null>(null);
-  const [hasMonacoErrors, setHasMonacoErrors] = useState(false);
+
+  const [state, dispatch] = useReducer(
+    validatorReducer,
+    searchParams,
+    (params): ValidatorState => {
+      const fromUrl = params.get("ruleSet");
+      const ruleSetId =
+        fromUrl && RULE_SETS.some((r) => r.ruleSetId === fromUrl)
+          ? fromUrl
+          : RULE_SETS[0]?.ruleSetId ?? "";
+      return {
+        schema: DEFAULT_SCHEMA,
+        selectedRuleSetId: ruleSetId,
+        hasMonacoErrors: false,
+        serverValidation: INITIAL_SERVER_VALIDATION,
+      };
+    },
+  );
+
+  const { ensureAuth } = useAuth();
   const editorApiRef = useRef<SchemaEditorApi | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onboarding = useOnboardingHint();
 
-  const validationResults = useAllRuleSetsValidation(schema, RULE_SETS, !hasMonacoErrors);
+  const validationResults = useAllRuleSetsValidation(
+    state.schema,
+    RULE_SETS,
+    !state.hasMonacoErrors,
+  );
 
   const selectedRuleSet = useMemo(
-    () => RULE_SETS.find((r) => r.ruleSetId === selectedRuleSetId) ?? null,
-    [selectedRuleSetId],
+    () => RULE_SETS.find((r) => r.ruleSetId === state.selectedRuleSetId),
+    [state.selectedRuleSetId],
   );
 
   const selectedMarkers = useMemo(
-    () => validationResults.get(selectedRuleSetId)?.markers ?? [],
-    [validationResults, selectedRuleSetId],
+    () => validationResults.get(state.selectedRuleSetId)?.markers ?? [],
+    [validationResults, state.selectedRuleSetId],
   );
+
+  /* ── Callbacks ── */
+
+  const handleSchemaChange = useCallback((newSchema: string) => {
+    dispatch({ type: "SCHEMA_CHANGED", schema: newSchema });
+  }, []);
 
   const handleRuleSetChange = useCallback(
     (ruleSetId: string) => {
-      setSelectedRuleSetId(ruleSetId);
-      setFixResult(null);
+      dispatch({ type: "RULESET_CHANGED", ruleSetId });
       const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
       if (ruleSet) {
         emit("ruleSet.selected", { ruleSetId, providerId: ruleSet.providerId });
@@ -93,19 +199,17 @@ function HomeContent() {
     [emit],
   );
 
-  const handleSchemaChange = useCallback((newSchema: string) => {
-    setSchema(newSchema);
-    setFixResult(null);
-  }, []);
-
   const handleFixAll = useCallback(
     (fixedSchema: string, result: FixResult) => {
       editorApiRef.current?.applyText(fixedSchema);
-      setSchema(fixedSchema);
-      setFixResult(result);
+      dispatch({ type: "FIX_APPLIED", fixedSchema, fixResult: result });
     },
     [],
   );
+
+  const handleMonacoErrors = useCallback((hasErrors: boolean) => {
+    dispatch({ type: "MONACO_ERRORS_CHANGED", hasErrors });
+  }, []);
 
   const handleScrollToLine = useCallback((line: number) => {
     editorApiRef.current?.scrollToLine(line);
@@ -114,6 +218,50 @@ function HomeContent() {
   const handleEditorReady = useCallback((api: SchemaEditorApi) => {
     editorApiRef.current = api;
   }, []);
+
+  const handleUndo = useCallback(() => {
+    const pre = state.preFixSchema;
+    if (pre) editorApiRef.current?.applyText(pre);
+    dispatch({ type: "FIX_UNDONE" });
+  }, [state.preFixSchema]);
+
+  const handleServerValidate = useCallback(async () => {
+    dispatch({ type: "SERVER_VALIDATION_STARTED" });
+    try {
+      const hash = await hashSchema(state.schema);
+      emit("server.validate.requested", {
+        schemaHash: hash,
+        schemaSizeBytes: new Blob([state.schema]).size,
+        modelIds: selectedRuleSet?.models ?? [],
+      });
+
+      const token = await ensureAuth();
+      const res = await fetch("/api/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          schema: state.schema,
+          modelIds: selectedRuleSet?.models ?? [],
+        }),
+      });
+      const data = (await res.json()) as {
+        results?: ValidationResult[];
+        error?: string;
+      };
+      if (!res.ok) {
+        dispatch({ type: "SERVER_VALIDATION_FAILED", error: data.error ?? `Request failed (${res.status})` });
+        return;
+      }
+      if (data.results) {
+        dispatch({ type: "SERVER_VALIDATION_COMPLETED", results: data.results });
+      }
+    } catch (err) {
+      dispatch({ type: "SERVER_VALIDATION_FAILED", error: (err as Error).message });
+    }
+  }, [state.schema, selectedRuleSet, ensureAuth, emit]);
 
   const applyLoadedJson = useCallback(
     (text: string) => {
@@ -196,7 +344,7 @@ function HomeContent() {
           <div className="editor-header">
             <span className="editor-label">Schema Editor</span>
             <EditorInputHint
-              schema={schema}
+              schema={state.schema}
               fileInputRef={fileInputRef}
               onSchemaChange={handleSchemaChange}
             />
@@ -214,13 +362,13 @@ function HomeContent() {
               onChange={handleFileChange}
             />
             <SchemaEditor
-              value={schema}
+              value={state.schema}
               onChange={handleSchemaChange}
               markers={selectedMarkers}
               markerLabel={selectedRuleSet?.displayName}
               fillHeight
               onEditorReady={handleEditorReady}
-              onSchemaValidation={setHasMonacoErrors}
+              onSchemaValidation={handleMonacoErrors}
             />
             <EditorBottomBar
               fileInputRef={fileInputRef}
@@ -233,12 +381,16 @@ function HomeContent() {
         <CompatibilityDashboard
           ruleSets={RULE_SETS}
           validationResults={validationResults}
-          selectedRuleSetId={selectedRuleSetId}
+          selectedRuleSetId={state.selectedRuleSetId}
           onSelectRuleSet={handleRuleSetChange}
-          schema={schema}
+          schema={state.schema}
           onFixAll={handleFixAll}
           onScrollToLine={handleScrollToLine}
-          fixResult={fixResult}
+          fixResult={state.fixResult}
+          onUndo={handleUndo}
+          lastFixedForRuleSetId={state.lastFixedForRuleSetId}
+          serverValidation={state.serverValidation}
+          onServerValidate={handleServerValidate}
         />
       </div>
 

@@ -8,4 +8,10 @@ export interface ValidationResult {
   error?: string;
 }
 
+export interface ServerValidationState {
+  loading: boolean;
+  results?: ValidationResult[];
+  error?: string;
+}
+
 export const PROVIDER_IDS: ProviderId[] = ["openai", "google", "anthropic"];
