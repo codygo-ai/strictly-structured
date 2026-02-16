@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { fixSchemaForRuleSet } from '@ssv/schemas/ruleSetFixer';
 import { z } from 'zod';
 
-import { getRuleSetByProvider } from '../lib/groups';
+import { getRuleSetByProvider } from '../lib/ruleSets';
 import type { ProviderId } from '../lib/types';
 
 export function registerFixSchemaTool(server: McpServer): void {

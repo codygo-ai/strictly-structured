@@ -3,7 +3,7 @@ import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 import { z } from 'zod';
 
 import { formatRuleSetAsText, formatMarkersAsText } from '../lib/formatRules';
-import { getRuleSetByProvider, getRuleSets } from '../lib/groups';
+import { getRuleSetByProvider, getRuleSets } from '../lib/ruleSets';
 import type { ProviderId } from '../lib/types';
 
 export function registerExplainErrorsPrompt(server: McpServer): void {

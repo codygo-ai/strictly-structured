@@ -4,7 +4,7 @@ import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 import { z } from 'zod';
 
 import { formatRuleSetAsText, formatMarkersAsText } from '../lib/formatRules';
-import { getRuleSetByProvider } from '../lib/groups';
+import { getRuleSetByProvider } from '../lib/ruleSets';
 import type { ProviderId } from '../lib/types';
 
 export function registerFixSchemaPrompt(server: McpServer): void {

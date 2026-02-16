@@ -1,5 +1,5 @@
 /**
- * Downloads 70 JSON schema samples per model group from the JSONSchemaBench dataset
+ * Downloads 70 JSON schema samples per rule set from the JSONSchemaBench dataset
  * (Hugging Face: epfl-dlab/JSONSchemaBench). Saves to data/downloaded-samples/{ruleSetId}/.
  * Use as basis for test cases; _meta.expected is "unknown" until validated per rule set.
  *
@@ -16,11 +16,11 @@ const OUT_DIR = path.join(PACKAGE_ROOT, "data", "downloaded-samples");
 
 const DATASET = "epfl-dlab/JSONSchemaBench";
 const ROWS_API = "https://datasets-server.huggingface.co/rows";
-const SAMPLES_PER_GROUP = 70;
+const SAMPLES_PER_RULE_SET = 70;
 const ROWS_MAX_LENGTH = 100;
 
-const GROUPS = ["gpt-4-o1", "claude-4-5", "gemini-2-5"] as const;
-const TOTAL_NEEDED = SAMPLES_PER_GROUP * GROUPS.length;
+const RULE_SET_IDS = ["gpt-4-o1", "claude-4-5", "gemini-2-5"] as const;
+const TOTAL_NEEDED = SAMPLES_PER_RULE_SET * RULE_SET_IDS.length;
 
 interface RowsResponse {
   rows?: Array<{ row: { json_schema: string; unique_id: string } }>;
@@ -85,7 +85,7 @@ async function collectSchemas(): Promise<Array<{ unique_id: string; doc: Record<
 function main(): void {
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  for (const g of GROUPS) {
+  for (const g of RULE_SET_IDS) {
     const dir = path.join(OUT_DIR, g);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   }
@@ -93,11 +93,11 @@ function main(): void {
   collectSchemas()
     .then((schemas) => {
       const total = schemas.length;
-      const perGroup = SAMPLES_PER_GROUP;
-      for (let g = 0; g < GROUPS.length; g++) {
-        const ruleSetId = GROUPS[g];
-        const start = g * perGroup;
-        const end = Math.min(start + perGroup, total);
+      const perRuleSet = SAMPLES_PER_RULE_SET;
+      for (let g = 0; g < RULE_SET_IDS.length; g++) {
+        const ruleSetId = RULE_SET_IDS[g];
+        const start = g * perRuleSet;
+        const end = Math.min(start + perRuleSet, total);
         const slice = schemas.slice(start, end);
         const dir = path.join(OUT_DIR, ruleSetId);
 
@@ -124,7 +124,7 @@ function main(): void {
         }
         console.log(`${ruleSetId}: ${slice.length} samples -> ${dir}`);
       }
-      console.log(`Done. Total: ${total} schemas, ${perGroup} per rule set.`);
+      console.log(`Done. Total: ${total} schemas, ${perRuleSet} per rule set.`);
     })
     .catch((err) => {
       console.error(err);

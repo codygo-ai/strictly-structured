@@ -28,12 +28,15 @@ export interface SizeLimits {
 
 export type ProviderId = 'openai' | 'anthropic' | 'gemini';
 
+export const RULE_SET_IDS = ['gpt-4-o1', 'claude-4-5', 'gemini-2-5'] as const;
+export type RuleSetId = (typeof RULE_SET_IDS)[number];
+
 export interface ComparisonColumn {
   id: ProviderId;
 }
 
 export interface SchemaRuleSet {
-  ruleSetId: string;
+  ruleSetId: RuleSetId;
   displayName: string;
   provider: string;
   providerId: ProviderId;
@@ -100,7 +103,7 @@ export interface SchemaRuleSetsMeta {
   comparisonColumns: ComparisonColumn[];
   comparisonRows: ComparisonRow[];
   sourcesDisplay: string;
-  providerBadgeClasses: Record<ProviderId, string>;
+  providerBadgeClasses: Record<string, string>;
   comparisonLegend: ComparisonLegend;
   universal: UniversalRules;
 }

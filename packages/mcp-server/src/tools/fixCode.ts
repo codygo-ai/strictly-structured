@@ -3,7 +3,7 @@ import { zodToJsonSchema, jsonSchemaToZod, detectFormat } from '@ssv/codegen';
 import { fixSchemaForRuleSet } from '@ssv/schemas/ruleSetFixer';
 import { z } from 'zod';
 
-import { getRuleSetByProvider } from '../lib/groups';
+import { getRuleSetByProvider } from '../lib/ruleSets';
 import type { ProviderId } from '../lib/types';
 
 export function registerFixCodeTool(server: McpServer): void {
@@ -77,7 +77,7 @@ export function registerFixCodeTool(server: McpServer): void {
 
         const fixResult = fixSchemaForRuleSet(conversion.schema, ruleSet);
 
-        const fixedZodCode = jsonSchemaToZod(fixResult.fixedSchema as Record<string, unknown>);
+        const fixedZodCode = jsonSchemaToZod(fixResult.fixedSchema);
 
         return {
           content: [

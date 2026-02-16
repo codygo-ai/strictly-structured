@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import { formatRuleSetAsText } from '../lib/formatRules';
-import { getRuleSetByProvider } from '../lib/groups';
+import { getRuleSetByProvider } from '../lib/ruleSets';
 import type { ProviderId } from '../lib/types';
 
 export function registerGenerateSchemaPrompt(server: McpServer): void {

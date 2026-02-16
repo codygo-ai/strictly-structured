@@ -38,9 +38,9 @@ function loadSamples(): SampleFile[] {
 
   for (const dirEntry of fs.readdirSync(SAMPLES_DIR, { withFileTypes: true })) {
     if (!dirEntry.isDirectory()) continue;
-    const groupDir = path.join(SAMPLES_DIR, dirEntry.name);
-    for (const file of fs.readdirSync(groupDir).filter((f) => f.endsWith('.json'))) {
-      const filePath = path.join(groupDir, file);
+    const ruleSetDir = path.join(SAMPLES_DIR, dirEntry.name);
+    for (const file of fs.readdirSync(ruleSetDir).filter((f) => f.endsWith('.json'))) {
+      const filePath = path.join(ruleSetDir, file);
       const raw = fs.readFileSync(filePath, 'utf-8');
       const parsed = JSON.parse(raw) as Record<string, unknown>;
       const { _meta, ...doc } = parsed;

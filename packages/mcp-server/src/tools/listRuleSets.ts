@@ -1,12 +1,12 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { getRuleSetsByProviders, getRuleSetsMeta } from '../lib/groups';
+import { getRuleSetsByProviders, getRuleSetsMeta } from '../lib/ruleSets';
 import type { ProviderId } from '../lib/types';
 
-export function registerListGroupsTool(server: McpServer): void {
+export function registerListRuleSetsTool(server: McpServer): void {
   server.tool(
-    'list_groups',
+    'list_rule_sets',
     'List available LLM provider rule sets and their models for structured output schema validation.',
     {
       provider: z

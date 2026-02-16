@@ -62,8 +62,8 @@ export default function ModelSupportPage() {
       <div>
         <h1 className="text-2xl font-semibold text-primary tracking-tight">Explore Models</h1>
         <p className="mt-2 text-secondary leading-snug">
-          JSON Schema support across LLM structured output providers. Each group shares identical
-          schema semantics — models within a group differ only in performance and pricing.
+          JSON Schema support across LLM structured output providers. Each rule set shares identical
+          schema semantics — models within a rule set differ only in performance and pricing.
         </p>
         <Link href="/" className="mt-4 inline-block text-sm text-accent hover:underline">
           Back to Playground

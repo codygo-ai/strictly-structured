@@ -6,7 +6,7 @@ import { registerGenerateSchemaPrompt } from './prompts/generateSchema';
 import { registerConvertCodeTool } from './tools/convertCode';
 import { registerFixCodeTool } from './tools/fixCode';
 import { registerFixSchemaTool } from './tools/fixSchema';
-import { registerListGroupsTool } from './tools/listGroups';
+import { registerListRuleSetsTool } from './tools/listRuleSets';
 import { registerListSdksTool } from './tools/listSdks';
 import { registerPreviewSdkTransformTool } from './tools/previewSdkTransform';
 import { registerValidateCodeTool } from './tools/validateCode';
@@ -21,7 +21,7 @@ export function createServer(): McpServer {
   });
 
   registerValidateSchemaTool(server);
-  registerListGroupsTool(server);
+  registerListRuleSetsTool(server);
   registerFixSchemaTool(server);
   registerConvertCodeTool(server);
   registerValidateCodeTool(server);

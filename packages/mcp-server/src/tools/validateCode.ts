@@ -4,7 +4,7 @@ import type { SdkId } from '@ssv/codegen';
 import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 import { z } from 'zod';
 
-import { getRuleSetsByProviders } from '../lib/groups';
+import { getRuleSetsByProviders } from '../lib/ruleSets';
 import type { ProviderId, ProviderValidationResult } from '../lib/types';
 
 const DEFAULT_SDK_FOR_PROVIDER: Record<string, SdkId> = {

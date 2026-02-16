@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 import { z } from 'zod';
 
-import { getRuleSetsByProviders } from '../lib/groups';
+import { getRuleSetsByProviders } from '../lib/ruleSets';
 import type { ProviderId, ProviderValidationResult, ValidateSchemaResponse } from '../lib/types';
 
 export function registerValidateSchemaTool(server: McpServer): void {
