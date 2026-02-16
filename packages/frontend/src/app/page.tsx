@@ -2,6 +2,7 @@
 
 import ruleSetsDataJson from '@ssv/schemas/data/schemaRuleSets.json';
 import type { FixResult } from '@ssv/schemas/ruleSetFixer';
+import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 import type { SchemaRuleSetsData, RuleSetId } from '@ssv/schemas/types';
 import { useSearchParams } from 'next/navigation';
 import { useReducer, useCallback, useMemo, useRef, useEffect, Suspense } from 'react';
@@ -9,6 +10,7 @@ import { useReducer, useCallback, useMemo, useRef, useEffect, Suspense } from 'r
 import { CompatibilityDashboard } from '~/components/CompatibilityDashboard';
 import { EditorBottomBar } from '~/components/EditorBottomBar';
 import { EditorInputHint } from '~/components/EditorInputHint';
+import type { OtherRuleSetStatus } from '~/components/IssuesTab';
 import { SchemaEditor, type SchemaEditorApi } from '~/components/SchemaEditor';
 import { useAllRuleSetsValidation } from '~/hooks/useAllRuleSetsValidation';
 import { useAudit, hashSchema } from '~/lib/audit';
@@ -113,6 +115,7 @@ interface ValidatorState {
   fixResult?: FixResult;
   preFixSchema?: string;
   lastFixedForRuleSetId?: RuleSetId;
+  otherRuleSetStatusesAtFix?: OtherRuleSetStatus[];
   hasMonacoErrors: boolean;
   serverValidation: ServerValidationState;
 }
@@ -125,7 +128,13 @@ type ValidatorAction =
       cachedServerValidation?: CachedServerValidation;
       cachedFixLineage?: CachedFixLineage;
     }
-  | { type: 'FIX_APPLIED'; fixedSchema: string; fixResult: FixResult; preFixSchema: string }
+  | {
+      type: 'FIX_APPLIED';
+      fixedSchema: string;
+      fixResult: FixResult;
+      preFixSchema: string;
+      otherRuleSetStatusesAtFix: OtherRuleSetStatus[];
+    }
   | { type: 'FIX_UNDONE' }
   | { type: 'MONACO_ERRORS_CHANGED'; hasErrors: boolean }
   | { type: 'SERVER_VALIDATION_STARTED' }
@@ -146,6 +155,7 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
         fixResult: undefined,
         preFixSchema: undefined,
         lastFixedForRuleSetId: undefined,
+        otherRuleSetStatusesAtFix: undefined,
         serverValidation: INITIAL_SERVER_VALIDATION,
       };
     case 'RULESET_CHANGED': {
@@ -169,6 +179,7 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
         schema: action.fixedSchema,
         fixResult: action.fixResult,
         lastFixedForRuleSetId: state.selectedRuleSetId,
+        otherRuleSetStatusesAtFix: action.otherRuleSetStatusesAtFix,
       };
     case 'FIX_UNDONE':
       return {
@@ -177,6 +188,7 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
         fixResult: undefined,
         preFixSchema: undefined,
         lastFixedForRuleSetId: undefined,
+        otherRuleSetStatusesAtFix: undefined,
       };
     case 'MONACO_ERRORS_CHANGED':
       if (state.hasMonacoErrors === action.hasErrors) return state;
@@ -332,12 +344,28 @@ function HomeContent() {
         fixResult: result,
         cachedAt: Date.now(),
       });
+
+      const otherRuleSetStatusesAtFix: OtherRuleSetStatus[] = RULE_SETS.filter(
+        (rs) => rs.ruleSetId !== state.selectedRuleSetId,
+      ).map((rs) => {
+        const markers = validateSchemaForRuleSet(fixedSchema, rs);
+        const errorCount = markers.filter((m) => m.severity === 'error').length;
+        const warningCount = markers.filter((m) => m.severity === 'warning').length;
+        return {
+          ruleSetId: rs.ruleSetId,
+          displayName: rs.displayName,
+          errorCount,
+          warningCount,
+        };
+      });
+
       editorApiRef.current?.applyText(fixedSchema);
       dispatch({
         type: 'FIX_APPLIED',
         fixedSchema,
         fixResult: result,
         preFixSchema: state.schema,
+        otherRuleSetStatusesAtFix,
       });
     },
     [state.schema, state.selectedRuleSetId, schemaHash],
@@ -532,6 +560,7 @@ function HomeContent() {
           fixResult={state.fixResult}
           onUndo={handleUndo}
           lastFixedForRuleSetId={state.lastFixedForRuleSetId}
+          otherRuleSetStatusesAtFix={state.otherRuleSetStatusesAtFix}
           serverValidation={state.serverValidation}
           onServerValidate={handleServerValidate}
         />
