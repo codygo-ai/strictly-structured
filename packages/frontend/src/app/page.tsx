@@ -100,6 +100,7 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
         schema: state.preFixSchema ?? state.schema,
         fixResult: null,
         preFixSchema: null,
+        lastFixedForRuleSetId: null,
       };
     case "MONACO_ERRORS_CHANGED":
       if (state.hasMonacoErrors === action.hasErrors) return state;
