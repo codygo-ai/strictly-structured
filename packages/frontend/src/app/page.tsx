@@ -4,7 +4,7 @@ import ruleSetsDataJson from '@ssv/schemas/data/schemaRuleSets.json';
 import type { FixResult } from '@ssv/schemas/ruleSetFixer';
 import type { SchemaRuleSetsData, RuleSetId } from '@ssv/schemas/types';
 import { useSearchParams } from 'next/navigation';
-import { useReducer, useCallback, useMemo, useRef, Suspense } from 'react';
+import { useReducer, useCallback, useMemo, useRef, useEffect, Suspense } from 'react';
 
 import { CompatibilityDashboard } from '~/components/CompatibilityDashboard';
 import { EditorBottomBar } from '~/components/EditorBottomBar';
@@ -41,6 +41,66 @@ const DEFAULT_SCHEMA = `{
 }
 `;
 
+/* ─── Session history utilities ────────────────────────────────────── */
+
+function fnv1aHash(str: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+function canonicalSchemaHash(rawJson: string): string {
+  return fnv1aHash(JSON.stringify(JSON.parse(rawJson)));
+}
+
+type SessionKey = `${string}:${string}`;
+
+function makeSessionKey(schemaHash: string, ruleSetId: RuleSetId): SessionKey {
+  return `${schemaHash}:${ruleSetId}`;
+}
+
+const MAX_CACHE_SIZE = 50;
+
+function sessionCacheSet<V extends { cachedAt: number }>(
+  map: Map<SessionKey, V>,
+  key: SessionKey,
+  value: V,
+): void {
+  map.set(key, value);
+  if (map.size > MAX_CACHE_SIZE) {
+    let oldestKey: SessionKey | undefined;
+    let oldestTime = Infinity;
+    for (const [k, v] of map) {
+      if (v.cachedAt < oldestTime) {
+        oldestTime = v.cachedAt;
+        oldestKey = k;
+      }
+    }
+    if (oldestKey) map.delete(oldestKey);
+  }
+}
+
+interface CachedServerValidation {
+  results: ValidationResult[];
+  cachedAt: number;
+}
+
+interface CachedFixLineage {
+  sourceSchema: string;
+  sourceSchemaHash: string;
+  ruleSetId: RuleSetId;
+  fixResult: FixResult;
+  cachedAt: number;
+}
+
+interface SessionHistoryStore {
+  serverValidation: Map<SessionKey, CachedServerValidation>;
+  fixLineage: Map<SessionKey, CachedFixLineage>;
+}
+
 /* ─── Validator state & reducer ─────────────────────────────────────── */
 
 const INITIAL_SERVER_VALIDATION: ServerValidationState = {
@@ -59,13 +119,23 @@ interface ValidatorState {
 
 type ValidatorAction =
   | { type: 'SCHEMA_CHANGED'; schema: string }
-  | { type: 'RULESET_CHANGED'; ruleSetId: RuleSetId }
-  | { type: 'FIX_APPLIED'; fixedSchema: string; fixResult: FixResult }
+  | {
+      type: 'RULESET_CHANGED';
+      ruleSetId: RuleSetId;
+      cachedServerValidation?: CachedServerValidation;
+      cachedFixLineage?: CachedFixLineage;
+    }
+  | { type: 'FIX_APPLIED'; fixedSchema: string; fixResult: FixResult; preFixSchema: string }
   | { type: 'FIX_UNDONE' }
   | { type: 'MONACO_ERRORS_CHANGED'; hasErrors: boolean }
   | { type: 'SERVER_VALIDATION_STARTED' }
   | { type: 'SERVER_VALIDATION_COMPLETED'; results: ValidationResult[] }
-  | { type: 'SERVER_VALIDATION_FAILED'; error: string };
+  | { type: 'SERVER_VALIDATION_FAILED'; error: string }
+  | {
+      type: 'RESTORE_FROM_CACHE';
+      cachedServerValidation?: CachedServerValidation;
+      cachedFixLineage?: CachedFixLineage;
+    };
 
 function validatorReducer(state: ValidatorState, action: ValidatorAction): ValidatorState {
   switch (action.type) {
@@ -78,17 +148,24 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
         lastFixedForRuleSetId: undefined,
         serverValidation: INITIAL_SERVER_VALIDATION,
       };
-    case 'RULESET_CHANGED':
+    case 'RULESET_CHANGED': {
+      const fixLineage = action.cachedFixLineage;
+      const serverCache = action.cachedServerValidation;
       return {
         ...state,
         selectedRuleSetId: action.ruleSetId,
-        fixResult: undefined,
-        serverValidation: INITIAL_SERVER_VALIDATION,
+        fixResult: fixLineage?.fixResult,
+        preFixSchema: fixLineage?.sourceSchema,
+        lastFixedForRuleSetId: fixLineage?.ruleSetId,
+        serverValidation: serverCache
+          ? { loading: false, results: serverCache.results }
+          : INITIAL_SERVER_VALIDATION,
       };
+    }
     case 'FIX_APPLIED':
       return {
         ...state,
-        preFixSchema: state.schema,
+        preFixSchema: action.preFixSchema,
         schema: action.fixedSchema,
         fixResult: action.fixResult,
         lastFixedForRuleSetId: state.selectedRuleSetId,
@@ -119,6 +196,19 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
         ...state,
         serverValidation: { loading: false, error: action.error },
       };
+    case 'RESTORE_FROM_CACHE': {
+      const sv = action.cachedServerValidation
+        ? { loading: false as const, results: action.cachedServerValidation.results }
+        : state.serverValidation;
+      const fl = action.cachedFixLineage;
+      return {
+        ...state,
+        fixResult: fl?.fixResult ?? state.fixResult,
+        preFixSchema: fl?.sourceSchema ?? state.preFixSchema,
+        lastFixedForRuleSetId: fl?.ruleSetId ?? state.lastFixedForRuleSetId,
+        serverValidation: sv,
+      };
+    }
   }
 }
 
@@ -164,12 +254,38 @@ function HomeContent() {
   const editorApiRef = useRef<SchemaEditorApi | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onboarding = useOnboardingHint();
+  const sessionRef = useRef<SessionHistoryStore>({
+    serverValidation: new Map(),
+    fixLineage: new Map(),
+  });
 
   const validationResults = useAllRuleSetsValidation(
     state.schema,
     RULE_SETS,
     !state.hasMonacoErrors,
   );
+
+  const schemaHash = useMemo(() => {
+    const anySummary = validationResults.values().next().value;
+    if (!anySummary?.isValidJson || !anySummary?.isValidJsonSchema) return undefined;
+    return canonicalSchemaHash(state.schema);
+  }, [state.schema, validationResults]);
+
+  // Restore cached state when schema becomes (or remains) a valid JSON schema
+  useEffect(() => {
+    if (!schemaHash) return;
+    const store = sessionRef.current;
+    const key = makeSessionKey(schemaHash, state.selectedRuleSetId);
+    const cachedSV = store.serverValidation.get(key);
+    const cachedFix = store.fixLineage.get(key);
+    if (cachedSV || cachedFix) {
+      dispatch({
+        type: 'RESTORE_FROM_CACHE',
+        cachedServerValidation: cachedSV,
+        cachedFixLineage: cachedFix,
+      });
+    }
+  }, [schemaHash, state.selectedRuleSetId]);
 
   const selectedRuleSet = useMemo(
     () => RULE_SETS.find((r) => r.ruleSetId === state.selectedRuleSetId),
@@ -189,19 +305,43 @@ function HomeContent() {
 
   const handleRuleSetChange = useCallback(
     (ruleSetId: RuleSetId) => {
-      dispatch({ type: 'RULESET_CHANGED', ruleSetId });
+      const store = sessionRef.current;
+      const key = schemaHash ? makeSessionKey(schemaHash, ruleSetId) : undefined;
+      dispatch({
+        type: 'RULESET_CHANGED',
+        ruleSetId,
+        cachedServerValidation: key ? store.serverValidation.get(key) : undefined,
+        cachedFixLineage: key ? store.fixLineage.get(key) : undefined,
+      });
       const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
       if (ruleSet) {
         emit('ruleSet.selected', { ruleSetId });
       }
     },
-    [emit],
+    [schemaHash, emit],
   );
 
-  const handleFixAll = useCallback((fixedSchema: string, result: FixResult) => {
-    editorApiRef.current?.applyText(fixedSchema);
-    dispatch({ type: 'FIX_APPLIED', fixedSchema, fixResult: result });
-  }, []);
+  const handleFixAll = useCallback(
+    (fixedSchema: string, result: FixResult) => {
+      const fixedHash = canonicalSchemaHash(fixedSchema);
+      const key = makeSessionKey(fixedHash, state.selectedRuleSetId);
+      sessionCacheSet(sessionRef.current.fixLineage, key, {
+        sourceSchema: state.schema,
+        sourceSchemaHash: schemaHash ?? '',
+        ruleSetId: state.selectedRuleSetId,
+        fixResult: result,
+        cachedAt: Date.now(),
+      });
+      editorApiRef.current?.applyText(fixedSchema);
+      dispatch({
+        type: 'FIX_APPLIED',
+        fixedSchema,
+        fixResult: result,
+        preFixSchema: state.schema,
+      });
+    },
+    [state.schema, state.selectedRuleSetId, schemaHash],
+  );
 
   const handleMonacoErrors = useCallback((hasErrors: boolean) => {
     dispatch({ type: 'MONACO_ERRORS_CHANGED', hasErrors });
@@ -258,12 +398,19 @@ function HomeContent() {
         return;
       }
       if (data.results) {
+        if (schemaHash) {
+          const key = makeSessionKey(schemaHash, state.selectedRuleSetId);
+          sessionCacheSet(sessionRef.current.serverValidation, key, {
+            results: data.results,
+            cachedAt: Date.now(),
+          });
+        }
         dispatch({ type: 'SERVER_VALIDATION_COMPLETED', results: data.results });
       }
     } catch (err) {
       dispatch({ type: 'SERVER_VALIDATION_FAILED', error: (err as Error).message });
     }
-  }, [state.schema, state.selectedRuleSetId, ensureAuth, emit]);
+  }, [state.schema, state.selectedRuleSetId, schemaHash, ensureAuth, emit]);
 
   const applyLoadedJson = useCallback(
     (text: string) => {
