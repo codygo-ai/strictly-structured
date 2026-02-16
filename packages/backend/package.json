@@ -15,7 +15,7 @@
     "dev": "tsup --watch",
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "serve": "firebase emulators:start --only functions",
+    "serve": "node scripts/prepare-emulator-env.mjs && firebase emulators:start --only functions,hosting,firestore",
     "deploy": "firebase deploy --only functions",
     "set-secrets": "node scripts/set-secrets-from-env.mjs",
     "prepare-emulator": "node scripts/prepare-emulator-env.mjs",

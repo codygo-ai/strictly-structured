@@ -4,10 +4,9 @@
   "private": true,
   "description": "Structured Schema Validator monorepo",
   "scripts": {
-    "dev": "concurrently -n fe,be,em -c blue,green,magenta \"pnpm --filter @ssv/frontend dev\" \"pnpm --filter @ssv/backend dev\" \"pnpm --filter @ssv/backend prepare-emulator && pnpm exec firebase emulators:start --only functions,hosting\"",
+    "dev": "concurrently -n fe,be,em -c blue,green,magenta \"pnpm --filter @ssv/frontend dev\" \"pnpm --filter @ssv/backend dev\" \"pnpm --filter @ssv/backend serve\"",
     "dev:frontend": "pnpm --filter @ssv/frontend dev",
     "dev:backend": "pnpm --filter @ssv/backend dev",
-    "dev:emulator": "pnpm --filter @ssv/backend prepare-emulator && pnpm exec firebase emulators:start --only functions,hosting",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
