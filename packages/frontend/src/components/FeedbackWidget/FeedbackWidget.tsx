@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+import { Tooltip } from '~/components/Tooltip';
+import { useAuth } from '~/lib/useAuth';
+
 import {
   FEEDBACK_TYPES,
   FEEDBACK_TYPE_CONFIG,
   type FeedbackType,
   type FeedbackPayload,
 } from './types';
-
-import { Tooltip } from '~/components/Tooltip';
-import { useAuth } from '~/lib/useAuth';
 
 const GITHUB_ISSUES_URL = 'https://github.com/codygo-ai/strictly-structured/issues';
 const API_URL = '/api/feedback';

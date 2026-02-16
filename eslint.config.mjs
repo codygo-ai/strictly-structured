@@ -2,6 +2,22 @@ import baseConfig from '@codygo-ai/eslint-config-base';
 
 export default [
   ...baseConfig,
+  // Frontend uses ~/… path alias — tell import/order to treat it as internal
+  {
+    files: ['packages/frontend/**/*.{ts,tsx}'],
+    rules: {
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          pathGroups: [{ pattern: '~/**', group: 'internal' }],
+          pathGroupsExcludedImportTypes: ['builtin'],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
+    },
+  },
   {
     rules: {
       // SSV uses @ssv/* namespace, not @codygo-ai/*
