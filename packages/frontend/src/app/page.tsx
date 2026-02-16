@@ -13,7 +13,8 @@ import { useAudit, hashSchema } from "~/lib/audit";
 import { useAuth } from "~/lib/useAuth";
 import { useAllRuleSetsValidation } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
-import type { ValidationResult, ServerValidationState } from "~/lib/providers/types";
+import type { ProviderId, ValidationResult, ServerValidationState } from "~/lib/providers/types";
+import { PROVIDER_TO_MODEL_ID } from "~/lib/modelIds";
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
@@ -228,11 +229,16 @@ function HomeContent() {
   const handleServerValidate = useCallback(async () => {
     dispatch({ type: "SERVER_VALIDATION_STARTED" });
     try {
+      const backendProviderId: ProviderId = selectedRuleSet?.providerId === "gemini"
+        ? "google"
+        : (selectedRuleSet?.providerId as ProviderId) ?? "openai";
+      const modelId = PROVIDER_TO_MODEL_ID[backendProviderId];
+
       const hash = await hashSchema(state.schema);
       emit("server.validate.requested", {
         schemaHash: hash,
         schemaSizeBytes: new Blob([state.schema]).size,
-        modelIds: selectedRuleSet?.models ?? [],
+        modelIds: [modelId],
       });
 
       const token = await ensureAuth();
@@ -244,7 +250,7 @@ function HomeContent() {
         },
         body: JSON.stringify({
           schema: state.schema,
-          modelIds: selectedRuleSet?.models ?? [],
+          modelIds: [modelId],
         }),
       });
       const data = (await res.json()) as {
