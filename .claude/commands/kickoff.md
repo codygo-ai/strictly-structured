@@ -6,7 +6,33 @@ Create a GitHub issue from the approved plan, optionally create a linked branch 
 
 Find the plan file from the conversation context. If unclear, check the most recent file in `.claude/plans/`. Extract the title (first `#` heading) and the full markdown body.
 
-## Step 2 — Create GitHub issue
+## Step 2 — Create or update GitHub issue
+
+### If the plan originated from an existing ticket
+
+If the planning session started from a reference to an existing GitHub issue (e.g., the user shared a link, mentioned `#<number>`, or the conversation context includes an issue number):
+
+1. Fetch the current issue body:
+   ```
+   gh issue view <number> --json body --jq '.body'
+   ```
+2. **If the description is empty or blank**: set the plan as the description:
+   ```
+   gh issue edit <number> --body "<full plan markdown>"
+   ```
+3. **If the description already has content**: append the plan as a clearly marked continuation:
+   ```
+   gh issue edit <number> --body "<existing body>
+
+   ---
+
+   ## Implementation Plan
+
+   <full plan markdown>"
+   ```
+4. Use this issue number going forward. Show the issue URL to the user.
+
+### If no existing ticket — create a new issue
 
 Run:
 
