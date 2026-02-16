@@ -51,7 +51,6 @@ interface RuleSetSelectedEvent extends AuditEventBase {
   readonly source: "frontend";
   readonly data: {
     readonly ruleSetId: string;
-    readonly providerId: string;
   };
 }
 

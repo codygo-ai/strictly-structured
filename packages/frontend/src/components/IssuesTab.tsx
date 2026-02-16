@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import type { SchemaRuleSet } from "@ssv/schemas/types";
-import type { ProviderId } from "@ssv/schemas/types";
 import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
 import { fixSchemaForRuleSet, type FixResult } from "@ssv/schemas/ruleSetFixer";
 import { SeverityIcon } from "~/components/SeverityIcon";
@@ -13,10 +12,9 @@ import type { ServerValidationState } from "~/lib/providers/types";
 
 /* ─── Types ───────────────────────────────────────────────────────────── */
 
-export interface OtherProviderStatus {
+export interface OtherRuleSetStatus {
   ruleSetId: string;
   displayName: string;
-  providerId: ProviderId;
   errorCount: number;
   warningCount: number;
 }
@@ -30,7 +28,7 @@ interface IssuesTabProps {
   onScrollToLine: (line: number) => void;
   fixResult?: FixResult;
   onUndo: () => void;
-  otherProviderStatuses: OtherProviderStatus[];
+  otherRuleSetStatuses: OtherRuleSetStatus[];
   lastFixedForRuleSetId?: string;
   onSelectRuleSet: (id: string) => void;
   serverValidation: ServerValidationState;
@@ -71,7 +69,7 @@ function CrossProviderBanner({
   onSelectRuleSet,
 }: {
   ruleSet: SchemaRuleSet;
-  statuses: OtherProviderStatus[];
+  statuses: OtherRuleSetStatus[];
   onSelectRuleSet: (id: string) => void;
 }) {
   const withIssues = statuses.filter((s) => s.errorCount > 0 || s.warningCount > 0);
@@ -112,18 +110,18 @@ function CrossProviderBanner({
 function ContextBanner({
   lastFixedForRuleSetId,
   currentRuleSetId,
-  otherProviderStatuses,
+  otherRuleSetStatuses,
 }: {
   lastFixedForRuleSetId?: string;
   currentRuleSetId: string;
-  otherProviderStatuses: OtherProviderStatus[];
+  otherRuleSetStatuses: OtherRuleSetStatus[];
 }) {
   if (!lastFixedForRuleSetId || lastFixedForRuleSetId === currentRuleSetId) return null;
 
   // Find the display name of the provider that was just fixed
-  // It could be in otherProviderStatuses (since it's "other" from current perspective)
+  // It could be in otherRuleSetStatuses (since it's "other" from current perspective)
   // or we just use the ID as fallback
-  const fixedProvider = otherProviderStatuses.find((s) => s.ruleSetId === lastFixedForRuleSetId);
+  const fixedProvider = otherRuleSetStatuses.find((s) => s.ruleSetId === lastFixedForRuleSetId);
   const fixedName = fixedProvider?.displayName ?? lastFixedForRuleSetId;
 
   return (
@@ -319,7 +317,7 @@ export function IssuesTab({
   onScrollToLine,
   fixResult,
   onUndo,
-  otherProviderStatuses,
+  otherRuleSetStatuses,
   lastFixedForRuleSetId,
   onSelectRuleSet,
   serverValidation,
@@ -398,7 +396,7 @@ export function IssuesTab({
         <div className="issues-card-content">
           <CrossProviderBanner
             ruleSet={ruleSet}
-            statuses={otherProviderStatuses}
+            statuses={otherRuleSetStatuses}
             onSelectRuleSet={onSelectRuleSet}
           />
           <FixResultContent fixResult={fixResult} />
@@ -426,7 +424,7 @@ export function IssuesTab({
           <ContextBanner
             lastFixedForRuleSetId={lastFixedForRuleSetId}
             currentRuleSetId={ruleSet.ruleSetId}
-            otherProviderStatuses={otherProviderStatuses}
+            otherRuleSetStatuses={otherRuleSetStatuses}
           />
           <CompatibleContent ruleSet={ruleSet} />
         </div>
@@ -455,7 +453,7 @@ export function IssuesTab({
         <ContextBanner
           lastFixedForRuleSetId={lastFixedForRuleSetId}
           currentRuleSetId={ruleSet.ruleSetId}
-          otherProviderStatuses={otherProviderStatuses}
+          otherRuleSetStatuses={otherRuleSetStatuses}
         />
         {sorted.map((marker, i) => (
           <div key={i} className="issue-row">

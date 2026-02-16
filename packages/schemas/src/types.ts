@@ -100,7 +100,7 @@ export interface SchemaRuleSetsMeta {
   comparisonColumns: ComparisonColumn[];
   comparisonRows: ComparisonRow[];
   sourcesDisplay: string;
-  providerBadgeClasses: Record<ProviderId, string>;
+  providerBadgeClasses: Record<string, string>;
   comparisonLegend: ComparisonLegend;
   universal: UniversalRules;
 }

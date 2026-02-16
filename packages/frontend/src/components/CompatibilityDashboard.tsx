@@ -6,7 +6,7 @@ import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation"
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
 import type { ServerValidationState } from "~/lib/providers/types";
 import { RuleSetStatusCard } from "~/components/RuleSetStatusCard";
-import { IssuesTab, type OtherProviderStatus } from "~/components/IssuesTab";
+import { IssuesTab, type OtherRuleSetStatus } from "~/components/IssuesTab";
 import { ReferenceTab } from "~/components/ReferenceTab";
 
 type TabId = "issues" | "reference";
@@ -103,7 +103,7 @@ export function CompatibilityDashboard({
 
   const selectedSummary = validationResults.get(selectedRuleSetId);
 
-  const otherProviderStatuses: OtherProviderStatus[] = useMemo(
+  const otherRuleSetStatuses: OtherRuleSetStatus[] = useMemo(
     () =>
       ruleSets
         .filter((rs) => rs.ruleSetId !== selectedRuleSetId)
@@ -112,7 +112,6 @@ export function CompatibilityDashboard({
           return {
             ruleSetId: rs.ruleSetId,
             displayName: rs.displayName,
-            providerId: rs.providerId,
             errorCount: summary?.errorCount ?? 0,
             warningCount: summary?.warningCount ?? 0,
           };
@@ -188,7 +187,7 @@ export function CompatibilityDashboard({
                 onScrollToLine={onScrollToLine}
                 fixResult={fixResult}
                 onUndo={onUndo}
-                otherProviderStatuses={otherProviderStatuses}
+                otherRuleSetStatuses={otherRuleSetStatuses}
                 lastFixedForRuleSetId={lastFixedForRuleSetId}
                 onSelectRuleSet={onSelectRuleSet}
                 serverValidation={serverValidation}

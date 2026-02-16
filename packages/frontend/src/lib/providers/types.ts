@@ -1,7 +1,5 @@
-export type ProviderId = "openai" | "google" | "anthropic";
-
 export interface ValidationResult {
-  provider: ProviderId;
+  provider: string;
   model: string;
   ok: boolean;
   latencyMs: number;
@@ -13,5 +11,3 @@ export interface ServerValidationState {
   results?: ValidationResult[];
   error?: string;
 }
-
-export const PROVIDER_IDS: ProviderId[] = ["openai", "google", "anthropic"];

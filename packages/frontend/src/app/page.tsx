@@ -13,8 +13,8 @@ import { useAudit, hashSchema } from "~/lib/audit";
 import { useAuth } from "~/lib/useAuth";
 import { useAllRuleSetsValidation } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
-import type { ProviderId, ValidationResult, ServerValidationState } from "~/lib/providers/types";
-import { PROVIDER_TO_MODEL_ID } from "~/lib/modelIds";
+import type { ValidationResult, ServerValidationState } from "~/lib/providers/types";
+import { RULESET_TO_CHEAPEST_MODEL_ID } from "~/lib/modelIds";
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
@@ -194,7 +194,7 @@ function HomeContent() {
       dispatch({ type: "RULESET_CHANGED", ruleSetId });
       const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
       if (ruleSet) {
-        emit("ruleSet.selected", { ruleSetId, providerId: ruleSet.providerId });
+        emit("ruleSet.selected", { ruleSetId });
       }
     },
     [emit],
@@ -229,10 +229,8 @@ function HomeContent() {
   const handleServerValidate = useCallback(async () => {
     dispatch({ type: "SERVER_VALIDATION_STARTED" });
     try {
-      const backendProviderId: ProviderId = selectedRuleSet?.providerId === "gemini"
-        ? "google"
-        : (selectedRuleSet?.providerId as ProviderId) ?? "openai";
-      const modelId = PROVIDER_TO_MODEL_ID[backendProviderId];
+      const modelId = RULESET_TO_CHEAPEST_MODEL_ID[state.selectedRuleSetId];
+      if (!modelId) return;
 
       const hash = await hashSchema(state.schema);
       emit("server.validate.requested", {
@@ -267,7 +265,7 @@ function HomeContent() {
     } catch (err) {
       dispatch({ type: "SERVER_VALIDATION_FAILED", error: (err as Error).message });
     }
-  }, [state.schema, selectedRuleSet, ensureAuth, emit]);
+  }, [state.schema, state.selectedRuleSetId, ensureAuth, emit]);
 
   const applyLoadedJson = useCallback(
     (text: string) => {
