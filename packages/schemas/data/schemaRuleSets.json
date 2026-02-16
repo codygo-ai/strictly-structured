@@ -2,7 +2,7 @@
   "meta": {
     "version": "4.0",
     "lastUpdated": "2026-02-14",
-    "description": "Structured Output JSON Schema support by LLM provider group. Each group shares identical schema semantics. Models within a group differ only in performance/pricing, not schema rules.",
+    "description": "Structured Output JSON Schema support by LLM provider rule set. Each rule set shares identical schema semantics. Models within a rule set differ only in performance/pricing, not schema rules.",
     "sources": {
       "openai": "https://platform.openai.com/docs/guides/structured-outputs",
       "anthropic": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",

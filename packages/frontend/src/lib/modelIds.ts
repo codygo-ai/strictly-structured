@@ -1,11 +1,11 @@
-import type { ProviderId } from "~/lib/providers/types";
+import type { RuleSetId } from "@ssv/schemas/types";
 
 /**
- * Map provider (UI selection) to compatibility data model id.
+ * Map ruleSetId → cheapest model id for server validation.
  * Must match config in compatibility-runner.
  */
-export const PROVIDER_TO_MODEL_ID: Record<ProviderId, string> = {
-  openai: "openai:gpt-4.1-mini",
-  google: "google:gemini-2.5-flash",
-  anthropic: "anthropic:claude-haiku-4-5",
+export const RULESET_TO_CHEAPEST_MODEL_ID: Record<RuleSetId, string> = {
+  "gpt-4-o1": "openai:gpt-4.1-mini",
+  "gemini-2-5": "google:gemini-2.5-flash",
+  "claude-4-5": "anthropic:claude-haiku-4-5",
 };

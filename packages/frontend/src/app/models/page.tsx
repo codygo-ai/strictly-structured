@@ -70,7 +70,7 @@ export default function ModelSupportPage() {
         </h1>
         <p className="mt-2 text-secondary leading-snug">
           JSON Schema support across LLM structured output providers. Each
-          group shares identical schema semantics — models within a group
+          rule set shares identical schema semantics — models within a rule set
           differ only in performance and pricing.
         </p>
         <Link

@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { SchemaRuleSet } from "@ssv/schemas/types";
-import type { ProviderId } from "@ssv/schemas/types";
+import type { SchemaRuleSet, RuleSetId } from "@ssv/schemas/types";
 import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
 import { fixSchemaForRuleSet, type FixResult } from "@ssv/schemas/ruleSetFixer";
 import { SeverityIcon } from "~/components/SeverityIcon";
@@ -13,10 +12,9 @@ import type { ServerValidationState } from "~/lib/providers/types";
 
 /* ─── Types ───────────────────────────────────────────────────────────── */
 
-export interface OtherProviderStatus {
-  ruleSetId: string;
+export interface OtherRuleSetStatus {
+  ruleSetId: RuleSetId;
   displayName: string;
-  providerId: ProviderId;
   errorCount: number;
   warningCount: number;
 }
@@ -30,9 +28,9 @@ interface IssuesTabProps {
   onScrollToLine: (line: number) => void;
   fixResult?: FixResult;
   onUndo: () => void;
-  otherProviderStatuses: OtherProviderStatus[];
-  lastFixedForRuleSetId?: string;
-  onSelectRuleSet: (id: string) => void;
+  otherRuleSetStatuses: OtherRuleSetStatus[];
+  lastFixedForRuleSetId?: RuleSetId;
+  onSelectRuleSet: (id: RuleSetId) => void;
   serverValidation: ServerValidationState;
   onServerValidate: () => void;
 }
@@ -65,26 +63,26 @@ function CardHeader({
   );
 }
 
-function CrossProviderBanner({
+function CrossRuleSetBanner({
   ruleSet,
   statuses,
   onSelectRuleSet,
 }: {
   ruleSet: SchemaRuleSet;
-  statuses: OtherProviderStatus[];
-  onSelectRuleSet: (id: string) => void;
+  statuses: OtherRuleSetStatus[];
+  onSelectRuleSet: (id: RuleSetId) => void;
 }) {
   const withIssues = statuses.filter((s) => s.errorCount > 0 || s.warningCount > 0);
   if (withIssues.length === 0) return null;
 
   return (
-    <div className="cross-provider-banner">
+    <div className="cross-ruleset-banner">
       <span className="banner-icon">&#x26A0;</span>
       <div>
         <span className="banner-text">
           These fixes were applied for <strong>{ruleSet.displayName}</strong>. Other providers:
         </span>
-        <div className="provider-chips">
+        <div className="ruleset-chips">
           {statuses.map((s) => {
             const hasErrors = s.errorCount > 0;
             const hasWarnings = s.warningCount > 0;
@@ -96,7 +94,7 @@ function CrossProviderBanner({
               <button
                 key={s.ruleSetId}
                 type="button"
-                className={`provider-chip ${variant}`}
+                className={`ruleset-chip ${variant}`}
                 onClick={() => onSelectRuleSet(s.ruleSetId)}
               >
                 {label}
@@ -112,19 +110,17 @@ function CrossProviderBanner({
 function ContextBanner({
   lastFixedForRuleSetId,
   currentRuleSetId,
-  otherProviderStatuses,
+  otherRuleSetStatuses,
 }: {
-  lastFixedForRuleSetId?: string;
-  currentRuleSetId: string;
-  otherProviderStatuses: OtherProviderStatus[];
+  lastFixedForRuleSetId?: RuleSetId;
+  currentRuleSetId: RuleSetId;
+  otherRuleSetStatuses: OtherRuleSetStatus[];
 }) {
   if (!lastFixedForRuleSetId || lastFixedForRuleSetId === currentRuleSetId) return null;
 
-  // Find the display name of the provider that was just fixed
-  // It could be in otherProviderStatuses (since it's "other" from current perspective)
-  // or we just use the ID as fallback
-  const fixedProvider = otherProviderStatuses.find((s) => s.ruleSetId === lastFixedForRuleSetId);
-  const fixedName = fixedProvider?.displayName ?? lastFixedForRuleSetId;
+  // Find the display name of the rule set that was just fixed
+  const fixedRuleSet = otherRuleSetStatuses.find((s) => s.ruleSetId === lastFixedForRuleSetId);
+  const fixedName = fixedRuleSet?.displayName ?? lastFixedForRuleSetId;
 
   return (
     <div className="context-banner">
@@ -319,7 +315,7 @@ export function IssuesTab({
   onScrollToLine,
   fixResult,
   onUndo,
-  otherProviderStatuses,
+  otherRuleSetStatuses,
   lastFixedForRuleSetId,
   onSelectRuleSet,
   serverValidation,
@@ -396,9 +392,9 @@ export function IssuesTab({
       <div className="issues-card">
         <CardHeader icon={icon} iconVariant={iconVariant} label={label} sublabel={sublabel} />
         <div className="issues-card-content">
-          <CrossProviderBanner
+          <CrossRuleSetBanner
             ruleSet={ruleSet}
-            statuses={otherProviderStatuses}
+            statuses={otherRuleSetStatuses}
             onSelectRuleSet={onSelectRuleSet}
           />
           <FixResultContent fixResult={fixResult} />
@@ -426,7 +422,7 @@ export function IssuesTab({
           <ContextBanner
             lastFixedForRuleSetId={lastFixedForRuleSetId}
             currentRuleSetId={ruleSet.ruleSetId}
-            otherProviderStatuses={otherProviderStatuses}
+            otherRuleSetStatuses={otherRuleSetStatuses}
           />
           <CompatibleContent ruleSet={ruleSet} />
         </div>
@@ -455,7 +451,7 @@ export function IssuesTab({
         <ContextBanner
           lastFixedForRuleSetId={lastFixedForRuleSetId}
           currentRuleSetId={ruleSet.ruleSetId}
-          otherProviderStatuses={otherProviderStatuses}
+          otherRuleSetStatuses={otherRuleSetStatuses}
         />
         {sorted.map((marker, i) => (
           <div key={i} className="issue-row">

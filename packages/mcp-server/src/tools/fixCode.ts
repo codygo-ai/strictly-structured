@@ -5,7 +5,7 @@ import {
   jsonSchemaToZod,
   detectFormat,
 } from "@ssv/codegen";
-import { getRuleSetByProvider } from "../lib/groups";
+import { getRuleSetByProvider } from "../lib/ruleSets";
 import { fixSchemaForRuleSet } from "@ssv/schemas/ruleSetFixer";
 import type { ProviderId } from "../lib/types";
 

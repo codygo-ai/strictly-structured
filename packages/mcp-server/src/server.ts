@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerValidateSchemaTool } from "./tools/validateSchema";
-import { registerListGroupsTool } from "./tools/listGroups";
+import { registerListRuleSetsTool } from "./tools/listRuleSets";
 import { registerFixSchemaTool } from "./tools/fixSchema";
 import { registerConvertCodeTool } from "./tools/convertCode";
 import { registerValidateCodeTool } from "./tools/validateCode";
@@ -20,7 +20,7 @@ export function createServer(): McpServer {
   });
 
   registerValidateSchemaTool(server);
-  registerListGroupsTool(server);
+  registerListRuleSetsTool(server);
   registerFixSchemaTool(server);
   registerConvertCodeTool(server);
   registerValidateCodeTool(server);

@@ -7,7 +7,7 @@ import {
   SDK_IDS,
 } from "@ssv/codegen";
 import type { SdkId } from "@ssv/codegen";
-import { getRuleSetsByProviders } from "../lib/groups";
+import { getRuleSetsByProviders } from "../lib/ruleSets";
 import { validateSchemaForRuleSet } from "@ssv/schemas/ruleSetValidator";
 import type { ProviderId, ProviderValidationResult } from "../lib/types";
 

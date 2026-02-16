@@ -1,5 +1,5 @@
 /**
- * Reads rule-matrix + fragments, validates per group from local data, writes schemas/*.json and manifest.json.
+ * Reads rule-matrix + fragments, validates per rule set from local data, writes schemas/*.json and manifest.json.
  */
 
 import * as fs from "fs";

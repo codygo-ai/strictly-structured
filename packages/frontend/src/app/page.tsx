@@ -7,14 +7,14 @@ import { CompatibilityDashboard } from "~/components/CompatibilityDashboard";
 
 import { EditorInputHint } from "~/components/EditorInputHint";
 import { EditorBottomBar } from "~/components/EditorBottomBar";
-import type { SchemaRuleSet, SchemaRuleSetsData } from "@ssv/schemas/types";
+import type { SchemaRuleSet, SchemaRuleSetsData, RuleSetId } from "@ssv/schemas/types";
 import ruleSetsDataJson from "@ssv/schemas/data/schemaRuleSets.json";
 import { useAudit, hashSchema } from "~/lib/audit";
 import { useAuth } from "~/lib/useAuth";
 import { useAllRuleSetsValidation } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
-import type { ProviderId, ValidationResult, ServerValidationState } from "~/lib/providers/types";
-import { PROVIDER_TO_MODEL_ID } from "~/lib/modelIds";
+import type { ValidationResult, ServerValidationState } from "~/lib/providers/types";
+import { RULESET_TO_CHEAPEST_MODEL_ID } from "~/lib/modelIds";
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 const RULE_SETS = ruleSetsData.ruleSets as SchemaRuleSet[];
@@ -49,17 +49,17 @@ const INITIAL_SERVER_VALIDATION: ServerValidationState = {
 
 interface ValidatorState {
   schema: string;
-  selectedRuleSetId: string;
+  selectedRuleSetId: RuleSetId;
   fixResult?: FixResult;
   preFixSchema?: string;
-  lastFixedForRuleSetId?: string;
+  lastFixedForRuleSetId?: RuleSetId;
   hasMonacoErrors: boolean;
   serverValidation: ServerValidationState;
 }
 
 type ValidatorAction =
   | { type: "SCHEMA_CHANGED"; schema: string }
-  | { type: "RULESET_CHANGED"; ruleSetId: string }
+  | { type: "RULESET_CHANGED"; ruleSetId: RuleSetId }
   | { type: "FIX_APPLIED"; fixedSchema: string; fixResult: FixResult }
   | { type: "FIX_UNDONE" }
   | { type: "MONACO_ERRORS_CHANGED"; hasErrors: boolean }
@@ -150,9 +150,8 @@ function HomeContent() {
     (params): ValidatorState => {
       const fromUrl = params.get("ruleSet");
       const ruleSetId =
-        fromUrl && RULE_SETS.some((r) => r.ruleSetId === fromUrl)
-          ? fromUrl
-          : RULE_SETS[0]?.ruleSetId ?? "";
+        RULE_SETS.find((r) => r.ruleSetId === fromUrl)?.ruleSetId
+        ?? RULE_SETS[0].ruleSetId;
       return {
         schema: DEFAULT_SCHEMA,
         selectedRuleSetId: ruleSetId,
@@ -190,11 +189,11 @@ function HomeContent() {
   }, []);
 
   const handleRuleSetChange = useCallback(
-    (ruleSetId: string) => {
+    (ruleSetId: RuleSetId) => {
       dispatch({ type: "RULESET_CHANGED", ruleSetId });
       const ruleSet = RULE_SETS.find((r) => r.ruleSetId === ruleSetId);
       if (ruleSet) {
-        emit("ruleSet.selected", { ruleSetId, providerId: ruleSet.providerId });
+        emit("ruleSet.selected", { ruleSetId });
       }
     },
     [emit],
@@ -229,10 +228,8 @@ function HomeContent() {
   const handleServerValidate = useCallback(async () => {
     dispatch({ type: "SERVER_VALIDATION_STARTED" });
     try {
-      const backendProviderId: ProviderId = selectedRuleSet?.providerId === "gemini"
-        ? "google"
-        : (selectedRuleSet?.providerId as ProviderId) ?? "openai";
-      const modelId = PROVIDER_TO_MODEL_ID[backendProviderId];
+      const modelId = RULESET_TO_CHEAPEST_MODEL_ID[state.selectedRuleSetId];
+      if (!modelId) return;
 
       const hash = await hashSchema(state.schema);
       emit("server.validate.requested", {
@@ -267,7 +264,7 @@ function HomeContent() {
     } catch (err) {
       dispatch({ type: "SERVER_VALIDATION_FAILED", error: (err as Error).message });
     }
-  }, [state.schema, selectedRuleSet, ensureAuth, emit]);
+  }, [state.schema, state.selectedRuleSetId, ensureAuth, emit]);
 
   const applyLoadedJson = useCallback(
     (text: string) => {
