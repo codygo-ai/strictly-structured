@@ -12,6 +12,9 @@ export interface AuditEmitter {
 }
 
 export function createFirestoreEmitter(): AuditEmitter {
+  if (!admin.apps.length) {
+    admin.initializeApp();
+  }
   const buffer: AuditEvent[] = [];
   const db = admin.firestore();
 
