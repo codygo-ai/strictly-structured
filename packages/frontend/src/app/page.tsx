@@ -44,16 +44,14 @@ const DEFAULT_SCHEMA = `{
 
 const INITIAL_SERVER_VALIDATION: ServerValidationState = {
   loading: false,
-  results: null,
-  error: null,
 };
 
 interface ValidatorState {
   schema: string;
   selectedRuleSetId: string;
-  fixResult: FixResult | null;
-  preFixSchema: string | null;
-  lastFixedForRuleSetId: string | null;
+  fixResult?: FixResult;
+  preFixSchema?: string;
+  lastFixedForRuleSetId?: string;
   hasMonacoErrors: boolean;
   serverValidation: ServerValidationState;
 }
@@ -74,16 +72,16 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
       return {
         ...state,
         schema: action.schema,
-        fixResult: null,
-        preFixSchema: null,
-        lastFixedForRuleSetId: null,
+        fixResult: undefined,
+        preFixSchema: undefined,
+        lastFixedForRuleSetId: undefined,
         serverValidation: INITIAL_SERVER_VALIDATION,
       };
     case "RULESET_CHANGED":
       return {
         ...state,
         selectedRuleSetId: action.ruleSetId,
-        fixResult: null,
+        fixResult: undefined,
         serverValidation: INITIAL_SERVER_VALIDATION,
       };
     case "FIX_APPLIED":
@@ -98,9 +96,9 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
       return {
         ...state,
         schema: state.preFixSchema ?? state.schema,
-        fixResult: null,
-        preFixSchema: null,
-        lastFixedForRuleSetId: null,
+        fixResult: undefined,
+        preFixSchema: undefined,
+        lastFixedForRuleSetId: undefined,
       };
     case "MONACO_ERRORS_CHANGED":
       if (state.hasMonacoErrors === action.hasErrors) return state;
@@ -108,17 +106,17 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
     case "SERVER_VALIDATION_STARTED":
       return {
         ...state,
-        serverValidation: { loading: true, results: null, error: null },
+        serverValidation: { loading: true },
       };
     case "SERVER_VALIDATION_COMPLETED":
       return {
         ...state,
-        serverValidation: { loading: false, results: action.results, error: null },
+        serverValidation: { loading: false, results: action.results },
       };
     case "SERVER_VALIDATION_FAILED":
       return {
         ...state,
-        serverValidation: { loading: false, results: null, error: action.error },
+        serverValidation: { loading: false, error: action.error },
       };
   }
 }
@@ -157,9 +155,6 @@ function HomeContent() {
       return {
         schema: DEFAULT_SCHEMA,
         selectedRuleSetId: ruleSetId,
-        fixResult: null,
-        preFixSchema: null,
-        lastFixedForRuleSetId: null,
         hasMonacoErrors: false,
         serverValidation: INITIAL_SERVER_VALIDATION,
       };
@@ -178,7 +173,7 @@ function HomeContent() {
   );
 
   const selectedRuleSet = useMemo(
-    () => RULE_SETS.find((r) => r.ruleSetId === state.selectedRuleSetId) ?? null,
+    () => RULE_SETS.find((r) => r.ruleSetId === state.selectedRuleSetId),
     [state.selectedRuleSetId],
   );
 

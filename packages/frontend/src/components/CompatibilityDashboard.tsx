@@ -19,9 +19,9 @@ interface CompatibilityDashboardProps {
   schema: string;
   onFixAll: (fixedSchema: string, fixResult: FixResult) => void;
   onScrollToLine: (line: number) => void;
-  fixResult: FixResult | null;
+  fixResult?: FixResult;
   onUndo: () => void;
-  lastFixedForRuleSetId: string | null;
+  lastFixedForRuleSetId?: string;
   serverValidation: ServerValidationState;
   onServerValidate: () => void;
 }
@@ -47,7 +47,7 @@ export function CompatibilityDashboard({
 }: CompatibilityDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabId>("issues");
   const sidebarRef = useRef<HTMLElement>(null);
-  const [width, setWidth] = useState<number | null>(null);
+  const [width, setWidth] = useState<number>();
 
   const MIN_SIDEBAR_WIDTH = 420;
   const KEYBOARD_RESIZE_STEP = 20;
@@ -91,7 +91,7 @@ export function CompatibilityDashboard({
   }, []);
 
   useEffect(() => {
-    const onResize = () => setWidth(null);
+    const onResize = () => setWidth(undefined);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);

@@ -10,8 +10,8 @@ export interface ValidationResult {
 
 export interface ServerValidationState {
   loading: boolean;
-  results: ValidationResult[] | null;
-  error: string | null;
+  results?: ValidationResult[];
+  error?: string;
 }
 
 export const PROVIDER_IDS: ProviderId[] = ["openai", "google", "anthropic"];

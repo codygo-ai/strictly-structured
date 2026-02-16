@@ -28,10 +28,10 @@ interface IssuesTabProps {
   isValidJsonSchema: boolean;
   onFixAll: (fixedSchema: string, fixResult: FixResult) => void;
   onScrollToLine: (line: number) => void;
-  fixResult: FixResult | null;
+  fixResult?: FixResult;
   onUndo: () => void;
   otherProviderStatuses: OtherProviderStatus[];
-  lastFixedForRuleSetId: string | null;
+  lastFixedForRuleSetId?: string;
   onSelectRuleSet: (id: string) => void;
   serverValidation: ServerValidationState;
   onServerValidate: () => void;
@@ -114,7 +114,7 @@ function ContextBanner({
   currentRuleSetId,
   otherProviderStatuses,
 }: {
-  lastFixedForRuleSetId: string | null;
+  lastFixedForRuleSetId?: string;
   currentRuleSetId: string;
   otherProviderStatuses: OtherProviderStatus[];
 }) {
@@ -325,7 +325,7 @@ export function IssuesTab({
   serverValidation,
   onServerValidate,
 }: IssuesTabProps) {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -356,7 +356,7 @@ export function IssuesTab({
   const fixableCount = markers.filter((m) => m.severity === "error" || m.severity === "warning").length;
 
   const handleFixAll = useCallback(() => {
-    setError(null);
+    setError(undefined);
 
     let parsed: Record<string, unknown>;
     try {
