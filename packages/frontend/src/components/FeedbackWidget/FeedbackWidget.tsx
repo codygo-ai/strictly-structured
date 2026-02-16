@@ -1,30 +1,31 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import {
   FEEDBACK_TYPES,
   FEEDBACK_TYPE_CONFIG,
   type FeedbackType,
   type FeedbackPayload,
-} from "./types";
-import { useAuth } from "~/lib/useAuth";
-import { Tooltip } from "~/components/Tooltip";
+} from './types';
 
-const GITHUB_ISSUES_URL =
-  "https://github.com/codygo-ai/strictly-structured/issues";
-const API_URL = "/api/feedback";
+import { Tooltip } from '~/components/Tooltip';
+import { useAuth } from '~/lib/useAuth';
 
-type FormState = "idle" | "submitting" | "success" | "error";
+const GITHUB_ISSUES_URL = 'https://github.com/codygo-ai/strictly-structured/issues';
+const API_URL = '/api/feedback';
+
+type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 export function FeedbackWidget() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [type, setType] = useState<FeedbackType>("general");
-  const [description, setDescription] = useState("");
-  const [email, setEmail] = useState("");
-  const [honeypot, setHoneypot] = useState("");
-  const [formState, setFormState] = useState<FormState>("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [type, setType] = useState<FeedbackType>('general');
+  const [description, setDescription] = useState('');
+  const [email, setEmail] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [formState, setFormState] = useState<FormState>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -35,9 +36,8 @@ export function FeedbackWidget() {
 
   useEffect(() => {
     if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [open, handleClickOutside]);
 
@@ -45,24 +45,24 @@ export function FeedbackWidget() {
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === 'Escape') setOpen(false);
     };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
   }, [open]);
 
   const resetForm = useCallback(() => {
-    setType("general");
-    setDescription("");
-    setEmail("");
-    setHoneypot("");
-    setFormState("idle");
-    setErrorMessage("");
+    setType('general');
+    setDescription('');
+    setEmail('');
+    setHoneypot('');
+    setFormState('idle');
+    setErrorMessage('');
   }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!description.trim()) return;
-    setFormState("submitting");
+    setFormState('submitting');
 
     const payload: FeedbackPayload = {
       type,
@@ -74,8 +74,8 @@ export function FeedbackWidget() {
 
     try {
       const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
@@ -84,9 +84,9 @@ export function FeedbackWidget() {
         };
         throw new Error(data.error ?? `Request failed (${res.status})`);
       }
-      setFormState("success");
+      setFormState('success');
     } catch (err) {
-      setFormState("error");
+      setFormState('error');
       setErrorMessage((err as Error).message);
     }
   }, [type, description, email, honeypot, user?.email]);
@@ -97,11 +97,11 @@ export function FeedbackWidget() {
   }
 
   const githubNewIssueUrl = `${GITHUB_ISSUES_URL}/new${
-    type === "bug"
-      ? "?template=bug_report.md"
-      : type === "feature"
-        ? "?template=feature_request.md"
-        : ""
+    type === 'bug'
+      ? '?template=bug_report.md'
+      : type === 'feature'
+        ? '?template=feature_request.md'
+        : ''
   }`;
 
   return (
@@ -119,7 +119,16 @@ export function FeedbackWidget() {
           className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:text-primary"
           aria-expanded={open}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </button>
@@ -128,9 +137,7 @@ export function FeedbackWidget() {
         <div className="feedback-popover feedback-slide-in">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="text-sm font-semibold text-primary">
-              Send Feedback
-            </h3>
+            <h3 className="text-sm font-semibold text-primary">Send Feedback</h3>
             <button
               type="button"
               onClick={handleClose}
@@ -141,15 +148,11 @@ export function FeedbackWidget() {
             </button>
           </div>
 
-          {formState === "success" ? (
+          {formState === 'success' ? (
             <div className="px-4 py-6 text-center">
               <div className="text-3xl mb-2">&#x2705;</div>
-              <p className="text-sm font-medium text-primary">
-                Thank you for your feedback!
-              </p>
-              <p className="text-xs text-secondary mt-1">
-                We&apos;ll review it shortly.
-              </p>
+              <p className="text-sm font-medium text-primary">Thank you for your feedback!</p>
+              <p className="text-xs text-secondary mt-1">We&apos;ll review it shortly.</p>
               <button
                 type="button"
                 onClick={handleClose}
@@ -169,12 +172,11 @@ export function FeedbackWidget() {
                     onClick={() => setType(t)}
                     className={`flex-1 rounded-md border px-2 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                       type === t
-                        ? "border-accent bg-accent-bg text-accent"
-                        : "border-border bg-surface text-secondary hover:bg-surface-hover"
+                        ? 'border-accent bg-accent-bg text-accent'
+                        : 'border-border bg-surface text-secondary hover:bg-surface-hover'
                     }`}
                   >
-                    {FEEDBACK_TYPE_CONFIG[t].icon}{" "}
-                    {FEEDBACK_TYPE_CONFIG[t].label}
+                    {FEEDBACK_TYPE_CONFIG[t].icon} {FEEDBACK_TYPE_CONFIG[t].label}
                   </button>
                 ))}
               </div>
@@ -210,9 +212,7 @@ export function FeedbackWidget() {
                 aria-hidden="true"
               />
 
-              {formState === "error" && (
-                <p className="text-xs text-error">{errorMessage}</p>
-              )}
+              {formState === 'error' && <p className="text-xs text-error">{errorMessage}</p>}
 
               {/* Submit + GitHub link */}
               <div className="flex items-center justify-between pt-1">
@@ -227,12 +227,10 @@ export function FeedbackWidget() {
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={
-                    !description.trim() || formState === "submitting"
-                  }
+                  disabled={!description.trim() || formState === 'submitting'}
                   className="rounded-md bg-accent px-4 py-1.5 text-sm font-medium text-white hover:bg-accent-hover disabled:bg-disabled disabled:cursor-not-allowed transition-colors cursor-pointer"
                 >
-                  {formState === "submitting" ? "Sending..." : "Send"}
+                  {formState === 'submitting' ? 'Sending...' : 'Send'}
                 </button>
               </div>
             </div>

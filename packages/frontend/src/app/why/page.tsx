@@ -1,8 +1,8 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const ISSUES = [
   {
-    heading: "Type Safety",
+    heading: 'Type Safety',
     before: `{
   "type": "object",
   "properties": {
@@ -24,10 +24,10 @@ const ISSUES = [
   "additionalProperties": false           // ✓ no extra fields
 }`,
     explanation:
-      "Without strict constraints, models inject unexpected fields or omit values entirely. Adding additionalProperties: false and requiring all fields ensures you get exactly what you expect — nothing more, nothing less.",
+      'Without strict constraints, models inject unexpected fields or omit values entirely. Adding additionalProperties: false and requiring all fields ensures you get exactly what you expect — nothing more, nothing less.',
   },
   {
-    heading: "Accuracy",
+    heading: 'Accuracy',
     before: `{
   "type": "object",
   "properties": {
@@ -58,10 +58,10 @@ const ISSUES = [
   "additionalProperties": false
 }`,
     explanation:
-      "Without enums, bounds, and descriptions, models guess values freely. You get \"happy\" instead of \"positive\", confidence scores of 85 instead of 0.85, and inconsistent language codes. Adding constraints guides the model to produce precise, consistent output.",
+      'Without enums, bounds, and descriptions, models guess values freely. You get "happy" instead of "positive", confidence scores of 85 instead of 0.85, and inconsistent language codes. Adding constraints guides the model to produce precise, consistent output.',
   },
   {
-    heading: "Compatibility",
+    heading: 'Compatibility',
     before: `{
   "type": "object",
   "properties": {
@@ -86,10 +86,10 @@ const ISSUES = [
   "additionalProperties": false          // ✓ universal compatibility
 }`,
     explanation:
-      "Each provider supports a different subset of JSON Schema. A schema that works on one may fail silently or be rejected outright on another. Validating against your target model catches these incompatibilities before deployment.",
+      'Each provider supports a different subset of JSON Schema. A schema that works on one may fail silently or be rejected outright on another. Validating against your target model catches these incompatibilities before deployment.',
   },
   {
-    heading: "Predictability",
+    heading: 'Predictability',
     before: `{
   "type": "object",
   "properties": {
@@ -125,7 +125,7 @@ const ISSUES = [
   "additionalProperties": false           // ✓ predictable structure
 }`,
     explanation:
-      "Complex schema structures with deep nesting and ambiguous unions confuse models. They may produce partially valid output, hallucinate fields, or silently fall back to unstructured text. Simpler, flatter schemas produce far more predictable results.",
+      'Complex schema structures with deep nesting and ambiguous unions confuse models. They may produce partially valid output, hallucinate fields, or silently fall back to unstructured text. Simpler, flatter schemas produce far more predictable results.',
   },
 ];
 
@@ -137,21 +137,15 @@ export default function WhyPage() {
           Ship schemas that work for you
         </h1>
         <p className="mt-3 text-secondary max-w-2xl mx-auto leading-relaxed">
-          Need to ensure cross-provider compatibility? Or squeeze the most out
-          of a single model&apos;s structured output? Without validation, models
-          silently ignore unsupported schema features — and you get unexpected
-          results.
+          Need to ensure cross-provider compatibility? Or squeeze the most out of a single
+          model&apos;s structured output? Without validation, models silently ignore unsupported
+          schema features — and you get unexpected results.
         </p>
       </section>
 
       {ISSUES.map((issue) => (
-        <section
-          key={issue.heading}
-          className="rounded-lg border border-border bg-surface p-6"
-        >
-          <h2 className="text-lg font-semibold text-primary mb-4">
-            {issue.heading}
-          </h2>
+        <section key={issue.heading} className="rounded-lg border border-border bg-surface p-6">
+          <h2 className="text-lg font-semibold text-primary mb-4">{issue.heading}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-error mb-2">
@@ -170,39 +164,28 @@ export default function WhyPage() {
               </pre>
             </div>
           </div>
-          <p className="mt-4 text-sm text-secondary leading-relaxed">
-            {issue.explanation}
-          </p>
+          <p className="mt-4 text-sm text-secondary leading-relaxed">{issue.explanation}</p>
         </section>
       ))}
 
       <section className="rounded-lg border border-border bg-surface p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div>
-            <h3 className="text-sm font-semibold text-primary mb-1">
-              See every issue
-            </h3>
+            <h3 className="text-sm font-semibold text-primary mb-1">See every issue</h3>
             <p className="text-xs text-secondary leading-relaxed">
-              Catch problems before they reach production — per keyword, per
-              model.
+              Catch problems before they reach production — per keyword, per model.
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-primary mb-1">
-              Know it&apos;s valid
-            </h3>
+            <h3 className="text-sm font-semibold text-primary mb-1">Know it&apos;s valid</h3>
             <p className="text-xs text-secondary leading-relaxed">
-              Validate against the exact model you&apos;re deploying to. No
-              guessing.
+              Validate against the exact model you&apos;re deploying to. No guessing.
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-primary mb-1">
-              Fix in one click
-            </h3>
+            <h3 className="text-sm font-semibold text-primary mb-1">Fix in one click</h3>
             <p className="text-xs text-secondary leading-relaxed">
-              Auto-fix resolves issues instantly, or shows you exactly what to
-              change.
+              Auto-fix resolves issues instantly, or shows you exactly what to change.
             </p>
           </div>
         </div>
@@ -216,10 +199,7 @@ export default function WhyPage() {
           Try it now
         </Link>
         <div className="mt-3">
-          <Link
-            href="/models"
-            className="text-sm text-accent hover:underline"
-          >
+          <Link href="/models" className="text-sm text-accent hover:underline">
             Explore Models
           </Link>
         </div>

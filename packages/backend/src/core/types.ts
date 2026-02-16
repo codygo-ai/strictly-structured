@@ -1,4 +1,4 @@
-export type ProviderId = "openai" | "google" | "anthropic";
+export type ProviderId = 'openai' | 'google' | 'anthropic';
 
 export interface ValidationResult {
   provider: ProviderId;

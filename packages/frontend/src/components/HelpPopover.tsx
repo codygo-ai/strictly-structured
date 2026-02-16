@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Tooltip } from "~/components/Tooltip";
+import { useState, useRef, useEffect, useCallback } from 'react';
+
+import { Tooltip } from '~/components/Tooltip';
 
 export function HelpPopover() {
   const [open, setOpen] = useState(false);
@@ -15,8 +16,8 @@ export function HelpPopover() {
 
   useEffect(() => {
     if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [open, handleClickOutside]);
 
@@ -35,7 +36,9 @@ export function HelpPopover() {
       </Tooltip>
       {open && (
         <div className="help-popover">
-          <p className="text-xs font-semibold text-primary mb-2.5 pb-1.5 border-b border-border">How it works</p>
+          <p className="text-xs font-semibold text-primary mb-2.5 pb-1.5 border-b border-border">
+            How it works
+          </p>
           <ol className="space-y-2 text-xs text-secondary list-decimal list-inside leading-relaxed">
             <li>Paste or upload a JSON Schema</li>
             <li>See which providers it&apos;s compatible with</li>

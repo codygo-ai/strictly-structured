@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { EXAMPLE_SCHEMAS } from "~/data/exampleSchemas";
-import { ProviderIcon } from "~/components/ui";
-import { UploadIcon } from "~/components/icons/UploadIcon";
-import { CopyIcon } from "~/components/icons/CopyIcon";
-import { DownloadIcon } from "~/components/icons/DownloadIcon";
-import { Tooltip } from "~/components/Tooltip";
+import { useState, useRef, useEffect, useCallback } from 'react';
+
+import { CopyIcon } from '~/components/icons/CopyIcon';
+import { DownloadIcon } from '~/components/icons/DownloadIcon';
+import { UploadIcon } from '~/components/icons/UploadIcon';
+import { Tooltip } from '~/components/Tooltip';
+import { ProviderIcon } from '~/components/ui';
+import { EXAMPLE_SCHEMAS } from '~/data/exampleSchemas';
 
 interface EditorInputHintProps {
   schema: string;
@@ -14,11 +15,7 @@ interface EditorInputHintProps {
   onSchemaChange: (schema: string) => void;
 }
 
-export function EditorInputHint({
-  schema,
-  fileInputRef,
-  onSchemaChange,
-}: EditorInputHintProps) {
+export function EditorInputHint({ schema, fileInputRef, onSchemaChange }: EditorInputHintProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLSpanElement>(null);
@@ -47,11 +44,11 @@ export function EditorInputHint({
   }, [schema]);
 
   const handleDownload = useCallback(() => {
-    const blob = new Blob([schema], { type: "application/json" });
+    const blob = new Blob([schema], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = "schema.json";
+    a.download = 'schema.json';
     a.click();
     URL.revokeObjectURL(url);
   }, [schema]);
@@ -63,8 +60,8 @@ export function EditorInputHint({
         setMenuOpen(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, [menuOpen]);
 
   return (
@@ -92,21 +89,19 @@ export function EditorInputHint({
               <div className="examples-dropdown-section-label">Samples</div>
               <div className="examples-samples-scroll">
                 {EXAMPLE_SCHEMAS.map((ex) => (
-                  <button
-                    key={ex.name}
-                    type="button"
-                    onClick={() => handleSample(ex.schema)}
-                  >
+                  <button key={ex.name} type="button" onClick={() => handleSample(ex.schema)}>
                     <span className="examples-sample-row">
                       <span>{ex.name}</span>
                       <span className="examples-providers">
-                        {ex.compatibleWith.length === 0
-                          ? <span className="examples-provider-tag none">none</span>
-                          : ex.compatibleWith.map((p) => (
+                        {ex.compatibleWith.length === 0 ? (
+                          <span className="examples-provider-tag none">none</span>
+                        ) : (
+                          ex.compatibleWith.map((p) => (
                             <span key={p} className={`examples-provider-tag ${p}`}>
                               <ProviderIcon provider={p} size={13} className="" colored />
                             </span>
-                          ))}
+                          ))
+                        )}
                       </span>
                     </span>
                     <span className="examples-desc">{ex.description}</span>
@@ -125,7 +120,7 @@ export function EditorInputHint({
           onClick={handleCopy}
           aria-label="Copy schema"
         >
-          {copied ? "✓" : <CopyIcon width={14} height={14} />}
+          {copied ? '✓' : <CopyIcon width={14} height={14} />}
         </button>
       </Tooltip>
       <Tooltip content="Download JSON" position="bottom">

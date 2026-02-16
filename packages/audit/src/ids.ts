@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash } from 'node:crypto';
 
 export function generateEventId(): string {
   return crypto.randomUUID();
@@ -13,5 +13,5 @@ export function generateTraceId(): string {
 }
 
 export function hashSchema(raw: string): string {
-  return createHash("sha256").update(raw).digest("hex");
+  return createHash('sha256').update(raw).digest('hex');
 }

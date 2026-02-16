@@ -1,13 +1,4 @@
-export { createFirestoreEmitter, type AuditEmitter } from "./emitter.js";
-export { classifyError } from "./classify.js";
-export {
-  createAuditContext,
-  emitEvent,
-  createTrace,
-  completeTrace,
-  upsertSchema,
-} from "./trace.js";
-export {
-  createAuditRequestContext,
-  type AuditRequestContext,
-} from "./middleware.js";
+export { createFirestoreEmitter, type AuditEmitter } from './emitter';
+export { classifyError } from './classify';
+export { createAuditContext, emitEvent, createTrace, completeTrace, upsertSchema } from './trace';
+export { createAuditRequestContext, type AuditRequestContext } from './middleware';

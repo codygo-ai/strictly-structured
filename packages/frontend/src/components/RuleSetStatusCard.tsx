@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import type { SchemaRuleSet } from "@ssv/schemas/types";
-import { ProviderIcon } from "~/components/ui";
+import type { SchemaRuleSet } from '@ssv/schemas/types';
+
+import { ProviderIcon } from '~/components/ui';
 
 interface RuleSetStatusCardProps {
   ruleSet: SchemaRuleSet;
@@ -29,28 +30,24 @@ export function RuleSetStatusCard({
   let statusClass: string;
 
   if (!isValidJson) {
-    statusText = "Invalid JSON";
-    statusClass = "neutral";
+    statusText = 'Invalid JSON';
+    statusClass = 'neutral';
   } else if (!isValidJsonSchema) {
-    statusText = "Not a Schema";
-    statusClass = "neutral";
+    statusText = 'Not a Schema';
+    statusClass = 'neutral';
   } else if (hasErrors) {
-    statusText = `${errorCount} issue${errorCount !== 1 ? "s" : ""}`;
-    statusClass = "error";
+    statusText = `${errorCount} issue${errorCount !== 1 ? 's' : ''}`;
+    statusClass = 'error';
   } else if (hasWarnings) {
-    statusText = `${warningCount} warning${warningCount !== 1 ? "s" : ""}`;
-    statusClass = "warning";
+    statusText = `${warningCount} warning${warningCount !== 1 ? 's' : ''}`;
+    statusClass = 'warning';
   } else {
-    statusText = "Compatible";
-    statusClass = "ok";
+    statusText = 'Compatible';
+    statusClass = 'ok';
   }
 
   return (
-    <button
-      type="button"
-      className={`status-card ${selected ? "selected" : ""}`}
-      onClick={onClick}
-    >
+    <button type="button" className={`status-card ${selected ? 'selected' : ''}`} onClick={onClick}>
       <div className="status-card-provider">
         <ProviderIcon provider={ruleSet.providerId} />
         <span>{ruleSet.displayName}</span>

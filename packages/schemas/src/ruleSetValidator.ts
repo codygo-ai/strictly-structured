@@ -1,5 +1,6 @@
-import jsonSourceMap from "json-source-map";
-import type { SchemaRuleSet } from "./types.js";
+import jsonSourceMap from 'json-source-map';
+
+import type { SchemaRuleSet } from './types';
 
 export interface SchemaMarker {
   startLineNumber: number;
@@ -7,7 +8,7 @@ export interface SchemaMarker {
   endLineNumber: number;
   endColumn: number;
   message: string;
-  severity: "error" | "warning" | "info";
+  severity: 'error' | 'warning' | 'info';
 }
 
 interface ValidatorRules {
@@ -57,37 +58,35 @@ interface WalkContext {
  * Checked via the composition check, skipped by the per-type keyword check.
  */
 const COMPOSITION_KEYWORDS = new Set([
-  "anyOf",
-  "allOf",
-  "oneOf",
-  "not",
-  "if",
-  "then",
-  "else",
-  "dependentRequired",
-  "dependentSchemas",
-  "$ref",
-  "$defs",
-  "definitions",
+  'anyOf',
+  'allOf',
+  'oneOf',
+  'not',
+  'if',
+  'then',
+  'else',
+  'dependentRequired',
+  'dependentSchemas',
+  '$ref',
+  '$defs',
+  'definitions',
 ]);
 
 /** Structural keywords valid on any node regardless of type or provider. */
-const STRUCTURAL_KEYWORDS = new Set(["type"]);
+const STRUCTURAL_KEYWORDS = new Set(['type']);
 
 function buildSupportedKeywordsByType(
-  supportedTypes: SchemaRuleSet["supportedTypes"]
+  supportedTypes: SchemaRuleSet['supportedTypes'],
 ): Map<string, Set<string>> {
-  return new Map(
-    supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)])
-  );
+  return new Map(supportedTypes.map((st) => [st.type, new Set(st.supportedKeywords)]));
 }
 
 function resolveType(node: Record<string, unknown>): string | null {
-  const t = node["type"];
-  if (typeof t === "string") return t;
+  const t = node['type'];
+  if (typeof t === 'string') return t;
   if (Array.isArray(t)) {
-    const nonNull = t.filter((v) => v !== "null");
-    if (nonNull.length === 1 && typeof nonNull[0] === "string") return nonNull[0];
+    const nonNull = t.filter((v) => v !== 'null');
+    if (nonNull.length === 1 && typeof nonNull[0] === 'string') return nonNull[0];
   }
   return null;
 }
@@ -97,9 +96,9 @@ function pointerToMarker(
   pointer: string,
   fallbackPointer: string,
   message: string,
-  severity: SchemaMarker["severity"]
+  severity: SchemaMarker['severity'],
 ): SchemaMarker {
-  const entry = pointers[pointer] ?? pointers[fallbackPointer] ?? pointers[""];
+  const entry = pointers[pointer] ?? pointers[fallbackPointer] ?? pointers[''];
   const start = entry?.key ?? entry?.value ?? { line: 0, column: 0 };
   const end = entry?.keyEnd ?? entry?.valueEnd ?? { line: 0, column: 1 };
   return {
@@ -114,7 +113,7 @@ function pointerToMarker(
 
 export function validateSchemaForRuleSet(
   raw: string,
-  ruleSet: SchemaRuleSet | undefined
+  ruleSet: SchemaRuleSet | undefined,
 ): SchemaMarker[] {
   if (!ruleSet) return [];
 
@@ -126,7 +125,7 @@ export function validateSchemaForRuleSet(
   }
 
   const { data, pointers } = parsed;
-  if (data === null || typeof data !== "object" || Array.isArray(data)) return [];
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) return [];
 
   const rules: ValidatorRules = {
     rootType: ruleSet.rootType,
@@ -156,7 +155,7 @@ export function validateSchemaForRuleSet(
     totalStringLengthNamesEnums: 0,
   };
 
-  walkNode(data as Record<string, unknown>, "", 0, true, ctx);
+  walkNode(data as Record<string, unknown>, '', 0, true, ctx);
   checkQuantitativeLimits(ctx);
 
   return ctx.markers;
@@ -167,7 +166,7 @@ function walkNode(
   pointer: string,
   depth: number,
   isRoot: boolean,
-  ctx: WalkContext
+  ctx: WalkContext,
 ): void {
   if (depth > ctx.maxDepthSeen) ctx.maxDepthSeen = depth;
 
@@ -175,9 +174,9 @@ function walkNode(
 
   // Flag multi-type unions like ["string", "number"] — providers only support
   // nullable via ["T", "null"], not arbitrary unions.
-  const rawType = node["type"];
+  const rawType = node['type'];
   if (Array.isArray(rawType)) {
-    const nonNull = rawType.filter((v) => v !== "null");
+    const nonNull = rawType.filter((v) => v !== 'null');
     if (nonNull.length > 1) {
       ctx.markers.push(
         pointerToMarker(
@@ -185,8 +184,8 @@ function walkNode(
           `${pointer}/type`,
           pointer,
           `Multi-type unions are not supported. Use anyOf for union types`,
-          "error"
-        )
+          'error',
+        ),
       );
     }
   }
@@ -200,19 +199,19 @@ function walkNode(
         `${pointer}/type`,
         pointer,
         `Type "${nodeType}" is not supported by this provider`,
-        "error"
-      )
+        'error',
+      ),
     );
   }
 
   checkNodeKeywords(node, nodeType, pointer, isRoot, ctx);
 
-  if (nodeType === "object" || node["properties"] !== undefined) {
+  if (nodeType === 'object' || node['properties'] !== undefined) {
     checkObjectConstraints(node, pointer, ctx);
   }
 
-  if (nodeType === "string" && typeof node["format"] === "string") {
-    checkStringFormat(node["format"], pointer, ctx);
+  if (nodeType === 'string' && typeof node['format'] === 'string') {
+    checkStringFormat(node['format'], pointer, ctx);
   }
 
   accumulateStats(node, ctx);
@@ -222,22 +221,20 @@ function walkNode(
 function checkRootConstraints(
   node: Record<string, unknown>,
   nodeType: string | null,
-  ctx: WalkContext
+  ctx: WalkContext,
 ): void {
   const { rules, pointers, markers } = ctx;
-  const allowedRoots = Array.isArray(rules.rootType)
-    ? rules.rootType
-    : [rules.rootType];
+  const allowedRoots = Array.isArray(rules.rootType) ? rules.rootType : [rules.rootType];
 
   if (nodeType && !allowedRoots.includes(nodeType)) {
     markers.push(
       pointerToMarker(
         pointers,
-        "/type",
-        "",
-        `Root type must be ${allowedRoots.join(" or ")}, got "${nodeType}"`,
-        "error"
-      )
+        '/type',
+        '',
+        `Root type must be ${allowedRoots.join(' or ')}, got "${nodeType}"`,
+        'error',
+      ),
     );
   }
 
@@ -245,17 +242,17 @@ function checkRootConstraints(
   // If anyOf is globally unsupported, checkNodeKeywords handles it.
   if (
     !rules.rootAnyOfAllowed &&
-    node["anyOf"] !== undefined &&
-    ctx.supportedComposition.has("anyOf")
+    node['anyOf'] !== undefined &&
+    ctx.supportedComposition.has('anyOf')
   ) {
     markers.push(
       pointerToMarker(
         pointers,
-        "/anyOf",
-        "",
-        "Root-level anyOf is not allowed for this provider",
-        "error"
-      )
+        '/anyOf',
+        '',
+        'Root-level anyOf is not allowed for this provider',
+        'error',
+      ),
     );
   }
 }
@@ -271,23 +268,21 @@ function checkNodeKeywords(
   nodeType: string | null,
   pointer: string,
   isRoot: boolean,
-  ctx: WalkContext
+  ctx: WalkContext,
 ): void {
   const { pointers, markers, supportedComposition } = ctx;
-  const typeSupported = nodeType
-    ? ctx.supportedKeywordsByType.get(nodeType)
-    : null;
+  const typeSupported = nodeType ? ctx.supportedKeywordsByType.get(nodeType) : null;
 
   for (const key of Object.keys(node)) {
     if (STRUCTURAL_KEYWORDS.has(key)) continue;
 
     if (COMPOSITION_KEYWORDS.has(key)) {
       // Root anyOf is handled by checkRootConstraints when anyOf is supported
-      if (isRoot && key === "anyOf" && supportedComposition.has("anyOf")) {
+      if (isRoot && key === 'anyOf' && supportedComposition.has('anyOf')) {
         continue;
       }
       // Treat "definitions" (Draft-07) as an alias for "$defs" (2020-12)
-      const compositionKey = key === "definitions" ? "$defs" : key;
+      const compositionKey = key === 'definitions' ? '$defs' : key;
       if (!supportedComposition.has(compositionKey)) {
         markers.push(
           pointerToMarker(
@@ -295,8 +290,8 @@ function checkNodeKeywords(
             `${pointer}/${escapePointer(key)}`,
             pointer,
             `"${key}" is not supported by this provider`,
-            "error"
-          )
+            'error',
+          ),
         );
       }
       continue;
@@ -310,8 +305,8 @@ function checkNodeKeywords(
           `${pointer}/${escapePointer(key)}`,
           pointer,
           `"${key}" is not supported for type "${nodeType}" by this provider`,
-          "error"
-        )
+          'error',
+        ),
       );
     }
   }
@@ -320,20 +315,20 @@ function checkNodeKeywords(
 function checkObjectConstraints(
   node: Record<string, unknown>,
   pointer: string,
-  ctx: WalkContext
+  ctx: WalkContext,
 ): void {
   const { rules, pointers, markers } = ctx;
 
-  if (rules.additionalPropertiesMustBeFalse && node["additionalProperties"] !== false) {
-    if (node["additionalProperties"] === undefined) {
+  if (rules.additionalPropertiesMustBeFalse && node['additionalProperties'] !== false) {
+    if (node['additionalProperties'] === undefined) {
       markers.push(
         pointerToMarker(
           pointers,
           `${pointer}/properties`,
           pointer,
           `Missing "additionalProperties": false — required by this provider`,
-          "error"
-        )
+          'error',
+        ),
       );
     } else {
       markers.push(
@@ -342,8 +337,8 @@ function checkObjectConstraints(
           `${pointer}/additionalProperties`,
           pointer,
           `"additionalProperties" must be false for this provider`,
-          "error"
-        )
+          'error',
+        ),
       );
     }
   }
@@ -351,8 +346,8 @@ function checkObjectConstraints(
   if (
     !rules.additionalPropertiesMustBeFalse &&
     rules.additionalPropertiesFalseRecommended &&
-    node["additionalProperties"] !== false &&
-    node["properties"] !== undefined
+    node['additionalProperties'] !== false &&
+    node['properties'] !== undefined
   ) {
     markers.push(
       pointerToMarker(
@@ -360,18 +355,16 @@ function checkObjectConstraints(
         `${pointer}/properties`,
         pointer,
         `"additionalProperties": false is recommended by this provider for reliable results`,
-        "warning"
-      )
+        'warning',
+      ),
     );
   }
 
-  if (rules.allFieldsRequired && node["properties"] !== undefined) {
-    const props = node["properties"];
-    if (props && typeof props === "object") {
+  if (rules.allFieldsRequired && node['properties'] !== undefined) {
+    const props = node['properties'];
+    if (props && typeof props === 'object') {
       const propKeys = Object.keys(props);
-      const required = Array.isArray(node["required"])
-        ? (node["required"] as string[])
-        : [];
+      const required = Array.isArray(node['required']) ? (node['required'] as string[]) : [];
       const missing = propKeys.filter((k) => !required.includes(k));
       if (missing.length > 0) {
         markers.push(
@@ -379,20 +372,16 @@ function checkObjectConstraints(
             pointers,
             `${pointer}/required`,
             `${pointer}/properties`,
-            `All properties must be in "required" for this provider. Missing: ${missing.join(", ")}`,
-            "error"
-          )
+            `All properties must be in "required" for this provider. Missing: ${missing.join(', ')}`,
+            'error',
+          ),
         );
       }
     }
   }
 }
 
-function checkStringFormat(
-  format: string,
-  pointer: string,
-  ctx: WalkContext
-): void {
+function checkStringFormat(format: string, pointer: string, ctx: WalkContext): void {
   const formats = ctx.rules.supportedStringFormats;
   // If formats list is empty, the format keyword itself is unsupported —
   // already flagged by checkNodeKeywords (format won't be in supportedStringKeywords).
@@ -404,30 +393,27 @@ function checkStringFormat(
         ctx.pointers,
         `${pointer}/format`,
         pointer,
-        `String format "${format}" is not supported. Supported: ${formats.join(", ")}`,
-        "error"
-      )
+        `String format "${format}" is not supported. Supported: ${formats.join(', ')}`,
+        'error',
+      ),
     );
   }
 }
 
-function accumulateStats(
-  node: Record<string, unknown>,
-  ctx: WalkContext
-): void {
-  if (node["properties"] && typeof node["properties"] === "object") {
-    const keys = Object.keys(node["properties"] as Record<string, unknown>);
+function accumulateStats(node: Record<string, unknown>, ctx: WalkContext): void {
+  if (node['properties'] && typeof node['properties'] === 'object') {
+    const keys = Object.keys(node['properties'] as Record<string, unknown>);
     ctx.totalProperties += keys.length;
     for (const key of keys) {
       ctx.totalStringLengthNamesEnums += key.length;
     }
   }
 
-  if (Array.isArray(node["enum"])) {
-    const enumArr = node["enum"] as unknown[];
+  if (Array.isArray(node['enum'])) {
+    const enumArr = node['enum'] as unknown[];
     ctx.totalEnumValues += enumArr.length;
     for (const val of enumArr) {
-      if (typeof val === "string") {
+      if (typeof val === 'string') {
         ctx.totalStringLengthNamesEnums += val.length;
       }
     }
@@ -438,90 +424,75 @@ function recurseChildren(
   node: Record<string, unknown>,
   pointer: string,
   depth: number,
-  ctx: WalkContext
+  ctx: WalkContext,
 ): void {
-  if (node["properties"] && typeof node["properties"] === "object") {
-    const props = node["properties"] as Record<string, unknown>;
+  if (node['properties'] && typeof node['properties'] === 'object') {
+    const props = node['properties'] as Record<string, unknown>;
     for (const [key, value] of Object.entries(props)) {
-      if (value && typeof value === "object") {
+      if (value && typeof value === 'object') {
         walkNode(
           value as Record<string, unknown>,
           `${pointer}/properties/${escapePointer(key)}`,
           depth + 1,
           false,
-          ctx
+          ctx,
         );
       }
     }
   }
 
-  if (node["items"] && typeof node["items"] === "object") {
-    walkNode(
-      node["items"] as Record<string, unknown>,
-      `${pointer}/items`,
-      depth + 1,
-      false,
-      ctx
-    );
+  if (node['items'] && typeof node['items'] === 'object') {
+    walkNode(node['items'] as Record<string, unknown>, `${pointer}/items`, depth + 1, false, ctx);
   }
 
-  if (Array.isArray(node["prefixItems"])) {
-    (node["prefixItems"] as unknown[]).forEach((item, i) => {
-      if (item && typeof item === "object") {
+  if (Array.isArray(node['prefixItems'])) {
+    (node['prefixItems'] as unknown[]).forEach((item, i) => {
+      if (item && typeof item === 'object') {
         walkNode(
           item as Record<string, unknown>,
           `${pointer}/prefixItems/${i}`,
           depth + 1,
           false,
-          ctx
+          ctx,
         );
       }
     });
   }
 
   // anyOf branches don't increase structural depth
-  if (Array.isArray(node["anyOf"])) {
-    (node["anyOf"] as unknown[]).forEach((branch, i) => {
-      if (branch && typeof branch === "object") {
-        walkNode(
-          branch as Record<string, unknown>,
-          `${pointer}/anyOf/${i}`,
-          depth,
-          false,
-          ctx
-        );
+  if (Array.isArray(node['anyOf'])) {
+    (node['anyOf'] as unknown[]).forEach((branch, i) => {
+      if (branch && typeof branch === 'object') {
+        walkNode(branch as Record<string, unknown>, `${pointer}/anyOf/${i}`, depth, false, ctx);
       }
     });
   }
 
   // $defs / definitions are definitions, not structural nesting
-  for (const defsKey of ["$defs", "definitions"] as const) {
-    if (node[defsKey] && typeof node[defsKey] === "object") {
+  for (const defsKey of ['$defs', 'definitions'] as const) {
+    if (node[defsKey] && typeof node[defsKey] === 'object') {
       const defs = node[defsKey] as Record<string, unknown>;
       for (const [key, value] of Object.entries(defs)) {
-        if (value && typeof value === "object") {
+        if (value && typeof value === 'object') {
           walkNode(
             value as Record<string, unknown>,
             `${pointer}/${escapePointer(defsKey)}/${escapePointer(key)}`,
             0,
             false,
-            ctx
+            ctx,
           );
         }
       }
     }
   }
 
-  if (
-    node["additionalProperties"] &&
-    typeof node["additionalProperties"] === "object"
-  ) {
+  if (node['additionalProperties'] && typeof node['additionalProperties'] === 'object') {
     walkNode(
-      node["additionalProperties"] as Record<string, unknown>,
+      node['additionalProperties'] as Record<string, unknown>,
       `${pointer}/additionalProperties`,
       depth + 1,
       false,
-      ctx
+      ctx,
     );
   }
 }
@@ -531,66 +502,66 @@ function checkQuantitativeLimits(ctx: WalkContext): void {
   if (!sizeLimits) return;
 
   if (
-    typeof sizeLimits.maxProperties === "number" &&
+    typeof sizeLimits.maxProperties === 'number' &&
     ctx.totalProperties > sizeLimits.maxProperties
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
-        "",
-        "",
+        '',
+        '',
         `Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${sizeLimits.maxProperties}`,
-        "error"
-      )
+        'error',
+      ),
     );
   }
 
   if (
-    typeof sizeLimits.maxNestingDepth === "number" &&
+    typeof sizeLimits.maxNestingDepth === 'number' &&
     ctx.maxDepthSeen > sizeLimits.maxNestingDepth
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
-        "",
-        "",
+        '',
+        '',
         `Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${sizeLimits.maxNestingDepth}`,
-        "error"
-      )
+        'error',
+      ),
     );
   }
 
   if (
-    typeof sizeLimits.maxEnumValues === "number" &&
+    typeof sizeLimits.maxEnumValues === 'number' &&
     ctx.totalEnumValues > sizeLimits.maxEnumValues
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
-        "",
-        "",
+        '',
+        '',
         `Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${sizeLimits.maxEnumValues}`,
-        "error"
-      )
+        'error',
+      ),
     );
   }
 
   if (
-    typeof sizeLimits.maxStringLengthNamesEnums === "number" &&
+    typeof sizeLimits.maxStringLengthNamesEnums === 'number' &&
     ctx.totalStringLengthNamesEnums > sizeLimits.maxStringLengthNamesEnums
   ) {
     ctx.markers.push(
       pointerToMarker(
         ctx.pointers,
-        "",
-        "",
+        '',
+        '',
         `Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${sizeLimits.maxStringLengthNamesEnums}`,
-        "error"
-      )
+        'error',
+      ),
     );
   }
 }
 
 function escapePointer(key: string): string {
-  return key.replace(/~/g, "~0").replace(/\//g, "~1");
+  return key.replace(/~/g, '~0').replace(/\//g, '~1');
 }

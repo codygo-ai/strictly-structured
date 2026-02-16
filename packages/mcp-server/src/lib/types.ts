@@ -1,6 +1,6 @@
 export interface ValidationIssue {
   message: string;
-  severity: "error" | "warning" | "info";
+  severity: 'error' | 'warning' | 'info';
   location?: { line: number; column: number };
 }
 
@@ -25,4 +25,4 @@ export interface FixResult {
   remainingIssues: string[];
 }
 
-export type { ProviderId } from "@ssv/schemas/types";
+export type { ProviderId } from '@ssv/schemas/types';

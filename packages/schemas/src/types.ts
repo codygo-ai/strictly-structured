@@ -6,7 +6,7 @@
 export interface Requirement {
   rule: string;
   detail: string;
-  severity: "error" | "warning" | "info";
+  severity: 'error' | 'warning' | 'info';
 }
 
 export interface SupportedType {
@@ -26,7 +26,7 @@ export interface SizeLimits {
   notes?: string | null;
 }
 
-export type ProviderId = "openai" | "anthropic" | "gemini";
+export type ProviderId = 'openai' | 'anthropic' | 'gemini';
 
 export interface ComparisonColumn {
   id: ProviderId;
@@ -75,9 +75,9 @@ export interface ComparisonRow {
   openai: string;
   anthropic: string;
   gemini: string;
-  openaiOk: boolean | "warn" | "partial";
-  anthropicOk: boolean | "partial";
-  geminiOk: boolean | "partial";
+  openaiOk: boolean | 'warn' | 'partial';
+  anthropicOk: boolean | 'partial';
+  geminiOk: boolean | 'partial';
 }
 
 export interface UniversalRules {

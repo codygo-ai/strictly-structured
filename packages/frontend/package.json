@@ -26,8 +26,6 @@
   },
   "devDependencies": {
     "@ssv/audit": "workspace:*",
-    "@ssv/eslint-config": "workspace:*",
-    "@ssv/tsconfig": "workspace:*",
     "@tailwindcss/node": "^4.1.18",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.18.6",

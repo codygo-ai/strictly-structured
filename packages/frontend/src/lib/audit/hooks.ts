@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useCallback } from "react";
-import type { AuditEventKind } from "@ssv/audit/browser";
-import { emit as rawEmit, startAutoFlush, stopAutoFlush } from "./emitter";
+import type { AuditEventKind } from '@ssv/audit/browser';
+import { useEffect, useRef, useCallback } from 'react';
+
+import { emit as rawEmit, startAutoFlush, stopAutoFlush } from './emitter';
 
 export function useAudit() {
   const initialized = useRef(false);

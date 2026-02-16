@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from 'react';
+
 import {
   getAuthSafe,
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
   type User,
-} from "~/lib/firebase";
+} from '~/lib/firebase';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -28,7 +29,7 @@ export function useAuth() {
 
   const signIn = useCallback(async () => {
     const auth = getAuthSafe();
-    if (!auth) throw new Error("Firebase Auth not available");
+    if (!auth) throw new Error('Firebase Auth not available');
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   }, []);
@@ -42,7 +43,7 @@ export function useAuth() {
   /** Returns a valid ID token. If not signed in, opens sign-in and waits, then returns token. */
   const ensureAuth = useCallback(async (): Promise<string> => {
     const auth = getAuthSafe();
-    if (!auth) throw new Error("Firebase Auth not available");
+    if (!auth) throw new Error('Firebase Auth not available');
     const currentUser = auth.currentUser;
     if (currentUser) {
       return currentUser.getIdToken(true);

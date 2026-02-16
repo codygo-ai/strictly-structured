@@ -20,10 +20,7 @@ export function Footer() {
           >
             GitHub
           </a>
-          <a
-            href="/terms"
-            className="hover:text-white transition-colors"
-          >
+          <a href="/terms" className="hover:text-white transition-colors">
             Terms of Use
           </a>
         </div>

@@ -1,4 +1,4 @@
-import type { InputFormat } from "./types";
+import type { InputFormat } from './types';
 
 const ZOD_PATTERNS = [
   /\bz\s*\.\s*(object|string|number|boolean|array|enum|union|literal|tuple|record|optional|nullable)\s*\(/,
@@ -20,10 +20,10 @@ export function detectFormat(code: string): InputFormat {
   const trimmed = code.trim();
 
   // Try JSON parse first — cheapest check
-  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
     try {
       JSON.parse(trimmed);
-      return "json-schema";
+      return 'json-schema';
     } catch {
       // Not valid JSON — fall through to heuristic checks
     }
@@ -39,9 +39,9 @@ export function detectFormat(code: string): InputFormat {
     0,
   );
 
-  if (zodScore > pydanticScore) return "zod";
-  if (pydanticScore > zodScore) return "pydantic";
-  if (zodScore > 0) return "zod";
+  if (zodScore > pydanticScore) return 'zod';
+  if (pydanticScore > zodScore) return 'pydantic';
+  if (zodScore > 0) return 'zod';
 
-  return "json-schema";
+  return 'json-schema';
 }

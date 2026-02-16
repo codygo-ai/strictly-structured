@@ -1,14 +1,11 @@
-export {
-  EVENT_SOURCES,
-  ERROR_CATEGORIES,
-} from "./types";
+export { EVENT_SOURCES, ERROR_CATEGORIES } from './types';
 
 export type {
   EventSource,
   ErrorCategory,
   AuditEventBase,
   SchemaEditedEvent,
-  GroupSelectedEvent,
+  RuleSetSelectedEvent,
   ClientValidationEvent,
   ServerValidateRequestedEvent,
   ServerValidateCompletedEvent,
@@ -32,14 +29,9 @@ export type {
   AuditTrace,
   AuditSchema,
   AuditContext,
-} from "./types";
+} from './types';
 
-export {
-  generateEventId,
-  generateSessionId,
-  generateTraceId,
-  hashSchema,
-} from "./ids";
+export { generateEventId, generateSessionId, generateTraceId, hashSchema } from './ids';
 
 export {
   AUDIT_EVENTS_COLLECTION,
@@ -53,4 +45,4 @@ export {
   FRONTEND_FLUSH_INTERVAL_MS,
   INGEST_MAX_EVENTS,
   SESSION_HEADER,
-} from "./constants";
+} from './constants';

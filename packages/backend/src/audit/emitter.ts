@@ -1,10 +1,6 @@
-import * as admin from "firebase-admin";
-import type { AuditEvent } from "@ssv/audit";
-import {
-  AUDIT_EVENTS_COLLECTION,
-  BACKEND_BATCH_SIZE,
-  EVENTS_TTL_MS,
-} from "@ssv/audit";
+import type { AuditEvent } from '@ssv/audit';
+import { AUDIT_EVENTS_COLLECTION, BACKEND_BATCH_SIZE, EVENTS_TTL_MS } from '@ssv/audit';
+import * as admin from 'firebase-admin';
 
 export interface AuditEmitter {
   emit(event: AuditEvent): void;
@@ -29,9 +25,7 @@ export function createFirestoreEmitter(): AuditEmitter {
     if (buffer.length === 0) return;
     const toFlush = buffer.splice(0, BACKEND_BATCH_SIZE);
     const batch = db.batch();
-    const expiresAt = admin.firestore.Timestamp.fromDate(
-      new Date(Date.now() + EVENTS_TTL_MS),
-    );
+    const expiresAt = admin.firestore.Timestamp.fromDate(new Date(Date.now() + EVENTS_TTL_MS));
     for (const event of toFlush) {
       const ref = db.collection(AUDIT_EVENTS_COLLECTION).doc(event.eventId);
       batch.set(ref, { ...event, expiresAt });

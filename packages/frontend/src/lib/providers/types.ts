@@ -1,4 +1,4 @@
-export type ProviderId = "openai" | "google" | "anthropic";
+export type ProviderId = 'openai' | 'google' | 'anthropic';
 
 export interface ValidationResult {
   provider: ProviderId;
@@ -14,4 +14,4 @@ export interface ServerValidationState {
   error?: string;
 }
 
-export const PROVIDER_IDS: ProviderId[] = ["openai", "google", "anthropic"];
+export const PROVIDER_IDS: ProviderId[] = ['openai', 'google', 'anthropic'];

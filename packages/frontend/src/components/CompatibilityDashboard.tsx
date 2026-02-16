@@ -1,15 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import type { SchemaRuleSet } from "@ssv/schemas/types";
-import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation";
-import type { FixResult } from "@ssv/schemas/ruleSetFixer";
-import type { ServerValidationState } from "~/lib/providers/types";
-import { RuleSetStatusCard } from "~/components/RuleSetStatusCard";
-import { IssuesTab, type OtherProviderStatus } from "~/components/IssuesTab";
-import { ReferenceTab } from "~/components/ReferenceTab";
+import type { FixResult } from '@ssv/schemas/ruleSetFixer';
+import type { SchemaRuleSet } from '@ssv/schemas/types';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 
-type TabId = "issues" | "reference";
+import { IssuesTab, type OtherProviderStatus } from '~/components/IssuesTab';
+import { ReferenceTab } from '~/components/ReferenceTab';
+import { RuleSetStatusCard } from '~/components/RuleSetStatusCard';
+import type { RuleSetValidationSummary } from '~/hooks/useAllRuleSetsValidation';
+import type { ServerValidationState } from '~/lib/providers/types';
+
+type TabId = 'issues' | 'reference';
 
 interface CompatibilityDashboardProps {
   ruleSets: SchemaRuleSet[];
@@ -27,8 +28,8 @@ interface CompatibilityDashboardProps {
 }
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: "issues", label: "Issues" },
-  { id: "reference", label: "Reference" },
+  { id: 'issues', label: 'Issues' },
+  { id: 'reference', label: 'Reference' },
 ];
 
 export function CompatibilityDashboard({
@@ -45,7 +46,7 @@ export function CompatibilityDashboard({
   serverValidation,
   onServerValidate,
 }: CompatibilityDashboardProps) {
-  const [activeTab, setActiveTab] = useState<TabId>("issues");
+  const [activeTab, setActiveTab] = useState<TabId>('issues');
   const sidebarRef = useRef<HTMLElement>(null);
   const [width, setWidth] = useState<number>();
 
@@ -68,32 +69,32 @@ export function CompatibilityDashboard({
     };
 
     const cleanup = () => {
-      el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerup", cleanup);
-      el.removeEventListener("pointercancel", cleanup);
-      el.removeEventListener("lostpointercapture", cleanup);
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup', cleanup);
+      el.removeEventListener('pointercancel', cleanup);
+      el.removeEventListener('lostpointercapture', cleanup);
     };
 
-    el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerup", cleanup);
-    el.addEventListener("pointercancel", cleanup);
-    el.addEventListener("lostpointercapture", cleanup);
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', cleanup);
+    el.addEventListener('pointercancel', cleanup);
+    el.addEventListener('lostpointercapture', cleanup);
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault();
     const sidebar = sidebarRef.current;
     if (!sidebar) return;
     const currentWidth = sidebar.getBoundingClientRect().width;
-    const delta = e.key === "ArrowLeft" ? -KEYBOARD_RESIZE_STEP : KEYBOARD_RESIZE_STEP;
+    const delta = e.key === 'ArrowLeft' ? -KEYBOARD_RESIZE_STEP : KEYBOARD_RESIZE_STEP;
     setWidth(Math.max(MIN_SIDEBAR_WIDTH, currentWidth + delta));
   }, []);
 
   useEffect(() => {
     const onResize = () => setWidth(undefined);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const selectedRuleSet = useMemo(
@@ -121,11 +122,7 @@ export function CompatibilityDashboard({
   );
 
   return (
-    <aside
-      ref={sidebarRef}
-      className="sidebar"
-      style={width ? { width } : undefined}
-    >
+    <aside ref={sidebarRef} className="sidebar" style={width ? { width } : undefined}>
       {/* Resize grip */}
       <div
         role="separator"
@@ -161,11 +158,11 @@ export function CompatibilityDashboard({
           <button
             key={tab.id}
             type="button"
-            className={`dashboard-tab ${activeTab === tab.id ? "active" : ""}`}
+            className={`dashboard-tab ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
-            {tab.id === "issues" && selectedSummary && selectedSummary.errorCount > 0 && (
+            {tab.id === 'issues' && selectedSummary && selectedSummary.errorCount > 0 && (
               <span className="ml-1.5 inline-flex items-center justify-center min-w-5 h-5 rounded-full bg-error/15 text-error text-[0.65rem] font-semibold px-1">
                 {selectedSummary.errorCount}
               </span>
@@ -178,7 +175,7 @@ export function CompatibilityDashboard({
       <div className="dashboard-tab-content">
         {selectedRuleSet ? (
           <>
-            {activeTab === "issues" && (
+            {activeTab === 'issues' && (
               <IssuesTab
                 markers={selectedSummary?.markers ?? []}
                 ruleSet={selectedRuleSet}
@@ -195,9 +192,7 @@ export function CompatibilityDashboard({
                 onServerValidate={onServerValidate}
               />
             )}
-            {activeTab === "reference" && (
-              <ReferenceTab ruleSet={selectedRuleSet} />
-            )}
+            {activeTab === 'reference' && <ReferenceTab ruleSet={selectedRuleSet} />}
           </>
         ) : (
           <p className="text-xs text-muted italic">Select a rule set above.</p>

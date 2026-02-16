@@ -1,25 +1,26 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { UserAvatarMenu } from "~/components/UserAvatarMenu";
-import { FeedbackWidget } from "~/components/FeedbackWidget";
-import { HelpPopover } from "~/components/HelpPopover";
-import { ThemeToggle } from "~/components/ThemeToggle";
-import { SiteLogo } from "~/components/SiteLogo";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import { FeedbackWidget } from '~/components/FeedbackWidget';
+import { HelpPopover } from '~/components/HelpPopover';
+import { SiteLogo } from '~/components/SiteLogo';
+import { ThemeToggle } from '~/components/ThemeToggle';
+import { UserAvatarMenu } from '~/components/UserAvatarMenu';
 
 export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
   const pathname = usePathname();
-  const current = pathname.startsWith("/terms")
-    ? "terms"
-    : pathname.startsWith("/why")
-      ? "why"
-      : pathname.startsWith("/models")
-        ? "models"
-        : "playground";
+  const current = pathname.startsWith('/terms')
+    ? 'terms'
+    : pathname.startsWith('/why')
+      ? 'why'
+      : pathname.startsWith('/models')
+        ? 'models'
+        : 'playground';
 
-  const linkClass = "text-sm text-secondary hover:text-primary transition-colors cursor-pointer";
-  const activeClass = "text-sm text-accent cursor-default";
+  const linkClass = 'text-sm text-secondary hover:text-primary transition-colors cursor-pointer';
+  const activeClass = 'text-sm text-accent cursor-default';
 
   return (
     <header className="validator-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -41,7 +42,7 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
       </div>
       <div className="flex items-center gap-4 self-start sm:self-center">
         <nav className="flex items-center gap-4">
-          {current === "playground" ? (
+          {current === 'playground' ? (
             <span className={activeClass} aria-current="page">
               Playground
             </span>
@@ -50,7 +51,7 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
               Playground
             </Link>
           )}
-          {current === "models" ? (
+          {current === 'models' ? (
             <span className={activeClass} aria-current="page">
               Explore Models
             </span>
@@ -59,7 +60,7 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
               Explore Models
             </Link>
           )}
-          {current === "why" ? (
+          {current === 'why' ? (
             <span className={activeClass} aria-current="page">
               See Why
             </span>
@@ -68,7 +69,7 @@ export function SiteHeader({ subtitle = true }: { subtitle?: boolean }) {
               See Why
             </Link>
           )}
-          {current === "terms" ? (
+          {current === 'terms' ? (
             <span className={activeClass} aria-current="page">
               Terms
             </span>
