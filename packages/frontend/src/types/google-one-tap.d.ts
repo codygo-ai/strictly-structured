@@ -9,6 +9,12 @@ declare global {
     clientId?: string;
   }
 
+  interface PromptMomentNotification {
+    getMomentType(): 'display' | 'skipped' | 'dismissed';
+    getSkippedReason?(): 'auto_cancel' | 'user_cancel' | 'tap_outside' | 'issuing_failed';
+    getDismissedReason?(): 'credential_returned' | 'cancel' | 'flow_restarted';
+  }
+
   namespace google {
     namespace accounts {
       namespace id {
@@ -18,7 +24,7 @@ declare global {
           auto_select?: boolean;
           cancel_on_tap_outside?: boolean;
         }): void;
-        function prompt(): void;
+        function prompt(momentListener?: (notification: PromptMomentNotification) => void): void;
         function cancel(): void;
         function disableAutoSelect(): void;
       }

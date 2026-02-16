@@ -27,14 +27,25 @@ export function GoogleOneTap() {
     const auth = getAuthSafe();
     if (!auth) return;
 
+    let cancelled = false;
+
     function handleCredentialResponse(response: { credential: string }) {
       const credential = GoogleAuthProvider.credential(response.credential);
-      signInWithCredential(auth!, credential).catch(() => {
-        // Ignore errors (e.g. user already signed in, or cancelled)
-      });
-      if (typeof google !== 'undefined' && google.accounts?.id?.cancel) {
-        google.accounts.id.cancel();
-      }
+      signInWithCredential(auth!, credential)
+        .then(() => {
+          if (typeof google !== 'undefined' && google.accounts?.id?.cancel) {
+            google.accounts.id.cancel();
+          }
+        })
+        .catch((error) => {
+          if (typeof google !== 'undefined' && google.accounts?.id?.cancel) {
+            google.accounts.id.cancel();
+          }
+          console.warn(
+            { error },
+            `Google One Tap sign-in failed: ${(error as Error)?.message ?? 'unknown'}`,
+          );
+        });
     }
 
     function loadScript(): Promise<void> {
@@ -57,7 +68,7 @@ export function GoogleOneTap() {
 
     loadScript()
       .then(() => {
-        if (initialized.current) return;
+        if (cancelled || initialized.current) return;
         if (typeof google === 'undefined' || !google.accounts?.id?.initialize) return;
 
         google.accounts.id.initialize({
@@ -67,17 +78,38 @@ export function GoogleOneTap() {
         });
         initialized.current = true;
 
-        // Show One Tap only after auth state is known and user is not signed in
         unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (user || typeof google === 'undefined' || !google.accounts?.id?.prompt) return;
+          if (cancelled || user || typeof google === 'undefined' || !google.accounts?.id?.prompt)
+            return;
           timeoutId = setTimeout(() => {
-            google.accounts.id.prompt();
+            if (cancelled) return;
+            google.accounts.id.prompt((notification) => {
+              const type = notification.getMomentType();
+              if (type === 'skipped') {
+                if (typeof google !== 'undefined' && google.accounts?.id?.cancel) {
+                  google.accounts.id.cancel();
+                }
+              } else if (
+                type === 'dismissed' &&
+                notification.getDismissedReason?.() !== 'credential_returned'
+              ) {
+                if (typeof google !== 'undefined' && google.accounts?.id?.cancel) {
+                  google.accounts.id.cancel();
+                }
+              }
+            });
           }, 300);
         });
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.warn(
+          { error },
+          `Google One Tap script load failed: ${(error as Error)?.message ?? 'unknown'}`,
+        );
+      });
 
     return () => {
+      cancelled = true;
       unsubscribe?.();
       if (timeoutId) clearTimeout(timeoutId);
     };
