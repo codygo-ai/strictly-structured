@@ -19,9 +19,7 @@
     "zod-to-json-schema": "^3.24.0"
   },
   "devDependencies": {
-    "@ssv/eslint-config": "workspace:*",
     "@ssv/schemas": "workspace:*",
-    "@ssv/tsconfig": "workspace:*",
     "@types/node": "^22.15.0",
     "eslint": "^9.39.1",
     "tsup": "^8.5.0",

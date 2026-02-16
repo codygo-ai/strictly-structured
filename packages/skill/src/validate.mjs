@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* global process, console */
 
 /**
  * Standalone JSON Schema validator for LLM structured outputs.
@@ -13,7 +12,7 @@
  *   node validate.mjs --schema '<json>' --rules-file <path> [--provider <id>]
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync } from 'node:fs';
 
 // --- CLI argument parsing ---
 
@@ -24,23 +23,25 @@ function getArg(name) {
   return idx !== -1 && idx + 1 < args.length ? args[idx + 1] : undefined;
 }
 
-const schemaFile = getArg("--schema-file");
-const schemaInline = getArg("--schema");
-const rulesFile = getArg("--rules-file");
-const providerFilter = getArg("--provider");
+const schemaFile = getArg('--schema-file');
+const schemaInline = getArg('--schema');
+const rulesFile = getArg('--rules-file');
+const providerFilter = getArg('--provider');
 
 if (!rulesFile) {
-  console.error("Usage: node validate.mjs --rules-file <path> (--schema-file <path> | --schema '<json>')");
+  console.error(
+    "Usage: node validate.mjs --rules-file <path> (--schema-file <path> | --schema '<json>')",
+  );
   process.exit(2);
 }
 
 let schemaStr;
 if (schemaFile) {
-  schemaStr = readFileSync(schemaFile, "utf-8");
+  schemaStr = readFileSync(schemaFile, 'utf-8');
 } else if (schemaInline) {
   schemaStr = schemaInline;
 } else {
-  console.error("Provide either --schema-file or --schema");
+  console.error('Provide either --schema-file or --schema');
   process.exit(2);
 }
 
@@ -52,25 +53,32 @@ try {
   process.exit(1);
 }
 
-const rulesData = JSON.parse(readFileSync(rulesFile, "utf-8"));
+const rulesData = JSON.parse(readFileSync(rulesFile, 'utf-8'));
 
 // --- Validation logic (mirrors packages/mcp-server/src/lib/validator.ts) ---
 
 const COMPOSITION_KEYWORDS = new Set([
-  "anyOf", "allOf", "oneOf", "not",
-  "if", "then", "else",
-  "dependentRequired", "dependentSchemas",
-  "$ref", "$defs",
+  'anyOf',
+  'allOf',
+  'oneOf',
+  'not',
+  'if',
+  'then',
+  'else',
+  'dependentRequired',
+  'dependentSchemas',
+  '$ref',
+  '$defs',
 ]);
 
-const STRUCTURAL_KEYWORDS = new Set(["type"]);
+const STRUCTURAL_KEYWORDS = new Set(['type']);
 
 function resolveType(node) {
   const t = node.type;
-  if (typeof t === "string") return t;
+  if (typeof t === 'string') return t;
   if (Array.isArray(t)) {
-    const nonNull = t.filter((v) => v !== "null");
-    if (nonNull.length === 1 && typeof nonNull[0] === "string") return nonNull[0];
+    const nonNull = t.filter((v) => v !== 'null');
+    if (nonNull.length === 1 && typeof nonNull[0] === 'string') return nonNull[0];
   }
   return undefined;
 }
@@ -80,8 +88,8 @@ function buildSupportedKeywordsByType(supportedTypes) {
 }
 
 function validateSchemaForRuleSet(s, ruleSet) {
-  if (s === null || typeof s !== "object") {
-    return { valid: false, errors: ["Schema must be an object"], warnings: [] };
+  if (s === null || typeof s !== 'object') {
+    return { valid: false, errors: ['Schema must be an object'], warnings: [] };
   }
 
   const rules = {
@@ -112,7 +120,7 @@ function validateSchemaForRuleSet(s, ruleSet) {
     totalStringLengthNamesEnums: 0,
   };
 
-  walkNode(s, "root", 0, true, ctx);
+  walkNode(s, 'root', 0, true, ctx);
   checkQuantitativeLimits(ctx);
 
   return { valid: ctx.errors.length === 0, errors: ctx.errors, warnings: ctx.warnings };
@@ -126,7 +134,7 @@ function walkNode(node, path, depth, isRoot, ctx) {
   // Multi-type union detection
   const rawType = node.type;
   if (Array.isArray(rawType)) {
-    const nonNull = rawType.filter((v) => v !== "null");
+    const nonNull = rawType.filter((v) => v !== 'null');
     if (nonNull.length > 1) {
       ctx.errors.push(`Multi-type unions are not supported at ${path}. Use anyOf for union types`);
     }
@@ -140,11 +148,11 @@ function walkNode(node, path, depth, isRoot, ctx) {
 
   checkNodeKeywords(node, nodeType, path, isRoot, ctx);
 
-  if (nodeType === "object" || node.properties !== undefined) {
+  if (nodeType === 'object' || node.properties !== undefined) {
     checkObjectConstraints(node, path, ctx);
   }
 
-  if (nodeType === "string" && typeof node.format === "string") {
+  if (nodeType === 'string' && typeof node.format === 'string') {
     checkStringFormat(node.format, path, ctx);
   }
 
@@ -157,15 +165,15 @@ function checkRootConstraints(node, nodeType, ctx) {
   const allowedRoots = Array.isArray(rules.rootType) ? rules.rootType : [rules.rootType];
 
   if (nodeType && !allowedRoots.includes(nodeType)) {
-    ctx.errors.push(`Root type must be ${allowedRoots.join(" or ")}, got "${nodeType}"`);
+    ctx.errors.push(`Root type must be ${allowedRoots.join(' or ')}, got "${nodeType}"`);
   }
 
   if (
     !rules.rootAnyOfAllowed &&
     node.anyOf !== undefined &&
-    ctx.supportedComposition.has("anyOf")
+    ctx.supportedComposition.has('anyOf')
   ) {
-    ctx.errors.push("Root-level anyOf is not allowed for this provider");
+    ctx.errors.push('Root-level anyOf is not allowed for this provider');
   }
 }
 
@@ -177,7 +185,7 @@ function checkNodeKeywords(node, nodeType, path, isRoot, ctx) {
     if (STRUCTURAL_KEYWORDS.has(key)) continue;
 
     if (COMPOSITION_KEYWORDS.has(key)) {
-      if (isRoot && key === "anyOf" && supportedComposition.has("anyOf")) continue;
+      if (isRoot && key === 'anyOf' && supportedComposition.has('anyOf')) continue;
       if (!supportedComposition.has(key)) {
         ctx.errors.push(`"${key}" is not supported by this provider at ${path}`);
       }
@@ -185,7 +193,9 @@ function checkNodeKeywords(node, nodeType, path, isRoot, ctx) {
     }
 
     if (typeSupported && !typeSupported.has(key)) {
-      ctx.errors.push(`"${key}" is not supported for type "${nodeType}" by this provider at ${path}`);
+      ctx.errors.push(
+        `"${key}" is not supported for type "${nodeType}" by this provider at ${path}`,
+      );
     }
   }
 }
@@ -195,7 +205,9 @@ function checkObjectConstraints(node, path, ctx) {
 
   if (rules.additionalPropertiesMustBeFalse && node.additionalProperties !== false) {
     if (node.additionalProperties === undefined) {
-      ctx.errors.push(`Missing "additionalProperties": false at ${path} — required by this provider`);
+      ctx.errors.push(
+        `Missing "additionalProperties": false at ${path} — required by this provider`,
+      );
     } else {
       ctx.errors.push(`"additionalProperties" must be false at ${path} for this provider`);
     }
@@ -207,17 +219,21 @@ function checkObjectConstraints(node, path, ctx) {
     node.additionalProperties !== false &&
     node.properties !== undefined
   ) {
-    ctx.warnings.push(`"additionalProperties": false is recommended at ${path} for reliable results`);
+    ctx.warnings.push(
+      `"additionalProperties": false is recommended at ${path} for reliable results`,
+    );
   }
 
   if (rules.allFieldsRequired && node.properties !== undefined) {
     const props = node.properties;
-    if (props && typeof props === "object") {
+    if (props && typeof props === 'object') {
       const propKeys = Object.keys(props);
       const required = Array.isArray(node.required) ? node.required : [];
       const missing = propKeys.filter((k) => !required.includes(k));
       if (missing.length > 0) {
-        ctx.errors.push(`All properties must be in "required" at ${path}. Missing: ${missing.join(", ")}`);
+        ctx.errors.push(
+          `All properties must be in "required" at ${path}. Missing: ${missing.join(', ')}`,
+        );
       }
     }
   }
@@ -228,12 +244,14 @@ function checkStringFormat(format, path, ctx) {
   if (!formats || formats.length === 0) return;
 
   if (!formats.includes(format)) {
-    ctx.errors.push(`String format "${format}" is not supported at ${path}. Supported: ${formats.join(", ")}`);
+    ctx.errors.push(
+      `String format "${format}" is not supported at ${path}. Supported: ${formats.join(', ')}`,
+    );
   }
 }
 
 function accumulateStats(node, ctx) {
-  if (node.properties && typeof node.properties === "object") {
+  if (node.properties && typeof node.properties === 'object') {
     const keys = Object.keys(node.properties);
     ctx.totalProperties += keys.length;
     for (const key of keys) {
@@ -244,7 +262,7 @@ function accumulateStats(node, ctx) {
   if (Array.isArray(node.enum)) {
     ctx.totalEnumValues += node.enum.length;
     for (const val of node.enum) {
-      if (typeof val === "string") {
+      if (typeof val === 'string') {
         ctx.totalStringLengthNamesEnums += val.length;
       }
     }
@@ -252,21 +270,21 @@ function accumulateStats(node, ctx) {
 }
 
 function recurseChildren(node, path, depth, ctx) {
-  if (node.properties && typeof node.properties === "object") {
+  if (node.properties && typeof node.properties === 'object') {
     for (const [key, value] of Object.entries(node.properties)) {
-      if (value && typeof value === "object") {
+      if (value && typeof value === 'object') {
         walkNode(value, `${path}.properties.${key}`, depth + 1, false, ctx);
       }
     }
   }
 
-  if (node.items && typeof node.items === "object") {
+  if (node.items && typeof node.items === 'object') {
     walkNode(node.items, `${path}.items`, depth + 1, false, ctx);
   }
 
   if (Array.isArray(node.prefixItems)) {
     node.prefixItems.forEach((item, i) => {
-      if (item && typeof item === "object") {
+      if (item && typeof item === 'object') {
         walkNode(item, `${path}.prefixItems[${i}]`, depth + 1, false, ctx);
       }
     });
@@ -274,21 +292,21 @@ function recurseChildren(node, path, depth, ctx) {
 
   if (Array.isArray(node.anyOf)) {
     node.anyOf.forEach((branch, i) => {
-      if (branch && typeof branch === "object") {
+      if (branch && typeof branch === 'object') {
         walkNode(branch, `${path}.anyOf[${i}]`, depth, false, ctx);
       }
     });
   }
 
-  if (node.$defs && typeof node.$defs === "object") {
+  if (node.$defs && typeof node.$defs === 'object') {
     for (const [key, value] of Object.entries(node.$defs)) {
-      if (value && typeof value === "object") {
+      if (value && typeof value === 'object') {
         walkNode(value, `${path}.$defs.${key}`, 0, false, ctx);
       }
     }
   }
 
-  if (node.additionalProperties && typeof node.additionalProperties === "object") {
+  if (node.additionalProperties && typeof node.additionalProperties === 'object') {
     walkNode(node.additionalProperties, `${path}.additionalProperties`, depth + 1, false, ctx);
   }
 }
@@ -297,20 +315,31 @@ function checkQuantitativeLimits(ctx) {
   const { limits } = ctx.rules;
   if (!limits) return;
 
-  if (typeof limits.maxProperties === "number" && ctx.totalProperties > limits.maxProperties) {
-    ctx.errors.push(`Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${limits.maxProperties}`);
+  if (typeof limits.maxProperties === 'number' && ctx.totalProperties > limits.maxProperties) {
+    ctx.errors.push(
+      `Schema has ${ctx.totalProperties} total properties, exceeding the limit of ${limits.maxProperties}`,
+    );
   }
 
-  if (typeof limits.maxNestingDepth === "number" && ctx.maxDepthSeen > limits.maxNestingDepth) {
-    ctx.errors.push(`Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${limits.maxNestingDepth}`);
+  if (typeof limits.maxNestingDepth === 'number' && ctx.maxDepthSeen > limits.maxNestingDepth) {
+    ctx.errors.push(
+      `Schema nesting depth is ${ctx.maxDepthSeen}, exceeding the limit of ${limits.maxNestingDepth}`,
+    );
   }
 
-  if (typeof limits.maxEnumValues === "number" && ctx.totalEnumValues > limits.maxEnumValues) {
-    ctx.errors.push(`Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${limits.maxEnumValues}`);
+  if (typeof limits.maxEnumValues === 'number' && ctx.totalEnumValues > limits.maxEnumValues) {
+    ctx.errors.push(
+      `Schema has ${ctx.totalEnumValues} total enum values, exceeding the limit of ${limits.maxEnumValues}`,
+    );
   }
 
-  if (typeof limits.maxStringLengthNamesEnums === "number" && ctx.totalStringLengthNamesEnums > limits.maxStringLengthNamesEnums) {
-    ctx.errors.push(`Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${limits.maxStringLengthNamesEnums}`);
+  if (
+    typeof limits.maxStringLengthNamesEnums === 'number' &&
+    ctx.totalStringLengthNamesEnums > limits.maxStringLengthNamesEnums
+  ) {
+    ctx.errors.push(
+      `Total string length of property names and enum values is ${ctx.totalStringLengthNamesEnums}, exceeding the limit of ${limits.maxStringLengthNamesEnums}`,
+    );
   }
 }
 
@@ -344,7 +373,7 @@ const summary =
     ? `Valid for all ${results.length} providers.`
     : invalidProviders.length === results.length
       ? `Invalid for all ${results.length} providers.`
-      : `Valid for ${validProviders.length}/${results.length} providers (${validProviders.join(", ")}). Issues found for: ${invalidProviders.join(", ")}.`;
+      : `Valid for ${validProviders.length}/${results.length} providers (${validProviders.join(', ')}). Issues found for: ${invalidProviders.join(', ')}.`;
 
 console.log(JSON.stringify({ results, summary }, null, 2));
 process.exit(invalidProviders.length > 0 ? 1 : 0);

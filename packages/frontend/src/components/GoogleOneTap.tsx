@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
+
 import {
   getAuthSafe,
   signInWithCredential,
   GoogleAuthProvider,
   onAuthStateChanged,
-} from "~/lib/firebase";
+} from '~/lib/firebase';
 
-const GIS_SCRIPT_URL = "https://accounts.google.com/gsi/client";
+const GIS_SCRIPT_URL = 'https://accounts.google.com/gsi/client';
 
 /**
  * Loads Google Identity Services and shows One Tap when the user is not signed in.
@@ -18,7 +19,7 @@ export function GoogleOneTap() {
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) return;
@@ -31,7 +32,7 @@ export function GoogleOneTap() {
       signInWithCredential(auth!, credential).catch(() => {
         // Ignore errors (e.g. user already signed in, or cancelled)
       });
-      if (typeof google !== "undefined" && google.accounts?.id?.cancel) {
+      if (typeof google !== 'undefined' && google.accounts?.id?.cancel) {
         google.accounts.id.cancel();
       }
     }
@@ -41,13 +42,12 @@ export function GoogleOneTap() {
         return Promise.resolve();
       }
       return new Promise((resolve, reject) => {
-        const script = document.createElement("script");
+        const script = document.createElement('script');
         script.src = GIS_SCRIPT_URL;
         script.async = true;
         script.defer = true;
         script.onload = () => resolve();
-        script.onerror = () =>
-          reject(new Error("Failed to load Google Identity Services"));
+        script.onerror = () => reject(new Error('Failed to load Google Identity Services'));
         document.head.appendChild(script);
       });
     }
@@ -58,8 +58,7 @@ export function GoogleOneTap() {
     loadScript()
       .then(() => {
         if (initialized.current) return;
-        if (typeof google === "undefined" || !google.accounts?.id?.initialize)
-          return;
+        if (typeof google === 'undefined' || !google.accounts?.id?.initialize) return;
 
         google.accounts.id.initialize({
           client_id: clientId,
@@ -70,12 +69,7 @@ export function GoogleOneTap() {
 
         // Show One Tap only after auth state is known and user is not signed in
         unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (
-            user ||
-            typeof google === "undefined" ||
-            !google.accounts?.id?.prompt
-          )
-            return;
+          if (user || typeof google === 'undefined' || !google.accounts?.id?.prompt) return;
           timeoutId = setTimeout(() => {
             google.accounts.id.prompt();
           }, 300);

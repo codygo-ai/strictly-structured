@@ -1,13 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import type {
-  SchemaRuleSet,
-  SchemaRuleSetsMeta,
-} from "@ssv/schemas/types";
-import { SeverityIcon } from "~/components/SeverityIcon";
-import { Pill } from "~/components/ui";
-import { camelCaseToLabel, limitsToRows } from "~/lib/format";
+import type { SchemaRuleSet, SchemaRuleSetsMeta } from '@ssv/schemas/types';
+import Link from 'next/link';
+
+import { SeverityIcon } from '~/components/SeverityIcon';
+import { Pill } from '~/components/ui';
+import { camelCaseToLabel, limitsToRows } from '~/lib/format';
 
 export function RuleSetCard({
   ruleSet,
@@ -16,33 +14,27 @@ export function RuleSetCard({
   ruleSet: SchemaRuleSet;
   meta: SchemaRuleSetsMeta;
 }) {
-  const modelsStr = ruleSet.models.join(", ");
+  const modelsStr = ruleSet.models.join(', ');
   const limitsRows = limitsToRows(ruleSet.sizeLimits);
-  const badgeClass = meta.providerBadgeClasses[ruleSet.providerId] ?? "";
+  const badgeClass = meta.providerBadgeClasses[ruleSet.providerId] ?? '';
   const unsupportedKeywords = Object.fromEntries(
     ruleSet.supportedTypes
       .filter((st) => st.unsupportedKeywords && st.unsupportedKeywords.length > 0)
-      .map((st) => [st.type, st.unsupportedKeywords!])
+      .map((st) => [st.type, st.unsupportedKeywords!]),
   );
 
   return (
     <div className="bg-surface border border-border rounded-[10px] p-6 mb-5">
       <div className="flex justify-between items-start mb-1">
-        <div className="text-[17px] font-bold text-primary">
-          {ruleSet.displayName}
-        </div>
+        <div className="text-[17px] font-bold text-primary">{ruleSet.displayName}</div>
         <div
           className={`text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded ${badgeClass}`}
         >
           {ruleSet.displayName}
         </div>
       </div>
-      <div className="text-[13px] text-secondary mb-2.5 leading-snug">
-        {ruleSet.description}
-      </div>
-      <div className="text-[11.5px] text-muted mb-4 font-mono leading-snug">
-        {modelsStr}
-      </div>
+      <div className="text-[13px] text-secondary mb-2.5 leading-snug">{ruleSet.description}</div>
+      <div className="text-[11.5px] text-muted mb-4 font-mono leading-snug">{modelsStr}</div>
 
       <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-5">
         <div>
@@ -56,12 +48,8 @@ export function RuleSetCard({
                   <SeverityIcon severity={c.severity} className="text-[13px] font-bold" />
                 </div>
                 <div>
-                  <div className="font-semibold text-xs text-primary">
-                    {c.rule}
-                  </div>
-                  <div className="text-[10.5px] text-muted mt-0.5">
-                    {c.detail}
-                  </div>
+                  <div className="font-semibold text-xs text-primary">{c.rule}</div>
+                  <div className="text-[10.5px] text-muted mt-0.5">{c.detail}</div>
                 </div>
               </div>
             ))}
@@ -71,10 +59,7 @@ export function RuleSetCard({
           </div>
           <div className="flex flex-col gap-1">
             {limitsRows.map((l, i) => (
-              <div
-                key={i}
-                className="flex justify-between text-xs"
-              >
+              <div key={i} className="flex justify-between text-xs">
                 <span className="text-secondary">{l.label}</span>
                 <span className="font-semibold font-mono text-[11.5px] text-primary">
                   {l.value}
@@ -101,9 +86,7 @@ export function RuleSetCard({
                 ))}
               </div>
               {st.notes && (
-                <div className="text-[10px] text-warning mt-0.5 ml-0.5">
-                  ⚠ {st.notes}
-                </div>
+                <div className="text-[10px] text-warning mt-0.5 ml-0.5">⚠ {st.notes}</div>
               )}
             </div>
           ))}
@@ -132,26 +115,17 @@ export function RuleSetCard({
           </div>
           <div className="flex flex-col gap-1">
             {Object.entries(ruleSet.behaviors)
-              .filter(([k]) => k !== "unknownKeywordsBehavior")
+              .filter(([k]) => k !== 'unknownKeywordsBehavior')
               .map(([label, val]) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-1.5 text-[11.5px]"
-                >
+                <div key={label} className="flex items-center gap-1.5 text-[11.5px]">
                   {val === true && <span className="text-success text-[11px]">✓</span>}
-                  {val === false && (
-                    <span className="text-error text-[11px]">✗</span>
-                  )}
-                  {typeof val === "string" && (
-                    <span className="text-muted text-[11px]">?</span>
-                  )}
-                  <span className="text-secondary">
-                    {camelCaseToLabel(label)}
-                  </span>
+                  {val === false && <span className="text-error text-[11px]">✗</span>}
+                  {typeof val === 'string' && <span className="text-muted text-[11px]">?</span>}
+                  <span className="text-secondary">{camelCaseToLabel(label)}</span>
                 </div>
               ))}
             <div className="text-[10.5px] text-muted mt-0.5">
-              Unknown kw → {String(ruleSet.behaviors.unknownKeywordsBehavior ?? "—")}
+              Unknown kw → {String(ruleSet.behaviors.unknownKeywordsBehavior ?? '—')}
             </div>
           </div>
         </div>
@@ -159,14 +133,14 @@ export function RuleSetCard({
 
       <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
         <div className="text-[10px] text-muted">
-          Source:{" "}
+          Source:{' '}
           <a
             href={ruleSet.docUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-secondary hover:underline"
           >
-            {ruleSet.docUrl.replace(/^https?:\/\//, "")}
+            {ruleSet.docUrl.replace(/^https?:\/\//, '')}
           </a>
         </div>
         <Link

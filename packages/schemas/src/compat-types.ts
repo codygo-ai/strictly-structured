@@ -13,7 +13,7 @@ export interface ModelResult {
 
 export interface KeywordRule {
   allowed?: boolean;
-  severity?: "error" | "warning" | "info";
+  severity?: 'error' | 'warning' | 'info';
   requirement?: string;
   errorMessage?: string;
   suggestion?: string;

@@ -19,8 +19,13 @@ This monorepo uses **`@ssv/*`** for all packages:
 - **`@ssv/skill`**: Claude Code / Cursor skill plugin (packages/skill)
 - **`@ssv/codegen`**: Zod/Pydantic ↔ JSON Schema conversion, SDK simulation (packages/codegen)
 - **`@ssv/audit`**: Shared audit event types and utilities (packages/audit)
-- **`@ssv/tsconfig`**: Shared TypeScript configs (devops/tsconfig)
-- **`@ssv/eslint-config`**: Shared ESLint config (devops/eslint-config)
+
+### Shared dev tooling (from @codygo-ai npm org)
+
+- **`@codygo-ai/tsconfig`**: Shared TypeScript configs (base, react, node)
+- **`@codygo-ai/eslint-config-base`**: Base ESLint config with Prettier, import ordering, mono plugin rules
+- **`@codygo-ai/eslint-config-react`**: React ESLint config (extends base, used by frontend)
+- **`@codygo-ai/eslint-plugin-mono`**: Custom monorepo ESLint rules (transitive dep)
 
 ## Build patterns
 

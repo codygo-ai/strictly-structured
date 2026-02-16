@@ -1,4 +1,4 @@
-import type { SdkChange } from "../types";
+import type { SdkChange } from '../types';
 
 type SchemaNode = Record<string, unknown>;
 
@@ -13,86 +13,72 @@ export function walkAllObjects(
 ): void {
   visitor(node, path);
 
-  if (node["properties"] && typeof node["properties"] === "object") {
-    const props = node["properties"] as Record<string, unknown>;
+  if (node['properties'] && typeof node['properties'] === 'object') {
+    const props = node['properties'] as Record<string, unknown>;
     for (const [key, value] of Object.entries(props)) {
-      if (value && typeof value === "object") {
-        walkAllObjects(
-          value as SchemaNode,
-          `${path}/properties/${key}`,
-          visitor,
-        );
+      if (value && typeof value === 'object') {
+        walkAllObjects(value as SchemaNode, `${path}/properties/${key}`, visitor);
       }
     }
   }
 
-  if (node["items"] && typeof node["items"] === "object") {
-    walkAllObjects(node["items"] as SchemaNode, `${path}/items`, visitor);
+  if (node['items'] && typeof node['items'] === 'object') {
+    walkAllObjects(node['items'] as SchemaNode, `${path}/items`, visitor);
   }
 
-  if (Array.isArray(node["prefixItems"])) {
-    (node["prefixItems"] as unknown[]).forEach((item, i) => {
-      if (item && typeof item === "object") {
+  if (Array.isArray(node['prefixItems'])) {
+    (node['prefixItems'] as unknown[]).forEach((item, i) => {
+      if (item && typeof item === 'object') {
         walkAllObjects(item as SchemaNode, `${path}/prefixItems/${i}`, visitor);
       }
     });
   }
 
-  for (const keyword of ["anyOf", "oneOf", "allOf"]) {
+  for (const keyword of ['anyOf', 'oneOf', 'allOf']) {
     if (Array.isArray(node[keyword])) {
       (node[keyword] as unknown[]).forEach((branch, i) => {
-        if (branch && typeof branch === "object") {
-          walkAllObjects(
-            branch as SchemaNode,
-            `${path}/${keyword}/${i}`,
-            visitor,
-          );
+        if (branch && typeof branch === 'object') {
+          walkAllObjects(branch as SchemaNode, `${path}/${keyword}/${i}`, visitor);
         }
       });
     }
   }
 
-  if (node["$defs"] && typeof node["$defs"] === "object") {
-    const defs = node["$defs"] as Record<string, unknown>;
+  if (node['$defs'] && typeof node['$defs'] === 'object') {
+    const defs = node['$defs'] as Record<string, unknown>;
     for (const [key, value] of Object.entries(defs)) {
-      if (value && typeof value === "object") {
+      if (value && typeof value === 'object') {
         walkAllObjects(value as SchemaNode, `${path}/$defs/${key}`, visitor);
       }
     }
   }
 
-  if (
-    node["additionalProperties"] &&
-    typeof node["additionalProperties"] === "object"
-  ) {
+  if (node['additionalProperties'] && typeof node['additionalProperties'] === 'object') {
     walkAllObjects(
-      node["additionalProperties"] as SchemaNode,
+      node['additionalProperties'] as SchemaNode,
       `${path}/additionalProperties`,
       visitor,
     );
   }
 
-  if (node["not"] && typeof node["not"] === "object") {
-    walkAllObjects(node["not"] as SchemaNode, `${path}/not`, visitor);
+  if (node['not'] && typeof node['not'] === 'object') {
+    walkAllObjects(node['not'] as SchemaNode, `${path}/not`, visitor);
   }
 }
 
-export function appendToDescription(
-  node: SchemaNode,
-  text: string,
-): void {
-  const existing = typeof node["description"] === "string" ? node["description"] : "";
-  node["description"] = existing ? `${existing}. ${text}` : text;
+export function appendToDescription(node: SchemaNode, text: string): void {
+  const existing = typeof node['description'] === 'string' ? node['description'] : '';
+  node['description'] = existing ? `${existing}. ${text}` : text;
 }
 
 export function isObjectNode(node: SchemaNode): boolean {
-  return node["type"] === "object" || node["properties"] !== undefined;
+  return node['type'] === 'object' || node['properties'] !== undefined;
 }
 
 export function addChange(
   changes: SdkChange[],
   path: string,
-  kind: SdkChange["kind"],
+  kind: SdkChange['kind'],
   description: string,
   before?: unknown,
   after?: unknown,
@@ -100,20 +86,18 @@ export function addChange(
   changes.push({ path, kind, description, before, after });
 }
 
-export function resolveRefs(
-  schema: SchemaNode,
-): SchemaNode {
-  const defs = (schema["$defs"] ?? schema["definitions"] ?? {}) as Record<string, unknown>;
+export function resolveRefs(schema: SchemaNode): SchemaNode {
+  const defs = (schema['$defs'] ?? schema['definitions'] ?? {}) as Record<string, unknown>;
 
   function resolve(node: SchemaNode, seen: Set<string>): SchemaNode {
-    if (typeof node["$ref"] === "string") {
-      const ref = node["$ref"];
+    if (typeof node['$ref'] === 'string') {
+      const ref = node['$ref'];
       // Handle internal refs like "#/$defs/Foo" or "#/definitions/Foo"
       const match = ref.match(/^#\/(?:\$defs|definitions)\/(.+)$/);
       if (match && match[1] && !seen.has(ref)) {
         const defName = match[1];
         const def = defs[defName];
-        if (def && typeof def === "object") {
+        if (def && typeof def === 'object') {
           const { $ref: _ref, ...siblings } = node;
           const resolved = resolve(
             { ...(def as SchemaNode), ...siblings },
@@ -127,12 +111,12 @@ export function resolveRefs(
 
     const result: SchemaNode = {};
     for (const [key, value] of Object.entries(node)) {
-      if (key === "$defs" || key === "definitions") continue;
+      if (key === '$defs' || key === 'definitions') continue;
       if (Array.isArray(value)) {
         result[key] = value.map((item) =>
-          item && typeof item === "object" ? resolve(item as SchemaNode, seen) : item,
+          item && typeof item === 'object' ? resolve(item as SchemaNode, seen) : item,
         );
-      } else if (value && typeof value === "object") {
+      } else if (value && typeof value === 'object') {
         result[key] = resolve(value as SchemaNode, seen);
       } else {
         result[key] = value;

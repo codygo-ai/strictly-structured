@@ -1,12 +1,14 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { AuditContext } from "@ssv/audit";
-import { generateEventId } from "@ssv/audit";
-import type { ValidationResult } from "../types.js";
-import { classifyError } from "../../audit/classify.js";
+import type { Schema as GoogleSchema } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import type { AuditContext } from '@ssv/audit';
+import { generateEventId } from '@ssv/audit';
 
-const DEFAULT_MODEL = "gemini-2.5-flash";
+import { classifyError } from '../../audit/classify';
+import type { ValidationResult } from '../types';
+
+const DEFAULT_MODEL = 'gemini-2.5-flash';
 const PROMPT =
-  "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
+  'Return a valid JSON object that matches the given schema. Use minimal placeholder data.';
 
 export async function validateWithGoogle(
   schema: object,
@@ -23,9 +25,9 @@ export async function validateWithGoogle(
       timestamp: new Date().toISOString(),
       sessionId: audit.sessionId,
       traceId: audit.traceId,
-      source: "backend",
-      kind: "llm.call.started",
-      data: { provider: "google", model, schemaHash: audit.schemaHash, schemaSizeBytes },
+      source: 'backend',
+      kind: 'llm.call.started',
+      data: { provider: 'google', model, schemaHash: audit.schemaHash, schemaSizeBytes },
     });
   }
 
@@ -34,14 +36,14 @@ export async function validateWithGoogle(
     const m = genAI.getGenerativeModel({
       model,
       generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: schema as unknown as import("@google/generative-ai").Schema,
+        responseMimeType: 'application/json',
+        responseSchema: schema as unknown as GoogleSchema,
       },
     });
     const result = await m.generateContent(PROMPT);
     const response = result.response;
     if (!response.text()) {
-      const errorMsg = "Empty response from model";
+      const errorMsg = 'Empty response from model';
       const latencyMs = Date.now() - start;
 
       if (audit) {
@@ -50,21 +52,21 @@ export async function validateWithGoogle(
           timestamp: new Date().toISOString(),
           sessionId: audit.sessionId,
           traceId: audit.traceId,
-          source: "backend",
-          kind: "llm.call.completed",
+          source: 'backend',
+          kind: 'llm.call.completed',
           data: {
-            provider: "google",
+            provider: 'google',
             model,
             ok: false,
             latencyMs,
             errorMessage: errorMsg,
-            errorCategory: "model_error" as const,
+            errorCategory: 'model_error' as const,
           },
         });
       }
 
       return {
-        provider: "google",
+        provider: 'google',
         model,
         ok: false,
         latencyMs,
@@ -76,7 +78,7 @@ export async function validateWithGoogle(
     JSON.parse(responseText);
 
     const validResult: ValidationResult = {
-      provider: "google",
+      provider: 'google',
       model,
       ok: true,
       latencyMs: Date.now() - start,
@@ -88,14 +90,14 @@ export async function validateWithGoogle(
         timestamp: new Date().toISOString(),
         sessionId: audit.sessionId,
         traceId: audit.traceId,
-        source: "backend",
-        kind: "llm.call.completed",
+        source: 'backend',
+        kind: 'llm.call.completed',
         data: {
-          provider: "google",
+          provider: 'google',
           model,
           ok: true,
           latencyMs: validResult.latencyMs,
-          responseSizeBytes: Buffer.byteLength(responseText, "utf8"),
+          responseSizeBytes: Buffer.byteLength(responseText, 'utf8'),
         },
       });
     }
@@ -111,10 +113,10 @@ export async function validateWithGoogle(
         timestamp: new Date().toISOString(),
         sessionId: audit.sessionId,
         traceId: audit.traceId,
-        source: "backend",
-        kind: "llm.call.completed",
+        source: 'backend',
+        kind: 'llm.call.completed',
         data: {
-          provider: "google",
+          provider: 'google',
           model,
           ok: false,
           latencyMs,
@@ -125,7 +127,7 @@ export async function validateWithGoogle(
     }
 
     return {
-      provider: "google",
+      provider: 'google',
       model,
       ok: false,
       latencyMs,

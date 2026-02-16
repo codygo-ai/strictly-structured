@@ -1,11 +1,5 @@
-import type { SdkChange, SdkGap, SdkTransformResult } from "../../types";
-import {
-  addChange,
-  deepClone,
-  isObjectNode,
-  resolveRefs,
-  walkAllObjects,
-} from "../shared";
+import type { SdkChange, SdkGap, SdkTransformResult } from '../../types';
+import { addChange, deepClone, isObjectNode, resolveRefs, walkAllObjects } from '../shared';
 
 /**
  * Simulates OpenAI SDK's `zodResponseFormat()` / `to_strict_json_schema()`.
@@ -18,33 +12,34 @@ import {
  * 5. Dereference `$ref` nodes that have sibling keywords
  * 6. Strip undefined/null defaults
  */
-export function simulateOpenAiSdk(
-  schema: Record<string, unknown>,
-): SdkTransformResult {
+export function simulateOpenAiSdk(schema: Record<string, unknown>): SdkTransformResult {
   const original = deepClone(schema);
   const transformed = deepClone(schema);
   const changes: SdkChange[] = [];
   const gaps: SdkGap[] = [];
 
   // 1. Dereference $refs with siblings (pass root defs for resolution)
-  const rootDefs = (transformed["$defs"] ?? transformed["definitions"] ?? {}) as Record<string, unknown>;
-  dereferenceRefsWithSiblings(transformed, "", changes, rootDefs);
+  const rootDefs = (transformed['$defs'] ?? transformed['definitions'] ?? {}) as Record<
+    string,
+    unknown
+  >;
+  dereferenceRefsWithSiblings(transformed, '', changes, rootDefs);
 
   // 2. Unwrap single-entry allOf
-  unwrapSingleAllOf(transformed, "", changes);
+  unwrapSingleAllOf(transformed, '', changes);
 
   // 3-5. Walk all objects for additionalProperties, required, nullable
-  walkAllObjects(transformed, "", (node, path) => {
+  walkAllObjects(transformed, '', (node, path) => {
     if (!isObjectNode(node)) return;
 
     // Force additionalProperties: false
-    if (node["additionalProperties"] !== false) {
-      const before = node["additionalProperties"];
-      node["additionalProperties"] = false;
+    if (node['additionalProperties'] !== false) {
+      const before = node['additionalProperties'];
+      node['additionalProperties'] = false;
       addChange(
         changes,
         `${path}/additionalProperties`,
-        before === undefined ? "added" : "modified",
+        before === undefined ? 'added' : 'modified',
         `Set additionalProperties to false`,
         before,
         false,
@@ -52,21 +47,19 @@ export function simulateOpenAiSdk(
     }
 
     // Force all properties into required + make optional ones nullable
-    if (node["properties"] && typeof node["properties"] === "object") {
-      const props = node["properties"] as Record<string, unknown>;
+    if (node['properties'] && typeof node['properties'] === 'object') {
+      const props = node['properties'] as Record<string, unknown>;
       const propKeys = Object.keys(props);
-      const existing = Array.isArray(node["required"])
-        ? (node["required"] as string[])
-        : [];
+      const existing = Array.isArray(node['required']) ? (node['required'] as string[]) : [];
       const missing = propKeys.filter((k) => !existing.includes(k));
 
       if (missing.length > 0) {
-        node["required"] = propKeys;
+        node['required'] = propKeys;
         addChange(
           changes,
           `${path}/required`,
-          existing.length > 0 ? "modified" : "added",
-          `Added all properties to required: ${missing.join(", ")}`,
+          existing.length > 0 ? 'modified' : 'added',
+          `Added all properties to required: ${missing.join(', ')}`,
           existing,
           propKeys,
         );
@@ -74,27 +67,27 @@ export function simulateOpenAiSdk(
         // Make previously-optional fields nullable
         for (const key of missing) {
           const prop = props[key] as Record<string, unknown> | undefined;
-          if (prop && typeof prop === "object" && prop["type"] !== undefined) {
-            const originalType = prop["type"];
+          if (prop && typeof prop === 'object' && prop['type'] !== undefined) {
+            const originalType = prop['type'];
 
-            if (typeof originalType === "string" && originalType !== "null") {
-              const newType = [originalType, "null"];
-              prop["type"] = newType;
+            if (typeof originalType === 'string' && originalType !== 'null') {
+              const newType = [originalType, 'null'];
+              prop['type'] = newType;
               addChange(
                 changes,
                 `${path}/properties/${key}/type`,
-                "modified",
+                'modified',
                 `Made "${key}" nullable (was optional, now required)`,
                 originalType,
                 newType,
               );
-            } else if (Array.isArray(originalType) && !originalType.includes("null")) {
-              const newType = [...originalType, "null"];
-              prop["type"] = newType;
+            } else if (Array.isArray(originalType) && !originalType.includes('null')) {
+              const newType = [...originalType, 'null'];
+              prop['type'] = newType;
               addChange(
                 changes,
                 `${path}/properties/${key}/type`,
-                "modified",
+                'modified',
                 `Made "${key}" nullable (was optional, now required)`,
                 originalType,
                 newType,
@@ -107,14 +100,14 @@ export function simulateOpenAiSdk(
   });
 
   // 6. Strip undefined/null defaults
-  walkAllObjects(transformed, "", (node, path) => {
-    if ("default" in node && (node["default"] === undefined || node["default"] === null)) {
-      const before = node["default"];
-      delete node["default"];
+  walkAllObjects(transformed, '', (node, path) => {
+    if ('default' in node && (node['default'] === undefined || node['default'] === null)) {
+      const before = node['default'];
+      delete node['default'];
       addChange(
         changes,
         `${path}/default`,
-        "removed",
+        'removed',
         `Removed null/undefined default`,
         before,
         undefined,
@@ -123,10 +116,10 @@ export function simulateOpenAiSdk(
   });
 
   // Identify gaps — things OpenAI SDK does NOT fix
-  const rootType = transformed["type"];
-  if (rootType !== "object" && !Array.isArray(transformed["anyOf"])) {
+  const rootType = transformed['type'];
+  if (rootType !== 'object' && !Array.isArray(transformed['anyOf'])) {
     gaps.push({
-      rule: "root_type",
+      rule: 'root_type',
       description:
         "OpenAI SDK does not validate that root type is 'object'. Non-object root schemas may cause API errors.",
       willCauseError: true,
@@ -135,22 +128,22 @@ export function simulateOpenAiSdk(
 
   // Check for unsupported keywords that the SDK doesn't strip
   const unsupportedKeywords = [
-    "minLength",
-    "maxLength",
-    "minimum",
-    "maximum",
-    "exclusiveMinimum",
-    "exclusiveMaximum",
-    "multipleOf",
-    "pattern",
-    "minItems",
-    "maxItems",
-    "uniqueItems",
-    "format",
+    'minLength',
+    'maxLength',
+    'minimum',
+    'maximum',
+    'exclusiveMinimum',
+    'exclusiveMaximum',
+    'multipleOf',
+    'pattern',
+    'minItems',
+    'maxItems',
+    'uniqueItems',
+    'format',
   ];
   checkForUnsupportedKeywords(transformed, unsupportedKeywords, gaps);
 
-  return { sdk: "openai-sdk", original, transformed, changes, gaps };
+  return { sdk: 'openai-sdk', original, transformed, changes, gaps };
 }
 
 function dereferenceRefsWithSiblings(
@@ -162,7 +155,7 @@ function dereferenceRefsWithSiblings(
   for (const [key, value] of Object.entries(node)) {
     if (Array.isArray(value)) {
       value.forEach((item, i) => {
-        if (item && typeof item === "object") {
+        if (item && typeof item === 'object') {
           dereferenceRefsWithSiblings(
             item as Record<string, unknown>,
             `${path}/${key}/${i}`,
@@ -171,22 +164,20 @@ function dereferenceRefsWithSiblings(
           );
         }
       });
-    } else if (value && typeof value === "object") {
+    } else if (value && typeof value === 'object') {
       const subNode = value as Record<string, unknown>;
-      if (typeof subNode["$ref"] === "string") {
-        const nonRefKeys = Object.keys(subNode).filter((k) => k !== "$ref");
+      if (typeof subNode['$ref'] === 'string') {
+        const nonRefKeys = Object.keys(subNode).filter((k) => k !== '$ref');
         if (nonRefKeys.length > 0) {
           // Has siblings — dereference using root $defs
-          const resolved = resolveRefs(
-            { ...subNode, $defs: rootDefs },
-          );
-          delete resolved["$defs"];
+          const resolved = resolveRefs({ ...subNode, $defs: rootDefs });
+          delete resolved['$defs'];
           node[key] = resolved;
           addChange(
             changes,
             `${path}/${key}`,
-            "modified",
-            `Dereferenced $ref with sibling keys: ${nonRefKeys.join(", ")}`,
+            'modified',
+            `Dereferenced $ref with sibling keys: ${nonRefKeys.join(', ')}`,
             subNode,
             resolved,
           );
@@ -194,7 +185,7 @@ function dereferenceRefsWithSiblings(
       }
       // Recurse on the (potentially updated) node
       const current = node[key];
-      if (current && typeof current === "object") {
+      if (current && typeof current === 'object') {
         dereferenceRefsWithSiblings(
           current as Record<string, unknown>,
           `${path}/${key}`,
@@ -212,15 +203,15 @@ function unwrapSingleAllOf(
   changes: SdkChange[],
 ): void {
   walkAllObjects(node, path, (n, p) => {
-    if (Array.isArray(n["allOf"]) && n["allOf"].length === 1) {
-      const inner = n["allOf"][0] as Record<string, unknown>;
-      if (inner && typeof inner === "object") {
-        delete n["allOf"];
+    if (Array.isArray(n['allOf']) && n['allOf'].length === 1) {
+      const inner = n['allOf'][0] as Record<string, unknown>;
+      if (inner && typeof inner === 'object') {
+        delete n['allOf'];
         Object.assign(n, inner);
         addChange(
           changes,
           `${p}/allOf`,
-          "removed",
+          'removed',
           `Unwrapped single-entry allOf`,
           [inner],
           undefined,
@@ -236,7 +227,7 @@ function checkForUnsupportedKeywords(
   gaps: SdkGap[],
 ): void {
   const found = new Set<string>();
-  walkAllObjects(schema, "", (node) => {
+  walkAllObjects(schema, '', (node) => {
     for (const kw of keywords) {
       if (kw in node) found.add(kw);
     }

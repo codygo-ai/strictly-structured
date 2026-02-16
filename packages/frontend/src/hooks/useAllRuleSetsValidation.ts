@@ -1,11 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import type { SchemaRuleSet } from "@ssv/schemas/types";
-import {
-  validateSchemaForRuleSet,
-  type SchemaMarker,
-} from "@ssv/schemas/ruleSetValidator";
+import { validateSchemaForRuleSet, type SchemaMarker } from '@ssv/schemas/ruleSetValidator';
+import type { SchemaRuleSet } from '@ssv/schemas/types';
+import { useEffect, useRef, useState } from 'react';
 
 export interface RuleSetValidationSummary {
   errorCount: number;
@@ -23,9 +20,7 @@ export function useAllRuleSetsValidation(
   ruleSets: SchemaRuleSet[],
   isValidJsonSchema: boolean,
 ): Map<string, RuleSetValidationSummary> {
-  const [results, setResults] = useState<Map<string, RuleSetValidationSummary>>(
-    () => new Map(),
-  );
+  const [results, setResults] = useState<Map<string, RuleSetValidationSummary>>(() => new Map());
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -43,12 +38,17 @@ export function useAllRuleSetsValidation(
 
       for (const rs of ruleSets) {
         const markers = isValidJsonSchema ? validateSchemaForRuleSet(schema, rs) : [];
-        const errorCount = markers.filter((m) => m.severity === "error").length;
-        const warningCount = markers.filter(
-          (m) => m.severity === "warning",
-        ).length;
+        const errorCount = markers.filter((m) => m.severity === 'error').length;
+        const warningCount = markers.filter((m) => m.severity === 'warning').length;
         const infoCount = markers.length - errorCount - warningCount;
-        next.set(rs.ruleSetId, { errorCount, warningCount, infoCount, markers, isValidJson, isValidJsonSchema });
+        next.set(rs.ruleSetId, {
+          errorCount,
+          warningCount,
+          infoCount,
+          markers,
+          isValidJson,
+          isValidJsonSchema,
+        });
       }
 
       setResults(next);

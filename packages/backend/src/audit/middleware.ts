@@ -1,5 +1,6 @@
-import { generateSessionId, SESSION_HEADER } from "@ssv/audit";
-import { createFirestoreEmitter, type AuditEmitter } from "./emitter.js";
+import { generateSessionId, SESSION_HEADER } from '@ssv/audit';
+
+import { createFirestoreEmitter, type AuditEmitter } from './emitter';
 
 /** Minimal request shape for extracting the session header */
 interface HasHeaders {
@@ -14,8 +15,6 @@ export interface AuditRequestContext {
 export function createAuditRequestContext(req: HasHeaders): AuditRequestContext {
   const emitter = createFirestoreEmitter();
   const raw = req.headers[SESSION_HEADER];
-  const sessionId =
-    (typeof raw === "string" ? raw : undefined) ?? generateSessionId();
+  const sessionId = (typeof raw === 'string' ? raw : undefined) ?? generateSessionId();
   return { emitter, sessionId };
 }
-

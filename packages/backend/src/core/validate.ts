@@ -1,13 +1,15 @@
-import type { AuditContext } from "@ssv/audit";
-import { generateEventId } from "@ssv/audit";
-import type { AuditRequestContext } from "../audit/index.js";
-import { createAuditContext, createTrace, completeTrace, upsertSchema } from "../audit/index.js";
-import { classifyError } from "../audit/classify.js";
-import type { ValidationResult, ProviderId } from "./types.js";
-import { validateWithOpenAI } from "./providers/openai.js";
-import { validateWithAnthropic } from "./providers/anthropic.js";
-import { validateWithGoogle } from "./providers/google.js";
-import { MODEL_MAP } from "./model-map.js";
+import type { AuditContext } from '@ssv/audit';
+import { generateEventId } from '@ssv/audit';
+
+import { classifyError } from '../audit/classify';
+import type { AuditRequestContext } from '../audit/index';
+import { createAuditContext, createTrace, completeTrace, upsertSchema } from '../audit/index';
+
+import { MODEL_MAP } from './model-map';
+import { validateWithAnthropic } from './providers/anthropic';
+import { validateWithGoogle } from './providers/google';
+import { validateWithOpenAI } from './providers/openai';
+import type { ValidationResult, ProviderId } from './types';
 
 export type ValidateBody = {
   schema?: string;
@@ -29,8 +31,8 @@ export async function runValidate(
   auditReq?: AuditRequestContext,
 ): Promise<ValidateSuccess | ValidateError> {
   const schemaRaw = body?.schema;
-  if (typeof schemaRaw !== "string" || !schemaRaw.trim()) {
-    return { error: "Missing or invalid schema" };
+  if (typeof schemaRaw !== 'string' || !schemaRaw.trim()) {
+    return { error: 'Missing or invalid schema' };
   }
 
   // Parse schema
@@ -45,23 +47,23 @@ export async function runValidate(
         timestamp: new Date().toISOString(),
         sessionId: ctx.sessionId,
         traceId: ctx.traceId,
-        source: "backend",
-        kind: "decision.schema_parse",
-        data: { success: false, errorMessage: "Invalid JSON" },
+        source: 'backend',
+        kind: 'decision.schema_parse',
+        data: { success: false, errorMessage: 'Invalid JSON' },
       });
       await auditReq.emitter.flush();
     }
-    return { error: "Schema is not valid JSON" };
+    return { error: 'Schema is not valid JSON' };
   }
 
   // Resolve models
   const modelIds = body?.modelIds ?? Object.keys(MODEL_MAP);
   const resolved = modelIds
     .map((id) => MODEL_MAP[id])
-    .filter((m): m is { provider: ProviderId; model: string } => m != null);
+    .filter((m): m is { provider: ProviderId; model: string } => m !== null && m !== undefined);
 
   if (resolved.length === 0) {
-    return { error: "No valid models specified" };
+    return { error: 'No valid models specified' };
   }
 
   // Create audit context
@@ -74,8 +76,8 @@ export async function runValidate(
       timestamp: new Date().toISOString(),
       sessionId: audit.sessionId,
       traceId: audit.traceId,
-      source: "backend",
-      kind: "decision.schema_parse",
+      source: 'backend',
+      kind: 'decision.schema_parse',
       data: { success: true },
     });
 
@@ -84,17 +86,17 @@ export async function runValidate(
       timestamp: new Date().toISOString(),
       sessionId: audit.sessionId,
       traceId: audit.traceId,
-      source: "backend",
-      kind: "api.validate.received",
+      source: 'backend',
+      kind: 'api.validate.received',
       data: {
         schemaHash: audit.schemaHash,
-        schemaSizeBytes: Buffer.byteLength(schemaRaw, "utf8"),
+        schemaSizeBytes: Buffer.byteLength(schemaRaw, 'utf8'),
         requestedModelIds: modelIds,
         resolvedModels: resolved.map((m) => ({ provider: m.provider, model: m.model })),
       },
     });
 
-    await createTrace(audit, "validate", schemaRaw, modelIds);
+    await createTrace(audit, 'validate', schemaRaw, modelIds);
   }
 
   const start = Date.now();
@@ -113,11 +115,11 @@ export async function runValidate(
         });
       }
       switch (provider) {
-        case "openai":
+        case 'openai':
           return validateWithOpenAI(schema, key, model, audit);
-        case "anthropic":
+        case 'anthropic':
           return validateWithAnthropic(schema, key, model, audit);
-        case "google":
+        case 'google':
           return validateWithGoogle(schema, key, model, audit);
       }
     }),
@@ -134,8 +136,8 @@ export async function runValidate(
       timestamp: new Date().toISOString(),
       sessionId: audit.sessionId,
       traceId: audit.traceId,
-      source: "backend",
-      kind: "api.validate.response",
+      source: 'backend',
+      kind: 'api.validate.response',
       data: {
         httpStatus: 200,
         totalLatencyMs,

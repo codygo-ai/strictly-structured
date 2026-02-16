@@ -1,21 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { useAuth } from "~/lib/useAuth";
-import { Tooltip } from "~/components/Tooltip";
+import { useState, useRef, useEffect } from 'react';
+
+import { Tooltip } from '~/components/Tooltip';
+import { useAuth } from '~/lib/useAuth';
 
 function getInitials(displayName: string | null, email: string | null): string {
   if (displayName?.trim()) {
     const parts = displayName.trim().split(/\s+/);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    const first = parts[0];
+    const last = parts[parts.length - 1];
+    if (parts.length >= 2 && first && last) {
+      return (first.charAt(0) + last.charAt(0)).toUpperCase();
     }
     return displayName.slice(0, 2).toUpperCase();
   }
   if (email) {
     return email.slice(0, 2).toUpperCase();
   }
-  return "?";
+  return '?';
 }
 
 export function UserAvatarMenu() {
@@ -30,8 +33,8 @@ export function UserAvatarMenu() {
       }
     }
     if (open) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [open]);
 
@@ -44,7 +47,16 @@ export function UserAvatarMenu() {
           className="flex size-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:text-primary"
           aria-label="Log in"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
@@ -66,17 +78,17 @@ export function UserAvatarMenu() {
           aria-haspopup="true"
           aria-label="User menu"
         >
-        {user.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt=""
-            className="h-full w-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <span className="text-primary">{initials}</span>
-        )}
-      </button>
+          {user.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt=""
+              className="h-full w-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <span className="text-primary">{initials}</span>
+          )}
+        </button>
       </Tooltip>
       {open && (
         <div
@@ -85,15 +97,9 @@ export function UserAvatarMenu() {
         >
           <div className="border-b border-(--ds-border) px-3 py-2">
             {user.displayName?.trim() && (
-              <p className="truncate text-sm font-medium text-primary">
-                {user.displayName}
-              </p>
+              <p className="truncate text-sm font-medium text-primary">{user.displayName}</p>
             )}
-            {user.email && (
-              <p className="truncate text-xs text-secondary mt-0.5">
-                {user.email}
-              </p>
-            )}
+            {user.email && <p className="truncate text-xs text-secondary mt-0.5">{user.email}</p>}
             {!user.displayName?.trim() && !user.email && (
               <p className="text-xs text-secondary">Signed in</p>
             )}

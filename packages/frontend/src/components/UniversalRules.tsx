@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import type { UniversalRules as UniversalRulesType } from "@ssv/schemas/types";
-import { Pill } from "~/components/ui";
+import type { UniversalRules as UniversalRulesType } from '@ssv/schemas/types';
+
+import { Pill } from '~/components/ui';
 
 export function UniversalRules({ data }: { data: UniversalRulesType }) {
   return (

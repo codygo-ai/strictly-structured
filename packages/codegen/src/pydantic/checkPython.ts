@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync } from 'node:child_process';
 
 export interface PythonCheck {
   available: boolean;
@@ -8,15 +8,15 @@ export interface PythonCheck {
   error: string | undefined;
 }
 
-const PYTHON_CANDIDATES = ["python3", "python"];
+const PYTHON_CANDIDATES = ['python3', 'python'];
 
 export function checkPython(): PythonCheck {
   let bestFailure: PythonCheck | undefined;
 
   for (const cmd of PYTHON_CANDIDATES) {
     try {
-      const version = execFileSync(cmd, ["--version"], {
-        encoding: "utf-8",
+      const version = execFileSync(cmd, ['--version'], {
+        encoding: 'utf-8',
         timeout: 5000,
       }).trim();
 
@@ -38,8 +38,8 @@ export function checkPython(): PythonCheck {
 
       // Check pydantic is installed
       try {
-        execFileSync(cmd, ["-c", "import pydantic; print(pydantic.__version__)"], {
-          encoding: "utf-8",
+        execFileSync(cmd, ['-c', 'import pydantic; print(pydantic.__version__)'], {
+          encoding: 'utf-8',
           timeout: 10000,
         });
         return {
@@ -55,7 +55,7 @@ export function checkPython(): PythonCheck {
           pythonPath: cmd,
           version,
           hasPydantic: false,
-          error: "pydantic>=2 is not installed. Run: pip install pydantic",
+          error: 'pydantic>=2 is not installed. Run: pip install pydantic',
         };
         continue;
       }
@@ -64,11 +64,13 @@ export function checkPython(): PythonCheck {
     }
   }
 
-  return bestFailure ?? {
-    available: false,
-    pythonPath: undefined,
-    version: undefined,
-    hasPydantic: false,
-    error: "Python 3.10+ not found. Install Python and pydantic>=2.",
-  };
+  return (
+    bestFailure ?? {
+      available: false,
+      pythonPath: undefined,
+      version: undefined,
+      hasPydantic: false,
+      error: 'Python 3.10+ not found. Install Python and pydantic>=2.',
+    }
+  );
 }

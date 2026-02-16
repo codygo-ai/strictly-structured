@@ -1,6 +1,8 @@
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { createServer as createHttpServer } from "node:http";
-import { createServer } from "../server";
+import { createServer as createHttpServer } from 'node:http';
+
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+
+import { createServer } from '../server';
 
 export async function startHttp(port: number): Promise<void> {
   const httpServer = createHttpServer(async (req, res) => {

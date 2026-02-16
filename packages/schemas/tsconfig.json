@@ -1,5 +1,5 @@
 {
-  "extends": "@ssv/tsconfig/base.json",
+  "extends": "@codygo-ai/tsconfig/base.json",
   "compilerOptions": {
     "moduleResolution": "node",
     "types": ["node"],

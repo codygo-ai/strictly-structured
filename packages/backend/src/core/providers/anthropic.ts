@@ -1,12 +1,13 @@
-import Anthropic from "@anthropic-ai/sdk";
-import type { AuditContext } from "@ssv/audit";
-import { generateEventId } from "@ssv/audit";
-import type { ValidationResult } from "../types.js";
-import { classifyError } from "../../audit/classify.js";
+import Anthropic from '@anthropic-ai/sdk';
+import type { AuditContext } from '@ssv/audit';
+import { generateEventId } from '@ssv/audit';
 
-const DEFAULT_MODEL = "claude-haiku-4-5";
+import { classifyError } from '../../audit/classify';
+import type { ValidationResult } from '../types';
+
+const DEFAULT_MODEL = 'claude-haiku-4-5';
 const PROMPT =
-  "Return a valid JSON object that matches the given schema. Use minimal placeholder data.";
+  'Return a valid JSON object that matches the given schema. Use minimal placeholder data.';
 
 export async function validateWithAnthropic(
   schema: object,
@@ -23,9 +24,9 @@ export async function validateWithAnthropic(
       timestamp: new Date().toISOString(),
       sessionId: audit.sessionId,
       traceId: audit.traceId,
-      source: "backend",
-      kind: "llm.call.started",
-      data: { provider: "anthropic", model, schemaHash: audit.schemaHash, schemaSizeBytes },
+      source: 'backend',
+      kind: 'llm.call.started',
+      data: { provider: 'anthropic', model, schemaHash: audit.schemaHash, schemaSizeBytes },
     });
   }
 
@@ -34,25 +35,23 @@ export async function validateWithAnthropic(
     const message = await client.messages.create({
       model,
       max_tokens: 256,
-      messages: [{ role: "user", content: PROMPT }],
+      messages: [{ role: 'user', content: PROMPT }],
       tools: [
         {
-          name: "output",
-          description: "Return the JSON output",
-          input_schema: { type: "object" as const, ...schema } as {
-            type: "object";
+          name: 'output',
+          description: 'Return the JSON output',
+          input_schema: { type: 'object' as const, ...schema } satisfies {
+            type: 'object';
             [key: string]: unknown;
           },
         },
       ],
-      tool_choice: { type: "tool", name: "output" },
+      tool_choice: { type: 'tool', name: 'output' },
     });
-    const toolUse = message.content.find(
-      (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
-    );
+    const toolUse = message.content.find((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use');
 
-    if (!toolUse || toolUse.name !== "output") {
-      const errorMsg = "Model did not return tool use";
+    if (!toolUse || toolUse.name !== 'output') {
+      const errorMsg = 'Model did not return tool use';
       const latencyMs = Date.now() - start;
 
       if (audit) {
@@ -61,21 +60,21 @@ export async function validateWithAnthropic(
           timestamp: new Date().toISOString(),
           sessionId: audit.sessionId,
           traceId: audit.traceId,
-          source: "backend",
-          kind: "llm.call.completed",
+          source: 'backend',
+          kind: 'llm.call.completed',
           data: {
-            provider: "anthropic",
+            provider: 'anthropic',
             model,
             ok: false,
             latencyMs,
             errorMessage: errorMsg,
-            errorCategory: "model_error" as const,
+            errorCategory: 'model_error' as const,
           },
         });
       }
 
       return {
-        provider: "anthropic",
+        provider: 'anthropic',
         model,
         ok: false,
         latencyMs,
@@ -84,7 +83,7 @@ export async function validateWithAnthropic(
     }
 
     const result: ValidationResult = {
-      provider: "anthropic",
+      provider: 'anthropic',
       model,
       ok: true,
       latencyMs: Date.now() - start,
@@ -97,14 +96,14 @@ export async function validateWithAnthropic(
         timestamp: new Date().toISOString(),
         sessionId: audit.sessionId,
         traceId: audit.traceId,
-        source: "backend",
-        kind: "llm.call.completed",
+        source: 'backend',
+        kind: 'llm.call.completed',
         data: {
-          provider: "anthropic",
+          provider: 'anthropic',
           model,
           ok: true,
           latencyMs: result.latencyMs,
-          responseSizeBytes: Buffer.byteLength(responseText, "utf8"),
+          responseSizeBytes: Buffer.byteLength(responseText, 'utf8'),
         },
       });
     }
@@ -120,10 +119,10 @@ export async function validateWithAnthropic(
         timestamp: new Date().toISOString(),
         sessionId: audit.sessionId,
         traceId: audit.traceId,
-        source: "backend",
-        kind: "llm.call.completed",
+        source: 'backend',
+        kind: 'llm.call.completed',
         data: {
-          provider: "anthropic",
+          provider: 'anthropic',
           model,
           ok: false,
           latencyMs,
@@ -134,7 +133,7 @@ export async function validateWithAnthropic(
     }
 
     return {
-      provider: "anthropic",
+      provider: 'anthropic',
       model,
       ok: false,
       latencyMs,

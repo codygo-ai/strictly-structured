@@ -1,4 +1,4 @@
-import type { ProviderId } from "@ssv/schemas/types";
+import type { ProviderId } from '@ssv/schemas/types';
 
 export interface ExampleSchema {
   name: string;
@@ -11,17 +11,17 @@ export interface ExampleSchema {
 export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
   // ── Works with all ──────────────────────────────────
   {
-    name: "Simple object",
-    description: "Minimal valid schema — works everywhere",
-    compatibleWith: ["openai", "anthropic", "gemini"],
+    name: 'Simple object',
+    description: 'Minimal valid schema — works everywhere',
+    compatibleWith: ['openai', 'anthropic', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          name: { type: "string" },
-          age: { type: "integer" },
+          name: { type: 'string' },
+          age: { type: 'integer' },
         },
-        required: ["name", "age"],
+        required: ['name', 'age'],
         additionalProperties: false,
       },
       null,
@@ -29,17 +29,17 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Enum field",
-    description: "String enum — universally supported",
-    compatibleWith: ["openai", "anthropic", "gemini"],
+    name: 'Enum field',
+    description: 'String enum — universally supported',
+    compatibleWith: ['openai', 'anthropic', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          status: { type: "string", enum: ["active", "inactive", "pending"] },
-          label: { type: "string" },
+          status: { type: 'string', enum: ['active', 'inactive', 'pending'] },
+          label: { type: 'string' },
         },
-        required: ["status", "label"],
+        required: ['status', 'label'],
         additionalProperties: false,
       },
       null,
@@ -47,26 +47,26 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "anyOf union",
-    description: "Discriminated union via anyOf",
-    compatibleWith: ["openai", "anthropic", "gemini"],
+    name: 'anyOf union',
+    description: 'Discriminated union via anyOf',
+    compatibleWith: ['openai', 'anthropic', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
           result: {
             anyOf: [
-              { type: "string" },
+              { type: 'string' },
               {
-                type: "object",
-                properties: { code: { type: "integer" } },
-                required: ["code"],
+                type: 'object',
+                properties: { code: { type: 'integer' } },
+                required: ['code'],
                 additionalProperties: false,
               },
             ],
           },
         },
-        required: ["result"],
+        required: ['result'],
         additionalProperties: false,
       },
       null,
@@ -74,31 +74,31 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Nested objects",
-    description: "3 levels deep — within all limits",
-    compatibleWith: ["openai", "anthropic", "gemini"],
+    name: 'Nested objects',
+    description: '3 levels deep — within all limits',
+    compatibleWith: ['openai', 'anthropic', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
           user: {
-            type: "object",
+            type: 'object',
             properties: {
               profile: {
-                type: "object",
+                type: 'object',
                 properties: {
-                  bio: { type: "string" },
-                  age: { type: "integer" },
+                  bio: { type: 'string' },
+                  age: { type: 'integer' },
                 },
-                required: ["bio", "age"],
+                required: ['bio', 'age'],
                 additionalProperties: false,
               },
             },
-            required: ["profile"],
+            required: ['profile'],
             additionalProperties: false,
           },
         },
-        required: ["user"],
+        required: ['user'],
         additionalProperties: false,
       },
       null,
@@ -108,45 +108,45 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
 
   // ── Works with some ─────────────────────────────────
   {
-    name: "Missing additionalProperties",
-    description: "Required by OpenAI, optional for others",
-    compatibleWith: ["anthropic", "gemini"],
+    name: 'Missing additionalProperties',
+    description: 'Required by OpenAI, optional for others',
+    compatibleWith: ['anthropic', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          name: { type: "string" },
+          name: { type: 'string' },
           tags: {
-            type: "array",
+            type: 'array',
             items: {
-              type: "object",
+              type: 'object',
               properties: {
-                key: { type: "string" },
-                value: { type: "string" },
+                key: { type: 'string' },
+                value: { type: 'string' },
               },
-              required: ["key", "value"],
+              required: ['key', 'value'],
             },
           },
         },
-        required: ["name"],
+        required: ['name'],
       },
       null,
       2,
     ),
   },
   {
-    name: "Optional fields",
-    description: "OpenAI requires all fields in required",
-    compatibleWith: ["anthropic", "gemini"],
+    name: 'Optional fields',
+    description: 'OpenAI requires all fields in required',
+    compatibleWith: ['anthropic', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          name: { type: "string" },
-          nickname: { type: "string" },
-          email: { type: "string" },
+          name: { type: 'string' },
+          nickname: { type: 'string' },
+          email: { type: 'string' },
         },
-        required: ["name"],
+        required: ['name'],
         additionalProperties: false,
       },
       null,
@@ -154,19 +154,19 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "String formats",
-    description: "OpenAI supports most, Gemini some, Anthropic none",
-    compatibleWith: ["openai"],
+    name: 'String formats',
+    description: 'OpenAI supports most, Gemini some, Anthropic none',
+    compatibleWith: ['openai'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          email: { type: "string", format: "email" },
-          created: { type: "string", format: "date-time" },
-          website: { type: "string", format: "uri" },
-          ip: { type: "string", format: "ipv4" },
+          email: { type: 'string', format: 'email' },
+          created: { type: 'string', format: 'date-time' },
+          website: { type: 'string', format: 'uri' },
+          ip: { type: 'string', format: 'ipv4' },
         },
-        required: ["email", "created", "website", "ip"],
+        required: ['email', 'created', 'website', 'ip'],
         additionalProperties: false,
       },
       null,
@@ -174,17 +174,17 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Pattern validation",
-    description: "Only OpenAI supports regex patterns",
-    compatibleWith: ["openai"],
+    name: 'Pattern validation',
+    description: 'Only OpenAI supports regex patterns',
+    compatibleWith: ['openai'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          zipCode: { type: "string", pattern: "^\\d{5}(-\\d{4})?$" },
-          phone: { type: "string", pattern: "^\\+?[1-9]\\d{1,14}$" },
+          zipCode: { type: 'string', pattern: '^\\d{5}(-\\d{4})?$' },
+          phone: { type: 'string', pattern: '^\\+?[1-9]\\d{1,14}$' },
         },
-        required: ["zipCode", "phone"],
+        required: ['zipCode', 'phone'],
         additionalProperties: false,
       },
       null,
@@ -192,17 +192,17 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Numeric constraints",
-    description: "min/max supported by OpenAI & Gemini only",
-    compatibleWith: ["openai", "gemini"],
+    name: 'Numeric constraints',
+    description: 'min/max supported by OpenAI & Gemini only',
+    compatibleWith: ['openai', 'gemini'],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          score: { type: "number", minimum: 0, maximum: 100 },
-          quantity: { type: "integer", minimum: 1 },
+          score: { type: 'number', minimum: 0, maximum: 100 },
+          quantity: { type: 'integer', minimum: 1 },
         },
-        required: ["score", "quantity"],
+        required: ['score', 'quantity'],
         additionalProperties: false,
       },
       null,
@@ -210,19 +210,19 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Root array type",
-    description: "Only Gemini allows root type to be array",
-    compatibleWith: ["gemini"],
+    name: 'Root array type',
+    description: 'Only Gemini allows root type to be array',
+    compatibleWith: ['gemini'],
     schema: JSON.stringify(
       {
-        type: "array",
+        type: 'array',
         items: {
-          type: "object",
+          type: 'object',
           properties: {
-            id: { type: "integer" },
-            name: { type: "string" },
+            id: { type: 'integer' },
+            name: { type: 'string' },
           },
-          required: ["id", "name"],
+          required: ['id', 'name'],
           additionalProperties: false,
         },
       },
@@ -233,21 +233,18 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
 
   // ── Fails all ───────────────────────────────────────
   {
-    name: "oneOf union",
-    description: "oneOf is not supported by any provider",
+    name: 'oneOf union',
+    description: 'oneOf is not supported by any provider',
     compatibleWith: [],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
           result: {
-            oneOf: [
-              { type: "string" },
-              { type: "integer" },
-            ],
+            oneOf: [{ type: 'string' }, { type: 'integer' }],
           },
         },
-        required: ["result"],
+        required: ['result'],
         additionalProperties: false,
       },
       null,
@@ -255,20 +252,20 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "allOf composition",
-    description: "allOf is unsupported — use flat objects instead",
+    name: 'allOf composition',
+    description: 'allOf is unsupported — use flat objects instead',
     compatibleWith: [],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         allOf: [
           {
-            properties: { name: { type: "string" } },
-            required: ["name"],
+            properties: { name: { type: 'string' } },
+            required: ['name'],
           },
           {
-            properties: { age: { type: "integer" } },
-            required: ["age"],
+            properties: { age: { type: 'integer' } },
+            required: ['age'],
           },
         ],
         additionalProperties: false,
@@ -278,19 +275,19 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Conditional (if/then/else)",
-    description: "Not supported by any provider",
+    name: 'Conditional (if/then/else)',
+    description: 'Not supported by any provider',
     compatibleWith: [],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
-          type: { type: "string", enum: ["personal", "business"] },
-          companyName: { type: "string" },
+          type: { type: 'string', enum: ['personal', 'business'] },
+          companyName: { type: 'string' },
         },
-        required: ["type"],
-        if: { properties: { type: { const: "business" } } },
-        then: { required: ["companyName"] },
+        required: ['type'],
+        if: { properties: { type: { const: 'business' } } },
+        then: { required: ['companyName'] },
         additionalProperties: false,
       },
       null,
@@ -298,51 +295,51 @@ export const EXAMPLE_SCHEMAS: ExampleSchema[] = [
     ),
   },
   {
-    name: "Deep nesting (6 levels)",
-    description: "Exceeds typical depth limits",
+    name: 'Deep nesting (6 levels)',
+    description: 'Exceeds typical depth limits',
     compatibleWith: [],
     schema: JSON.stringify(
       {
-        type: "object",
+        type: 'object',
         properties: {
           a: {
-            type: "object",
+            type: 'object',
             properties: {
               b: {
-                type: "object",
+                type: 'object',
                 properties: {
                   c: {
-                    type: "object",
+                    type: 'object',
                     properties: {
                       d: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           e: {
-                            type: "object",
+                            type: 'object',
                             properties: {
-                              f: { type: "string" },
+                              f: { type: 'string' },
                             },
-                            required: ["f"],
+                            required: ['f'],
                             additionalProperties: false,
                           },
                         },
-                        required: ["e"],
+                        required: ['e'],
                         additionalProperties: false,
                       },
                     },
-                    required: ["d"],
+                    required: ['d'],
                     additionalProperties: false,
                   },
                 },
-                required: ["c"],
+                required: ['c'],
                 additionalProperties: false,
               },
             },
-            required: ["b"],
+            required: ['b'],
             additionalProperties: false,
           },
         },
-        required: ["a"],
+        required: ['a'],
         additionalProperties: false,
       },
       null,

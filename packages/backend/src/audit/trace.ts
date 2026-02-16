@@ -1,5 +1,4 @@
-import * as admin from "firebase-admin";
-import type { AuditTrace, AuditContext, ErrorCategory } from "@ssv/audit";
+import type { AuditTrace, AuditContext, ErrorCategory } from '@ssv/audit';
 import {
   generateTraceId,
   generateEventId,
@@ -8,8 +7,10 @@ import {
   AUDIT_SCHEMAS_COLLECTION,
   TRACES_TTL_MS,
   SCHEMAS_TTL_MS,
-} from "@ssv/audit";
-import type { AuditEmitter } from "./emitter.js";
+} from '@ssv/audit';
+import * as admin from 'firebase-admin';
+
+import type { AuditEmitter } from './emitter';
 
 interface TraceResult {
   provider: string;
@@ -30,14 +31,14 @@ export function createAuditContext(
     traceId,
     sessionId,
     schemaHash,
-    emit: emitter.emit,
+    emit: (event) => emitter.emit(event),
   };
 }
 
 export function emitEvent(
   ctx: AuditContext,
   kind: string,
-  source: "backend",
+  source: 'backend',
   data: Record<string, unknown>,
 ): void {
   ctx.emit({
@@ -48,19 +49,22 @@ export function emitEvent(
     source,
     kind,
     data,
-  } as Parameters<AuditContext["emit"]>[0]);
+  } as Parameters<AuditContext['emit']>[0]);
 }
 
 export async function createTrace(
   ctx: AuditContext,
-  operation: "validate" | "fix",
+  operation: 'validate' | 'fix',
   schemaRaw: string,
   modelIds: readonly string[],
 ): Promise<void> {
   const db = admin.firestore();
   const now = new Date().toISOString();
 
-  const trace: Omit<AuditTrace, "completedAt" | "results" | "totalLatencyMs" | "overallSuccess" | "clientValidationErrors"> & {
+  const trace: Omit<
+    AuditTrace,
+    'completedAt' | 'results' | 'totalLatencyMs' | 'overallSuccess' | 'clientValidationErrors'
+  > & {
     completedAt?: string;
     results: TraceResult[];
     totalLatencyMs: number;
@@ -72,16 +76,14 @@ export async function createTrace(
     sessionId: ctx.sessionId,
     startedAt: now,
     schemaHash: ctx.schemaHash,
-    schemaSizeBytes: Buffer.byteLength(schemaRaw, "utf8"),
+    schemaSizeBytes: Buffer.byteLength(schemaRaw, 'utf8'),
     operation,
     modelIds,
     clientValidationErrors: 0,
     results: [],
     totalLatencyMs: 0,
     overallSuccess: false,
-    expiresAt: admin.firestore.Timestamp.fromDate(
-      new Date(Date.now() + TRACES_TTL_MS),
-    ),
+    expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + TRACES_TTL_MS)),
   };
 
   await db.collection(AUDIT_TRACES_COLLECTION).doc(ctx.traceId).set(trace);
@@ -111,9 +113,7 @@ export async function upsertSchema(
   const db = admin.firestore();
   const ref = db.collection(AUDIT_SCHEMAS_COLLECTION).doc(schemaHash);
   const now = new Date().toISOString();
-  const expiresAt = admin.firestore.Timestamp.fromDate(
-    new Date(Date.now() + SCHEMAS_TTL_MS),
-  );
+  const expiresAt = admin.firestore.Timestamp.fromDate(new Date(Date.now() + SCHEMAS_TTL_MS));
 
   await db.runTransaction(async (tx) => {
     const doc = await tx.get(ref);
@@ -121,7 +121,7 @@ export async function upsertSchema(
       const data = doc.data()!;
       const total = (data.totalValidations as number) + 1;
       const oldRate = data.successRate as number;
-      const successRate = oldRate + (((success ? 1 : 0) - oldRate) / total);
+      const successRate = oldRate + ((success ? 1 : 0) - oldRate) / total;
       tx.update(ref, {
         lastSeenAt: now,
         totalValidations: total,

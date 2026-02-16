@@ -6,7 +6,7 @@
 export interface Requirement {
   rule: string;
   detail: string;
-  severity: "error" | "warning" | "info";
+  severity: 'error' | 'warning' | 'info';
 }
 
 export interface SupportedType {
@@ -26,9 +26,9 @@ export interface SizeLimits {
   notes?: string | null;
 }
 
-export type ProviderId = "openai" | "anthropic" | "gemini";
+export type ProviderId = 'openai' | 'anthropic' | 'gemini';
 
-export const RULE_SET_IDS = ["gpt-4-o1", "claude-4-5", "gemini-2-5"] as const;
+export const RULE_SET_IDS = ['gpt-4-o1', 'claude-4-5', 'gemini-2-5'] as const;
 export type RuleSetId = (typeof RULE_SET_IDS)[number];
 
 export interface ComparisonColumn {
@@ -78,9 +78,9 @@ export interface ComparisonRow {
   openai: string;
   anthropic: string;
   gemini: string;
-  openaiOk: boolean | "warn" | "partial";
-  anthropicOk: boolean | "partial";
-  geminiOk: boolean | "partial";
+  openaiOk: boolean | 'warn' | 'partial';
+  anthropicOk: boolean | 'partial';
+  geminiOk: boolean | 'partial';
 }
 
 export interface UniversalRules {

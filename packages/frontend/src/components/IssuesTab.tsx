@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import type { SchemaRuleSet, RuleSetId } from "@ssv/schemas/types";
-import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
-import { fixSchemaForRuleSet, type FixResult } from "@ssv/schemas/ruleSetFixer";
-import { SeverityIcon } from "~/components/SeverityIcon";
-import { Button } from "~/components/ui";
-import { CopyIcon } from "~/components/icons/CopyIcon";
-import { DownloadIcon } from "~/components/icons/DownloadIcon";
-import type { ServerValidationState } from "~/lib/providers/types";
+import { fixSchemaForRuleSet, type FixResult } from '@ssv/schemas/ruleSetFixer';
+import type { SchemaMarker } from '@ssv/schemas/ruleSetValidator';
+import type { SchemaRuleSet, RuleSetId } from '@ssv/schemas/types';
+import { useCallback, useState } from 'react';
+
+import { CopyIcon } from '~/components/icons/CopyIcon';
+import { DownloadIcon } from '~/components/icons/DownloadIcon';
+import { SeverityIcon } from '~/components/SeverityIcon';
+import { Button } from '~/components/ui';
+import type { ServerValidationState } from '~/lib/providers/types';
 
 /* ─── Types ───────────────────────────────────────────────────────────── */
 
@@ -48,7 +49,7 @@ function CardHeader({
   sublabel,
 }: {
   icon: string;
-  iconVariant: "error" | "success" | "mixed";
+  iconVariant: 'error' | 'success' | 'mixed';
   label: string;
   sublabel: string;
 }) {
@@ -86,9 +87,9 @@ function CrossRuleSetBanner({
           {statuses.map((s) => {
             const hasErrors = s.errorCount > 0;
             const hasWarnings = s.warningCount > 0;
-            const variant = hasErrors ? "error" : hasWarnings ? "error" : "ok";
+            const variant = hasErrors ? 'error' : hasWarnings ? 'error' : 'ok';
             const label = hasErrors
-              ? `\u2715 ${s.displayName} \u2014 ${s.errorCount} issue${s.errorCount !== 1 ? "s" : ""}`
+              ? `\u2715 ${s.displayName} \u2014 ${s.errorCount} issue${s.errorCount !== 1 ? 's' : ''}`
               : `\u2713 ${s.displayName}`;
             return (
               <button
@@ -126,7 +127,8 @@ function ContextBanner({
     <div className="context-banner">
       <span>&#x2139;</span>
       <span>
-        Schema was recently fixed for <strong>{fixedName}</strong>. These are provider-specific issues.
+        Schema was recently fixed for <strong>{fixedName}</strong>. These are provider-specific
+        issues.
       </span>
     </div>
   );
@@ -153,13 +155,11 @@ function FixResultContent({ fixResult }: { fixResult: FixResult }) {
           <div className="fix-result-label applied">Applied</div>
           {fixResult.appliedFixes.map((fix, i) => (
             <div key={i} className="fix-result-row">
-              <span className={`fix-icon ${fix.infoLost ? "info-lost" : "applied"}`}>
-                {fix.infoLost ? "~" : "+"}
+              <span className={`fix-icon ${fix.infoLost ? 'info-lost' : 'applied'}`}>
+                {fix.infoLost ? '~' : '+'}
               </span>
               <span className="fix-desc">{fix.description}</span>
-              {fix.infoLost && (
-                <span className="fix-note">&mdash; {fix.infoLost}</span>
-              )}
+              {fix.infoLost && <span className="fix-note">&mdash; {fix.infoLost}</span>}
             </div>
           ))}
         </>
@@ -213,9 +213,9 @@ function ServerValidationSection({
 
   // Determine header label
   const allOk = results?.every((r) => r.ok);
-  let headerLabel = "Verify with real API";
+  let headerLabel = 'Verify with real API';
   if (loading) headerLabel = `Verifying with ${ruleSet.provider} API\u2026`;
-  else if (results) headerLabel = "API verification results";
+  else if (results) headerLabel = 'API verification results';
 
   return (
     <div className="server-validate-section">
@@ -237,14 +237,13 @@ function ServerValidationSection({
       {loading && (
         <div className="server-validate-loading">
           <span className="server-validate-spinner" />
-          Sending schema to {ruleSet.models.length} model{ruleSet.models.length !== 1 ? "s" : ""}&hellip;
+          Sending schema to {ruleSet.models.length} model{ruleSet.models.length !== 1 ? 's' : ''}
+          &hellip;
         </div>
       )}
 
       {/* Error from fetch itself */}
-      {error && (
-        <div className="server-result-error">{error}</div>
-      )}
+      {error && <div className="server-result-error">{error}</div>}
 
       {/* Results */}
       {results && (
@@ -258,11 +257,11 @@ function ServerValidationSection({
             {results.map((r) => (
               <div key={r.model} className="server-result-row">
                 <span className="server-result-model">{r.model}</span>
-                <span className={`server-result-status ${r.ok ? "ok" : "fail"}`}>
-                  {r.ok ? "OK" : "Failed"}
+                <span className={`server-result-status ${r.ok ? 'ok' : 'fail'}`}>
+                  {r.ok ? 'OK' : 'Failed'}
                 </span>
                 <span className="server-result-latency">
-                  {r.ok && r.latencyMs > 0 ? `${r.latencyMs}ms` : r.ok ? "" : "\u2014"}
+                  {r.ok && r.latencyMs > 0 ? `${r.latencyMs}ms` : r.ok ? '' : '\u2014'}
                 </span>
               </div>
             ))}
@@ -294,7 +293,7 @@ function SchemaActions({
       <span className="schema-action-label">Schema</span>
       <Button variant="ghost" onClick={onCopy}>
         <CopyIcon width={14} height={14} className="shrink-0" />
-        {copied ? "Copied!" : "Copy"}
+        {copied ? 'Copied!' : 'Copy'}
       </Button>
       <Button variant="ghost" onClick={onDownload}>
         <DownloadIcon width={14} height={14} className="shrink-0" />
@@ -335,21 +334,22 @@ export function IssuesTab({
   }, [schema]);
 
   const handleDownload = useCallback(() => {
-    const blob = new Blob([schema], { type: "application/json" });
+    const blob = new Blob([schema], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = "schema.json";
+    a.download = 'schema.json';
     a.click();
     URL.revokeObjectURL(url);
   }, [schema]);
 
   const sorted = [...markers].sort(
-    (a, b) =>
-      (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3),
+    (a, b) => (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3),
   );
 
-  const fixableCount = markers.filter((m) => m.severity === "error" || m.severity === "warning").length;
+  const fixableCount = markers.filter(
+    (m) => m.severity === 'error' || m.severity === 'warning',
+  ).length;
 
   const handleFixAll = useCallback(() => {
     setError(undefined);
@@ -358,7 +358,7 @@ export function IssuesTab({
     try {
       parsed = JSON.parse(schema) as Record<string, unknown>;
     } catch {
-      setError("Schema is not valid JSON");
+      setError('Schema is not valid JSON');
       return;
     }
 
@@ -379,13 +379,11 @@ export function IssuesTab({
   if (fixResult) {
     const allResolved = fixResult.unresolvedErrors.length === 0;
     const noneResolved = fixResult.appliedFixes.length === 0;
-    const iconVariant = allResolved ? "success" : noneResolved ? "error" : "mixed";
-    const icon = allResolved ? "\u2713" : noneResolved ? "!" : "\u2713";
-    const label = allResolved
-      ? "All issues fixed"
-      : `Fixes applied`;
+    const iconVariant = allResolved ? 'success' : noneResolved ? 'error' : 'mixed';
+    const icon = allResolved ? '\u2713' : noneResolved ? '!' : '\u2713';
+    const label = allResolved ? 'All issues fixed' : `Fixes applied`;
     const sublabel = allResolved
-      ? `${fixResult.appliedFixes.length} fix${fixResult.appliedFixes.length !== 1 ? "es" : ""} applied for ${ruleSet.displayName}`
+      ? `${fixResult.appliedFixes.length} fix${fixResult.appliedFixes.length !== 1 ? 'es' : ''} applied for ${ruleSet.displayName}`
       : `${fixResult.appliedFixes.length} fixed \u00B7 ${fixResult.unresolvedErrors.length} needs manual fix`;
 
     return (
@@ -400,7 +398,9 @@ export function IssuesTab({
           <FixResultContent fixResult={fixResult} />
         </div>
         <div className="issues-card-footer">
-          <Button variant="ghost" onClick={onUndo}>Undo</Button>
+          <Button variant="ghost" onClick={onUndo}>
+            Undo
+          </Button>
           <div className="footer-spacer" />
           <SchemaActions copied={copied} onCopy={handleCopy} onDownload={handleDownload} />
         </div>
@@ -413,7 +413,7 @@ export function IssuesTab({
     return (
       <div className="issues-card">
         <CardHeader
-          icon={"\u2713"}
+          icon={'\u2713'}
           iconVariant="success"
           label="Compatible"
           sublabel={ruleSet.displayName}
@@ -442,9 +442,9 @@ export function IssuesTab({
   return (
     <div className="issues-card">
       <CardHeader
-        icon={"\u2715"}
+        icon={'\u2715'}
         iconVariant="error"
-        label={`${sorted.length} issue${sorted.length !== 1 ? "s" : ""} found`}
+        label={`${sorted.length} issue${sorted.length !== 1 ? 's' : ''} found`}
         sublabel={ruleSet.displayName}
       />
       <div className="issues-card-content">
@@ -470,11 +470,9 @@ export function IssuesTab({
       {isValidJsonSchema && fixableCount > 0 && (
         <div className="issues-card-footer">
           <Button variant="primary" onClick={handleFixAll}>
-            Fix all {fixableCount} issue{fixableCount !== 1 ? "s" : ""}
+            Fix all {fixableCount} issue{fixableCount !== 1 ? 's' : ''}
           </Button>
-          {error && (
-            <span className="text-xs text-error">{error}</span>
-          )}
+          {error && <span className="text-xs text-error">{error}</span>}
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-declare module "json-source-map" {
+declare module 'json-source-map' {
   interface ParseLocation {
     line: number;
     column: number;
@@ -21,6 +21,6 @@ declare module "json-source-map" {
   function stringify(
     data: unknown,
     _replacer?: unknown,
-    space?: string | number | object
+    space?: string | number | object,
   ): { json: string; pointers: Record<string, PointerLocation> };
 }

@@ -2,14 +2,14 @@
 // Event source
 // ---------------------------------------------------------------------------
 
-const EVENT_SOURCES = ["frontend", "backend"] as const;
-type EventSource = (typeof EVENT_SOURCES)[number];
+export const EVENT_SOURCES = ['frontend', 'backend'] as const;
+export type EventSource = (typeof EVENT_SOURCES)[number];
 
 // ---------------------------------------------------------------------------
 // Common envelope shared by every audit event
 // ---------------------------------------------------------------------------
 
-interface AuditEventBase {
+export interface AuditEventBase {
   readonly eventId: string;
   readonly timestamp: string;
   readonly sessionId: string;
@@ -21,24 +21,24 @@ interface AuditEventBase {
 // Error category (for LLM call classification)
 // ---------------------------------------------------------------------------
 
-const ERROR_CATEGORIES = [
-  "api_error",
-  "invalid_schema",
-  "timeout",
-  "rate_limit",
-  "model_error",
-  "auth_error",
-  "unknown",
+export const ERROR_CATEGORIES = [
+  'api_error',
+  'invalid_schema',
+  'timeout',
+  'rate_limit',
+  'model_error',
+  'auth_error',
+  'unknown',
 ] as const;
-type ErrorCategory = (typeof ERROR_CATEGORIES)[number];
+export type ErrorCategory = (typeof ERROR_CATEGORIES)[number];
 
 // ---------------------------------------------------------------------------
 // Frontend events
 // ---------------------------------------------------------------------------
 
-interface SchemaEditedEvent extends AuditEventBase {
-  readonly kind: "schema.edited";
-  readonly source: "frontend";
+export interface SchemaEditedEvent extends AuditEventBase {
+  readonly kind: 'schema.edited';
+  readonly source: 'frontend';
   readonly data: {
     readonly schemaHash: string;
     readonly schemaSizeBytes: number;
@@ -46,17 +46,17 @@ interface SchemaEditedEvent extends AuditEventBase {
   };
 }
 
-interface RuleSetSelectedEvent extends AuditEventBase {
-  readonly kind: "ruleSet.selected";
-  readonly source: "frontend";
+export interface RuleSetSelectedEvent extends AuditEventBase {
+  readonly kind: 'ruleSet.selected';
+  readonly source: 'frontend';
   readonly data: {
     readonly ruleSetId: string;
   };
 }
 
-interface ClientValidationEvent extends AuditEventBase {
-  readonly kind: "client.validation";
-  readonly source: "frontend";
+export interface ClientValidationEvent extends AuditEventBase {
+  readonly kind: 'client.validation';
+  readonly source: 'frontend';
   readonly data: {
     readonly ruleSetId: string;
     readonly schemaHash: string;
@@ -68,9 +68,9 @@ interface ClientValidationEvent extends AuditEventBase {
   };
 }
 
-interface ServerValidateRequestedEvent extends AuditEventBase {
-  readonly kind: "server.validate.requested";
-  readonly source: "frontend";
+export interface ServerValidateRequestedEvent extends AuditEventBase {
+  readonly kind: 'server.validate.requested';
+  readonly source: 'frontend';
   readonly data: {
     readonly schemaHash: string;
     readonly schemaSizeBytes: number;
@@ -78,9 +78,9 @@ interface ServerValidateRequestedEvent extends AuditEventBase {
   };
 }
 
-interface ServerValidateCompletedEvent extends AuditEventBase {
-  readonly kind: "server.validate.completed";
-  readonly source: "frontend";
+export interface ServerValidateCompletedEvent extends AuditEventBase {
+  readonly kind: 'server.validate.completed';
+  readonly source: 'frontend';
   readonly data: {
     readonly totalLatencyMs: number;
     readonly resultCount: number;
@@ -89,51 +89,51 @@ interface ServerValidateCompletedEvent extends AuditEventBase {
   };
 }
 
-interface FixRequestedEvent extends AuditEventBase {
-  readonly kind: "fix.requested";
-  readonly source: "frontend";
+export interface FixRequestedEvent extends AuditEventBase {
+  readonly kind: 'fix.requested';
+  readonly source: 'frontend';
   readonly data: {
     readonly schemaHash: string;
     readonly issueCount: number;
   };
 }
 
-interface FixCompletedEvent extends AuditEventBase {
-  readonly kind: "fix.completed";
-  readonly source: "frontend";
+export interface FixCompletedEvent extends AuditEventBase {
+  readonly kind: 'fix.completed';
+  readonly source: 'frontend';
   readonly data: {
     readonly success: boolean;
     readonly totalLatencyMs: number;
   };
 }
 
-interface FixAcceptedEvent extends AuditEventBase {
-  readonly kind: "fix.accepted";
-  readonly source: "frontend";
+export interface FixAcceptedEvent extends AuditEventBase {
+  readonly kind: 'fix.accepted';
+  readonly source: 'frontend';
   readonly data: {
     readonly schemaHash: string;
     readonly suggestedSchemaHash: string;
   };
 }
 
-interface FixRejectedEvent extends AuditEventBase {
-  readonly kind: "fix.rejected";
-  readonly source: "frontend";
+export interface FixRejectedEvent extends AuditEventBase {
+  readonly kind: 'fix.rejected';
+  readonly source: 'frontend';
   readonly data: {
     readonly schemaHash: string;
   };
 }
 
-interface SchemaLoadedEvent extends AuditEventBase {
-  readonly kind: "schema.loaded";
-  readonly source: "frontend";
+export interface SchemaLoadedEvent extends AuditEventBase {
+  readonly kind: 'schema.loaded';
+  readonly source: 'frontend';
   readonly data: {
-    readonly method: "file_upload" | "drag_drop" | "paste";
+    readonly method: 'file_upload' | 'drag_drop' | 'paste';
     readonly schemaSizeBytes: number;
   };
 }
 
-type FrontendEvent =
+export type FrontendEvent =
   | SchemaEditedEvent
   | RuleSetSelectedEvent
   | ClientValidationEvent
@@ -149,9 +149,9 @@ type FrontendEvent =
 // Backend events
 // ---------------------------------------------------------------------------
 
-interface ValidateRequestReceivedEvent extends AuditEventBase {
-  readonly kind: "api.validate.received";
-  readonly source: "backend";
+export interface ValidateRequestReceivedEvent extends AuditEventBase {
+  readonly kind: 'api.validate.received';
+  readonly source: 'backend';
   readonly data: {
     readonly schemaHash: string;
     readonly schemaSizeBytes: number;
@@ -160,18 +160,18 @@ interface ValidateRequestReceivedEvent extends AuditEventBase {
   };
 }
 
-interface SchemaParseDecisionEvent extends AuditEventBase {
-  readonly kind: "decision.schema_parse";
-  readonly source: "backend";
+export interface SchemaParseDecisionEvent extends AuditEventBase {
+  readonly kind: 'decision.schema_parse';
+  readonly source: 'backend';
   readonly data: {
     readonly success: boolean;
     readonly errorMessage?: string;
   };
 }
 
-interface LlmCallStartedEvent extends AuditEventBase {
-  readonly kind: "llm.call.started";
-  readonly source: "backend";
+export interface LlmCallStartedEvent extends AuditEventBase {
+  readonly kind: 'llm.call.started';
+  readonly source: 'backend';
   readonly data: {
     readonly provider: string;
     readonly model: string;
@@ -180,9 +180,9 @@ interface LlmCallStartedEvent extends AuditEventBase {
   };
 }
 
-interface LlmCallCompletedEvent extends AuditEventBase {
-  readonly kind: "llm.call.completed";
-  readonly source: "backend";
+export interface LlmCallCompletedEvent extends AuditEventBase {
+  readonly kind: 'llm.call.completed';
+  readonly source: 'backend';
   readonly data: {
     readonly provider: string;
     readonly model: string;
@@ -194,9 +194,9 @@ interface LlmCallCompletedEvent extends AuditEventBase {
   };
 }
 
-interface ValidateResponseSentEvent extends AuditEventBase {
-  readonly kind: "api.validate.response";
-  readonly source: "backend";
+export interface ValidateResponseSentEvent extends AuditEventBase {
+  readonly kind: 'api.validate.response';
+  readonly source: 'backend';
   readonly data: {
     readonly httpStatus: number;
     readonly totalLatencyMs: number;
@@ -206,18 +206,18 @@ interface ValidateResponseSentEvent extends AuditEventBase {
   };
 }
 
-interface FixRequestReceivedEvent extends AuditEventBase {
-  readonly kind: "api.fix.received";
-  readonly source: "backend";
+export interface FixRequestReceivedEvent extends AuditEventBase {
+  readonly kind: 'api.fix.received';
+  readonly source: 'backend';
   readonly data: {
     readonly schemaHash: string;
     readonly issueCount: number;
   };
 }
 
-interface FixLlmCallCompletedEvent extends AuditEventBase {
-  readonly kind: "llm.fix.completed";
-  readonly source: "backend";
+export interface FixLlmCallCompletedEvent extends AuditEventBase {
+  readonly kind: 'llm.fix.completed';
+  readonly source: 'backend';
   readonly data: {
     readonly ok: boolean;
     readonly latencyMs: number;
@@ -225,9 +225,9 @@ interface FixLlmCallCompletedEvent extends AuditEventBase {
   };
 }
 
-interface FixResponseSentEvent extends AuditEventBase {
-  readonly kind: "api.fix.response";
-  readonly source: "backend";
+export interface FixResponseSentEvent extends AuditEventBase {
+  readonly kind: 'api.fix.response';
+  readonly source: 'backend';
   readonly data: {
     readonly httpStatus: number;
     readonly totalLatencyMs: number;
@@ -235,7 +235,7 @@ interface FixResponseSentEvent extends AuditEventBase {
   };
 }
 
-type BackendEvent =
+export type BackendEvent =
   | ValidateRequestReceivedEvent
   | SchemaParseDecisionEvent
   | LlmCallStartedEvent
@@ -249,22 +249,22 @@ type BackendEvent =
 // Unified discriminated union
 // ---------------------------------------------------------------------------
 
-type AuditEvent = FrontendEvent | BackendEvent;
+export type AuditEvent = FrontendEvent | BackendEvent;
 
-type AuditEventKind = AuditEvent["kind"];
+export type AuditEventKind = AuditEvent['kind'];
 
 // ---------------------------------------------------------------------------
 // Trace document (written to audit_traces collection)
 // ---------------------------------------------------------------------------
 
-interface AuditTrace {
+export interface AuditTrace {
   readonly traceId: string;
   readonly sessionId: string;
   readonly startedAt: string;
   readonly completedAt?: string;
   readonly schemaHash: string;
   readonly schemaSizeBytes: number;
-  readonly operation: "validate" | "fix";
+  readonly operation: 'validate' | 'fix';
   readonly modelIds: readonly string[];
   readonly clientValidationErrors: number;
   readonly results: readonly {
@@ -282,7 +282,7 @@ interface AuditTrace {
 // Schema document (written to audit_schemas collection)
 // ---------------------------------------------------------------------------
 
-interface AuditSchema {
+export interface AuditSchema {
   readonly schemaHash: string;
   readonly schemaText: string;
   readonly firstSeenAt: string;
@@ -295,49 +295,9 @@ interface AuditSchema {
 // Audit context passed through backend functions
 // ---------------------------------------------------------------------------
 
-interface AuditContext {
+export interface AuditContext {
   readonly traceId: string;
   readonly sessionId: string;
   readonly schemaHash: string;
   readonly emit: (event: AuditEvent) => void;
 }
-
-// ---------------------------------------------------------------------------
-// Exports
-// ---------------------------------------------------------------------------
-
-export {
-  EVENT_SOURCES,
-  ERROR_CATEGORIES,
-};
-
-export type {
-  EventSource,
-  ErrorCategory,
-  AuditEventBase,
-  SchemaEditedEvent,
-  RuleSetSelectedEvent,
-  ClientValidationEvent,
-  ServerValidateRequestedEvent,
-  ServerValidateCompletedEvent,
-  FixRequestedEvent,
-  FixCompletedEvent,
-  FixAcceptedEvent,
-  FixRejectedEvent,
-  SchemaLoadedEvent,
-  FrontendEvent,
-  ValidateRequestReceivedEvent,
-  SchemaParseDecisionEvent,
-  LlmCallStartedEvent,
-  LlmCallCompletedEvent,
-  ValidateResponseSentEvent,
-  FixRequestReceivedEvent,
-  FixLlmCallCompletedEvent,
-  FixResponseSentEvent,
-  BackendEvent,
-  AuditEvent,
-  AuditEventKind,
-  AuditTrace,
-  AuditSchema,
-  AuditContext,
-};

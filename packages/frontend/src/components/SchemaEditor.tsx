@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
-import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
-import metaSchema from "@ssv/schemas/data/versionAggregatedJsonSchema.json";
+import metaSchema from '@ssv/schemas/data/versionAggregatedJsonSchema.json';
+import type { SchemaMarker } from '@ssv/schemas/ruleSetValidator';
+import dynamic from 'next/dynamic';
+import { useTheme } from 'next-themes';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
+const Monaco = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
-const META_SCHEMA_URI = "http://json-schema.org/draft-07/schema#";
-const EDITOR_MODEL_PATH = "schema.json";
-const CUSTOM_MARKER_OWNER = "ssv-ruleset-validator";
+const META_SCHEMA_URI = 'http://json-schema.org/draft-07/schema#';
+const EDITOR_MODEL_PATH = 'schema.json';
+const CUSTOM_MARKER_OWNER = 'ssv-ruleset-validator';
 
 export interface SchemaEditorApi {
   scrollToLine: (line: number) => void;
@@ -30,9 +30,9 @@ interface SchemaEditorProps {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toMonacoSeverity(monaco: any, severity: string): number {
   switch (severity) {
-    case "error":
+    case 'error':
       return monaco.MarkerSeverity.Error;
-    case "warning":
+    case 'warning':
       return monaco.MarkerSeverity.Warning;
     default:
       return monaco.MarkerSeverity.Info;
@@ -43,13 +43,13 @@ export function SchemaEditor({
   value,
   onChange,
   markers,
-  markerLabel = "provider",
+  markerLabel = 'provider',
   fillHeight = false,
   onEditorReady,
   onSchemaValidation,
 }: SchemaEditorProps) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const isDark = resolvedTheme === 'dark';
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const monacoRef = useRef<any>(null);
@@ -93,14 +93,12 @@ export function SchemaEditor({
           if (!model) return;
           const fullRange = model.getFullModelRange();
           editor.pushUndoStop();
-          editor.executeEdits("fix-all", [
-            { range: fullRange, text },
-          ]);
+          editor.executeEdits('fix-all', [{ range: fullRange, text }]);
           editor.pushUndoStop();
         },
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- capture onEditorReady at mount time only
   }, []);
 
   // Listen to Monaco's built-in JSON/meta-schema diagnostics
@@ -115,17 +113,13 @@ export function SchemaEditor({
 
     const disposable = monaco.editor.onDidChangeMarkers((uris: unknown[]) => {
       const modelUri = model.uri.toString();
-      const affected = (uris as { toString(): string }[]).some(
-        (u) => u.toString() === modelUri,
-      );
+      const affected = (uris as { toString(): string }[]).some((u) => u.toString() === modelUri);
       if (!affected) return;
 
       const allMarkers = monaco.editor.getModelMarkers({ resource: model.uri });
       const builtinErrors = allMarkers.filter(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (m: any) =>
-          m.owner !== CUSTOM_MARKER_OWNER &&
-          m.severity === monaco.MarkerSeverity.Error,
+        (m: any) => m.owner !== CUSTOM_MARKER_OWNER && m.severity === monaco.MarkerSeverity.Error,
       );
       onSchemaValidation?.(builtinErrors.length > 0);
     });
@@ -134,9 +128,7 @@ export function SchemaEditor({
     const allMarkers = monaco.editor.getModelMarkers({ resource: model.uri });
     const builtinErrors = allMarkers.filter(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (m: any) =>
-        m.owner !== CUSTOM_MARKER_OWNER &&
-        m.severity === monaco.MarkerSeverity.Error,
+      (m: any) => m.owner !== CUSTOM_MARKER_OWNER && m.severity === monaco.MarkerSeverity.Error,
     );
     onSchemaValidation?.(builtinErrors.length > 0);
 
@@ -170,25 +162,25 @@ export function SchemaEditor({
     <div
       className={
         fillHeight
-          ? "flex-1 min-h-0 rounded-t-lg overflow-hidden flex flex-col border border-b-0 border-border bg-surface shadow-sm"
-          : "rounded-t-lg overflow-hidden min-h-[280px] border border-b-0 border-border bg-surface shadow-sm"
+          ? 'flex-1 min-h-0 rounded-t-lg overflow-hidden flex flex-col border border-b-0 border-border bg-surface shadow-sm'
+          : 'rounded-t-lg overflow-hidden min-h-[280px] border border-b-0 border-border bg-surface shadow-sm'
       }
     >
       <Monaco
-        height={fillHeight ? "100%" : "280px"}
+        height={fillHeight ? '100%' : '280px'}
         defaultLanguage="json"
         defaultPath={EDITOR_MODEL_PATH}
         value={value}
-        onChange={(v) => onChange(v ?? "")}
+        onChange={(v) => onChange(v ?? '')}
         beforeMount={handleBeforeMount}
         onMount={handleMount}
-        theme={isDark ? "vs-dark" : "vs"}
+        theme={isDark ? 'vs-dark' : 'vs'}
         options={{
           minimap: { enabled: false },
           fontSize: 13,
-          lineNumbers: "on",
+          lineNumbers: 'on',
           scrollBeyondLastLine: false,
-          wordWrap: "on",
+          wordWrap: 'on',
           contextmenu: true,
           copyWithSyntaxHighlighting: true,
           fixedOverflowWidgets: true,

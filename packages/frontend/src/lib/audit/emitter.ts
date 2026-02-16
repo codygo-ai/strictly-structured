@@ -1,19 +1,20 @@
-import type { AuditEventKind } from "@ssv/audit/browser";
+import type { AuditEventKind } from '@ssv/audit/browser';
 import {
   FRONTEND_BUFFER_MAX,
   FRONTEND_FLUSH_INTERVAL_MS,
   SESSION_HEADER,
-} from "@ssv/audit/browser";
-import { getOrCreateSessionId } from "./session";
+} from '@ssv/audit/browser';
 
-const AUDIT_ENDPOINT = "/api/evaluate";
+import { getOrCreateSessionId } from './session';
+
+const AUDIT_ENDPOINT = '/api/evaluate';
 
 interface BufferedEvent {
   eventId: string;
   timestamp: string;
   sessionId: string;
   traceId: string;
-  source: "frontend";
+  source: 'frontend';
   kind: AuditEventKind;
   data: Record<string, unknown>;
 }
@@ -22,17 +23,13 @@ const buffer: BufferedEvent[] = [];
 let flushTimer: ReturnType<typeof setInterval> | undefined;
 let started = false;
 
-export function emit(
-  kind: AuditEventKind,
-  data: Record<string, unknown>,
-  traceId = "",
-): void {
+export function emit(kind: AuditEventKind, data: Record<string, unknown>, traceId = ''): void {
   buffer.push({
     eventId: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
     sessionId: getOrCreateSessionId(),
     traceId,
-    source: "frontend",
+    source: 'frontend',
     kind,
     data,
   });
@@ -47,9 +44,9 @@ export async function flush(): Promise<void> {
   const toSend = buffer.splice(0);
   try {
     await fetch(AUDIT_ENDPOINT, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         [SESSION_HEADER]: getOrCreateSessionId(),
       },
       body: JSON.stringify({ events: toSend }),
@@ -66,9 +63,9 @@ export function startAutoFlush(): void {
   started = true;
   flushTimer = setInterval(() => void flush(), FRONTEND_FLUSH_INTERVAL_MS);
 
-  if (typeof document !== "undefined") {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
         void flush();
       }
     });

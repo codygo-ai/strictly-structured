@@ -1,6 +1,7 @@
-import type { AuditRequestContext } from "../audit/index.js";
-import { createAuditContext } from "../audit/index.js";
-import { generateEventId } from "@ssv/audit";
+import { generateEventId } from '@ssv/audit';
+
+import type { AuditRequestContext } from '../audit/index';
+import { createAuditContext } from '../audit/index';
 
 export type FixIssue = {
   path: string;
@@ -30,8 +31,8 @@ export async function runFix(
       timestamp: new Date().toISOString(),
       sessionId: ctx.sessionId,
       traceId: ctx.traceId,
-      source: "backend",
-      kind: "api.fix.received",
+      source: 'backend',
+      kind: 'api.fix.received',
       data: {
         schemaHash: ctx.schemaHash,
         issueCount: body.issues?.length ?? 0,
@@ -43,8 +44,8 @@ export async function runFix(
       timestamp: new Date().toISOString(),
       sessionId: ctx.sessionId,
       traceId: ctx.traceId,
-      source: "backend",
-      kind: "api.fix.response",
+      source: 'backend',
+      kind: 'api.fix.response',
       data: {
         httpStatus: 501,
         totalLatencyMs: 0,
@@ -53,5 +54,5 @@ export async function runFix(
     });
   }
 
-  return { error: "Not implemented" };
+  return { error: 'Not implemented' };
 }

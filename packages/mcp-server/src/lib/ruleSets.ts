@@ -1,7 +1,6 @@
-import ruleSetsData from "@ssv/schemas/data/schemaRuleSets.json" with { type: "json" };
-import type { SchemaRuleSet, ProviderId } from "@ssv/schemas/types";
-
-export type { SchemaRuleSet, ProviderId };
+import ruleSetsData from '@ssv/schemas/data/schemaRuleSets.json' with { type: 'json' };
+import type { SchemaRuleSet, ProviderId } from '@ssv/schemas/types';
+export type { SchemaRuleSet, ProviderId } from '@ssv/schemas/types';
 
 interface RuleSetsMeta {
   version: string;
@@ -24,9 +23,7 @@ export function getRuleSetByProvider(providerId: ProviderId): SchemaRuleSet | un
   return data.ruleSets.find((r) => r.providerId === providerId);
 }
 
-export function getRuleSetsByProviders(
-  providerIds?: ProviderId[]
-): SchemaRuleSet[] {
+export function getRuleSetsByProviders(providerIds?: ProviderId[]): SchemaRuleSet[] {
   if (!providerIds || providerIds.length === 0) return data.ruleSets;
   return data.ruleSets.filter((r) => providerIds.includes(r.providerId));
 }
