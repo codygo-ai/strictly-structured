@@ -10,7 +10,7 @@ const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const META_SCHEMA_URI = "http://json-schema.org/draft-07/schema#";
 const EDITOR_MODEL_PATH = "schema.json";
-const CUSTOM_MARKER_OWNER = "ssv-group-validator";
+const CUSTOM_MARKER_OWNER = "ssv-ruleset-validator";
 
 export interface SchemaEditorApi {
   scrollToLine: (line: number) => void;

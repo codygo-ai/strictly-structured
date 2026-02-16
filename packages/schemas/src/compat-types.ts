@@ -20,7 +20,7 @@ export interface KeywordRule {
   note?: string;
 }
 
-export interface CompatibilityGroup {
+export interface CompatibilityRuleSet {
   id: string;
   provider: string;
   modelIds: string[];

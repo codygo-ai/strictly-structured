@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getRuleSetByProvider, getRuleSets } from "../lib/groups";
+import { getRuleSetByProvider, getRuleSets } from "../lib/ruleSets";
 import { validateSchemaForRuleSet } from "@ssv/schemas/ruleSetValidator";
 import { formatRuleSetAsText, formatMarkersAsText } from "../lib/formatRules";
 import type { ProviderId } from "../lib/types";

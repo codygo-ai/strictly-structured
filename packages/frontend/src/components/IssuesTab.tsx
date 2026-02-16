@@ -63,7 +63,7 @@ function CardHeader({
   );
 }
 
-function CrossProviderBanner({
+function CrossRuleSetBanner({
   ruleSet,
   statuses,
   onSelectRuleSet,
@@ -76,13 +76,13 @@ function CrossProviderBanner({
   if (withIssues.length === 0) return null;
 
   return (
-    <div className="cross-provider-banner">
+    <div className="cross-ruleset-banner">
       <span className="banner-icon">&#x26A0;</span>
       <div>
         <span className="banner-text">
           These fixes were applied for <strong>{ruleSet.displayName}</strong>. Other providers:
         </span>
-        <div className="provider-chips">
+        <div className="ruleset-chips">
           {statuses.map((s) => {
             const hasErrors = s.errorCount > 0;
             const hasWarnings = s.warningCount > 0;
@@ -94,7 +94,7 @@ function CrossProviderBanner({
               <button
                 key={s.ruleSetId}
                 type="button"
-                className={`provider-chip ${variant}`}
+                className={`ruleset-chip ${variant}`}
                 onClick={() => onSelectRuleSet(s.ruleSetId)}
               >
                 {label}
@@ -112,17 +112,15 @@ function ContextBanner({
   currentRuleSetId,
   otherRuleSetStatuses,
 }: {
-  lastFixedForRuleSetId?: string;
-  currentRuleSetId: string;
+  lastFixedForRuleSetId?: RuleSetId;
+  currentRuleSetId: RuleSetId;
   otherRuleSetStatuses: OtherRuleSetStatus[];
 }) {
   if (!lastFixedForRuleSetId || lastFixedForRuleSetId === currentRuleSetId) return null;
 
-  // Find the display name of the provider that was just fixed
-  // It could be in otherRuleSetStatuses (since it's "other" from current perspective)
-  // or we just use the ID as fallback
-  const fixedProvider = otherRuleSetStatuses.find((s) => s.ruleSetId === lastFixedForRuleSetId);
-  const fixedName = fixedProvider?.displayName ?? lastFixedForRuleSetId;
+  // Find the display name of the rule set that was just fixed
+  const fixedRuleSet = otherRuleSetStatuses.find((s) => s.ruleSetId === lastFixedForRuleSetId);
+  const fixedName = fixedRuleSet?.displayName ?? lastFixedForRuleSetId;
 
   return (
     <div className="context-banner">
@@ -394,7 +392,7 @@ export function IssuesTab({
       <div className="issues-card">
         <CardHeader icon={icon} iconVariant={iconVariant} label={label} sublabel={sublabel} />
         <div className="issues-card-content">
-          <CrossProviderBanner
+          <CrossRuleSetBanner
             ruleSet={ruleSet}
             statuses={otherRuleSetStatuses}
             onSelectRuleSet={onSelectRuleSet}
