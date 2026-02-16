@@ -1,11 +1,41 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import baseConfig from '@codygo-ai/eslint-config-base';
+import reactConfig from '@codygo-ai/eslint-config-react';
+import tailwindCanonicalClasses from 'eslint-plugin-tailwind-canonical-classes';
+import globals from 'globals';
+
+const root = path.dirname(fileURLToPath(import.meta.url));
+
+// React-specific configs (everything in reactConfig that isn't shared with base)
+const reactOnlyConfigs = reactConfig.filter((cfg) => !baseConfig.includes(cfg));
 
 export default [
   ...baseConfig,
-  // Frontend uses ~/… path alias — tell import/order to treat it as internal
+  // React/JSX rules scoped to frontend
+  ...reactOnlyConfigs.map((cfg) => ({
+    ...cfg,
+    files: ['packages/frontend/**/*.{tsx,jsx}'],
+  })),
+  // Frontend-specific: browser globals, tailwind, ~/… path alias
   {
     files: ['packages/frontend/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        React: 'readonly',
+        JSX: 'readonly',
+      },
+    },
+    plugins: {
+      'tailwind-canonical-classes': tailwindCanonicalClasses,
+    },
     rules: {
+      'tailwind-canonical-classes/tailwind-canonical-classes': [
+        'error',
+        { cssPath: path.join(root, 'packages/frontend/src/app/globals.css') },
+      ],
       'import/order': [
         'error',
         {
@@ -18,6 +48,7 @@ export default [
       ],
     },
   },
+  // Shared overrides for all packages
   {
     rules: {
       // SSV uses @ssv/* namespace, not @codygo-ai/*
