@@ -26,7 +26,7 @@ Read and follow these before making changes.
    ```bash
    pnpm lint
    pnpm typecheck
-   pnpm test
+   pnpm --filter @ssv/schemas test    # or: turbo run test
    ```
 4. Commit using [Conventional Commits](https://www.conventionalcommits.org/) format
 5. Open a PR against `main`

@@ -13,7 +13,7 @@ This project uses three terms that must stay consistent to avoid confusion.
 **Examples:**
 - The document in the schema editor
 - The string sent to `validate_schema` (MCP) or `validateSchemaForRuleSet`
-- Sample files under `samples/schemas/*.json` (they are schemas that describe example data)
+- Sample files under `packages/schemas/samples/schemas/*.json` (schemas that describe example data)
 
 **Use the word “schema” when:** Referring to the user’s JSON Schema, validation of that schema, or editing/fixing it.
 

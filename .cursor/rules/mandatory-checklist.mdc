@@ -15,7 +15,7 @@ Even when in plan mode or writing docs — add code snippets and examples so the
 
    `turbo run lint typecheck --filter=<package-name>`
 
-   - Example: `turbo run lint typecheck --filter=@ssv/schema-utils`
+   - Example: `turbo run lint typecheck --filter=@ssv/schemas`
    - Lint uses `--max-warnings 0` where applicable. If it fails, fix all errors.
 
 2. **If tests exist**: `turbo run test --filter=<package-name>`. If tests fail, fix them.

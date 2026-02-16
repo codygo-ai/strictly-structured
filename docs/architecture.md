@@ -9,7 +9,7 @@ Strictly Structured is a monorepo that validates and auto-fixes JSON schemas for
 | Channel | Package | Purpose |
 |---------|---------|---------|
 | **Web app** | `packages/frontend` | Discovery and exploration surface — paste a schema, validate, fix, export |
-| **MCP Server** | `packages/mcp-server` | Local validation inside Cursor, Claude Desktop, or any MCP client |
+| **MCP Server** | `packages/mcp-server` | Local schema & code validation inside Cursor, Claude Desktop, or any MCP client |
 | **Skill plugin** | `packages/skill` | Conversational in-editor validation for Cursor / Claude Code |
 
 ## Monorepo Structure
@@ -17,11 +17,12 @@ Strictly Structured is a monorepo that validates and auto-fixes JSON schemas for
 ```
 ├── packages/
 │   ├── frontend        # Next.js static export — validator UI
-│   ├── backend         # Firebase Cloud Functions — /api/validate, /api/fix
+│   ├── backend         # Firebase Cloud Functions — /api/validate, /api/fix, /api/evaluate, /api/feedback
 │   ├── schemas         # Canonical schemaRuleSets.json, validator, fixer — single source of truth
-│   ├── mcp-server      # MCP server exposing validate_schema, fix_schema, list_groups
+│   ├── mcp-server      # MCP server — schema tools, code tools, SDK tools, prompts
 │   ├── skill           # Claude Code / Cursor skill plugin
-│   └── audit           # Shared test data and utilities for validating rule sets
+│   ├── codegen         # Zod/Pydantic ↔ JSON Schema conversion, SDK transform simulation
+│   └── audit           # Shared audit event types and utilities
 ├── devops/
 │   ├── tsconfig        # Shared TypeScript configuration
 │   └── eslint-config   # Shared ESLint flat config
@@ -37,16 +38,16 @@ Strictly Structured is a monorepo that validates and auto-fixes JSON schemas for
 - Per-rule-set constraints (supported/unsupported keywords, limits, behaviors)
 - Metadata (version, lastUpdated, comparison columns, legend)
 
-The `@ssv/schemas` package also exports the validation engine (`ruleSetValidator`), auto-fix engine (`ruleSetFixer`), TypeScript types, and an aggregated meta-schema — all imported directly by consumers.
+The `@ssv/schemas` package also exports the validation engine (`validateSchemaForRuleSet` via `@ssv/schemas/ruleSetValidator`), auto-fix engine (`fixSchemaForRuleSet` via `@ssv/schemas/ruleSetFixer`), TypeScript types, and an aggregated meta-schema — all imported directly by consumers.
 
 ### Client-Side Validation Pipeline
 
 1. User types/pastes a schema in the Monaco editor
-2. `ruleSetValidator` runs (debounced, 200ms)
+2. `validateSchemaForRuleSet` runs (debounced, 200ms)
 3. Returns `SchemaMarker[]` with line/col positions, messages, and severities
 4. Markers applied to Monaco model (squiggly underlines)
 5. User hovers a marker to see the error message
-6. User clicks "Auto-fix" — `schemaFixer` transforms the schema
+6. User clicks "Auto-fix" — `fixSchemaForRuleSet` transforms the schema
 
 ### Server-Side Validation (Optional)
 
@@ -62,4 +63,5 @@ The `@ssv/schemas` package also exports the validation engine (`ruleSetValidator
 - **Monorepo**: pnpm workspaces, Turborepo
 - **Language**: TypeScript (strict)
 - **Code Quality**: ESLint, TypeScript compiler, Husky pre-commit hooks
+- **Testing**: Vitest (`@ssv/schemas`, `@ssv/codegen`)
 - **Deployment**: Firebase Hosting (static) + Cloud Functions

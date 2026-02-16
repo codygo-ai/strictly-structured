@@ -19,7 +19,7 @@ Focus the message on **merits and the most important changes**—what actually m
 
 1. **Subject line**: `type(scope): short summary`
    - **type**: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `style`, `perf`
-   - **scope**: area of the codebase, e.g. `backend`, `frontend`, `schema-utils`
+   - **scope**: area of the codebase, e.g. `backend`, `frontend`, `schemas`, `mcp-server`, `codegen`
    - **summary**: imperative, lowercase start, no period; ~50–72 chars
 
 2. **Body** (optional, after a blank line): bullet list of main changes.
@@ -27,7 +27,7 @@ Focus the message on **merits and the most important changes**—what actually m
 ## Example
 
 ```
-refactor(schema-utils): add strict schema validity checks
+refactor(schemas): add strict schema validity checks
 
 - Add schemaValidity module with strict mode
 - Update validate to use shared types
@@ -36,6 +36,6 @@ refactor(schema-utils): add strict schema validity checks
 ## Rules
 
 - Lead with impact: subject and first bullets describe architectural or behavioral changes when both are present.
-- Prefer a scope when the change touches a clear area (backend, frontend, schema-utils).
+- Prefer a scope when the change touches a clear area (backend, frontend, schemas, mcp-server, codegen).
 - Use the body when there are multiple distinct changes.
 - Do not use past tense in the subject ("added" → "add").

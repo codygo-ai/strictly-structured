@@ -88,7 +88,7 @@ This is the **primary feedback loop** and it works well.
 | **Single rule-set selection (radio)**                   | The editor can only have one truth — markers, fixes, and rules must be coherent for one rule set at a time. Multi-provider would create contradictory markers and unfixable states. |
 | **Monaco editor**                                      | Professional editing experience, JSON syntax highlighting, built-in undo stack.                                                                                                  |
 | **Schema rule set data model**                         | Rule sets with identical schema semantics are a sound abstraction. Just needs better presentation.                                                                                |
-| **Auto-fix logic** (`schemaFixer.ts`)                  | The fix engine is solid — handles root type, composition, keywords, additionalProperties, required, formats.                                                                     |
+| **Auto-fix logic** (`ruleSetFixer.ts`)                  | The fix engine is solid — handles root type, composition, keywords, additionalProperties, required, formats.                                                                     |
 | **Client-side validation** (`ruleSetValidator.ts`)    | Fast, comprehensive, no auth required.                                                                                                                                           |
 | **Feedback widget**                                    | Clean, non-intrusive, covers bug/feature/general.                                                                                                                                |
 | **`/models` comparison page**                          | Good reference content with detailed GroupCards.                                                                                                                                 |
@@ -284,7 +284,7 @@ API Test Results
 
 #### Data flow:
 
-- `SchemaEditor` already produces `SchemaMarker[]` via `validateSchemaForGroup`
+- `SchemaEditor` already produces `SchemaMarker[]` via `validateSchemaForRuleSet`
 - Currently these markers are only set on the Monaco model
 - **Proposed**: Also pass the `SchemaMarker[]` up to the parent (`page.tsx`) via callback
 - `page.tsx` passes them as a prop to `IssuesPanel`
@@ -318,7 +318,7 @@ API Test Results
 
 ### 5.5. Auto-fix redesign
 
-**Current**: "Auto-fix" button → `fixSchemaForGroup` runs → if fixes exist, editor is **replaced** with DiffEditor → user accepts/rejects entire batch → state replacement (no undo).
+**Current**: "Auto-fix" button → `fixSchemaForRuleSet` runs → if fixes exist, editor is **replaced** with DiffEditor → user accepts/rejects entire batch → state replacement (no undo).
 
 **Problems with current**:
 - Editor is replaced — user loses editing context
@@ -341,12 +341,12 @@ Use Monaco's **Code Action / Quick Fix** system — the standard IDE pattern. Wh
 This is the pattern every developer already knows from VS Code. It's discoverable via hover, lightbulb, and keyboard shortcut.
 
 **Implementation**: Register a `CodeActionProvider` on the Monaco editor model. When Monaco requests code actions for a range:
-1. Check if any `SchemaMarker` in that range has a corresponding fix from `schemaFixer.ts`
+1. Check if any `SchemaMarker` in that range has a corresponding fix from `ruleSetFixer.ts`
 2. Compute the text edit (the specific text replacement in the JSON)
 3. Return a `CodeAction` with a `WorkspaceEdit` describing the change
 4. Monaco handles applying it, undo stack, and marker refresh
 
-**Correlating markers ↔ fixes**: Both the validator (`ruleSetValidator.ts`) and fixer (`schemaFixer.ts`) work off JSON pointers and `kind` identifiers. The correlation path:
+**Correlating markers ↔ fixes**: Both the validator (`ruleSetValidator.ts`) and fixer (`ruleSetFixer.ts`) work off JSON pointers and `kind` identifiers. The correlation path:
 - Validator produces `SchemaMarker[]` with line/col positions and messages
 - Fixer produces `AppliedFix[]` with JSON pointers and fix kinds
 - Match by pointer: the marker's position maps to a JSON pointer (via `json-source-map`), and the fixer operates on the same pointer
@@ -945,7 +945,7 @@ Recommendation: Start with **Option B** (link to GitHub README), upgrade to **Op
   - Clickable line ref → editor focus
   - Per-issue `[Fix]` buttons (secondary to Monaco Quick Fix)
   - Reference content in expandable "View full rules"
-- [ ] Correlate `SchemaMarker` entries with `schemaFixer` fixes (match by JSON pointer/kind)
+- [ ] Correlate `SchemaMarker` entries with `ruleSetFixer` fixes (match by JSON pointer/kind)
 - [ ] Register Monaco `CodeActionProvider` — lightbulb + Quick Fix on markers that have associated fixes
 - [ ] Individual fix path (both Quick Fix and panel [Fix] button): apply as Monaco edit operation (undo stack)
 - [ ] Panel states: empty, has-issues, all-clear

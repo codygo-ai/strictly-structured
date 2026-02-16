@@ -1,77 +1,105 @@
-# Structured Schema Validator
+# Strictly Structured
 
-**Structured Schema Validator** is an open-source tool by [Codygo](https://codygo.com) that validates JSON schemas for use with LLM structured outputs. Pick a group (e.g. GPT 4+, Claude 4.5+, Gemini 2.5+), paste or load a schema, and see whether that provider’s model accepts it. Default models: **gpt-4.1-mini**, **gemini-2.5-flash**, **claude-3-5-haiku**.
+**Strictly Structured** is an open-source toolset by [Codygo](https://codygo.com) that validates and auto-fixes JSON schemas for LLM structured output APIs across OpenAI, Anthropic, and Google Gemini. It ships through three channels: a web app, an MCP server, and a Claude Code / Cursor skill.
 
 ## Monorepo
 
-This repo uses **packages/** and **devops/**.
+This repo uses **pnpm workspaces** and **Turborepo**. Code lives in `packages/` and `devops/`.
 
-**packages/** (apps and shared libs):
+### packages/
 
-- **frontend** – Next.js app (static export): validator UI; Firebase client + Analytics when configured
-- **backend** – Firebase Cloud Functions: HTTP `validate` (POST `/api/validate`) and `fix` (POST `/api/fix`), both require auth; contains server-only logic that calls OpenAI/Google/Anthropic APIs
-- **schema-utils** – Shared types and helpers for **compatibility data and schema validation**; used by the **frontend** only (client-safe, no API keys). Different from backend: schema-utils does not call LLM APIs; it parses schemas, validates structure, and provides types for the UI
+| Package | Description |
+|---------|-------------|
+| **frontend** | Next.js 15 static export — validator UI with Monaco editor, live markers, auto-fix |
+| **backend** | Firebase Cloud Functions — `/api/validate`, `/api/fix`, `/api/evaluate`, `/api/feedback` |
+| **schemas** | Canonical rule sets, validation engine (`validateSchemaForRuleSet`), auto-fix engine (`fixSchemaForRuleSet`), types |
+| **mcp-server** | MCP server — 8 tools (schema validation, code conversion, SDK simulation) + 3 prompts |
+| **skill** | Claude Code / Cursor skill plugin for conversational schema validation |
+| **codegen** | Zod/Pydantic ↔ JSON Schema conversion, SDK transform simulation |
+| **audit** | Shared audit event types and utilities |
 
-**devops/** (tooling and data):
+### devops/
 
-- **tsconfig** – Shared TypeScript config
-- **eslint-config** – Shared ESLint flat config
-- **compatibility-runner** – Test schemas + CLI; output: `data/compatibility.json`
+| Package | Description |
+|---------|-------------|
+| **tsconfig** | Shared TypeScript configuration |
+| **eslint-config** | Shared ESLint flat config |
 
-The site is **static only**. API calls use the same origin: on localhost the dev server proxies to the emulator; when deployed, Hosting rewrites to Cloud Functions.
+The single source of truth for provider rules is `packages/schemas/data/schemaRuleSets.json`.
 
 ## Run the app
 
-1. Install dependencies from the repo root:
+1. Install dependencies:
 
    ```bash
    pnpm install
    ```
 
-2. **Local dev (recommended)**  
-   From the repo root, `pnpm dev` runs in parallel: Next.js (with hot reload), backend build in watch mode, and Firebase emulators (functions + hosting). Open **http://localhost:3000**; the app proxies `/api/validate` and `/api/fix` to the emulator. Put API keys in `packages/backend/.env` (see `packages/backend/.env.sample`). Before starting, the emulator step copies `.env` into `packages/backend/.deployed` so the functions load them.
+2. **Local dev (recommended)** — runs Next.js (hot reload), backend build (tsup watch), and Firebase emulators in parallel:
 
    ```bash
    pnpm dev
    ```
 
-   Then open http://localhost:3000.
+   Open http://localhost:3000. The dev server proxies `/api/*` to the emulator. Put API keys in `packages/backend/.env` (see `packages/backend/.env.sample`).
 
-3. **Emulator or frontend only**  
-   `pnpm dev:emulator` runs only Firebase emulators (hosting at http://localhost:5050, functions at 5001). `pnpm dev:frontend` runs only the Next.js dev server.
+3. **Emulator or frontend only:**
+
+   ```bash
+   pnpm dev:emulator   # Firebase emulators: hosting at :5050, functions at :5001
+   pnpm dev:frontend   # Next.js dev server only
+   ```
 
 ## Deploy (Firebase)
 
-Default deploy target is **Firebase** (Hosting + Functions).
+1. Install Firebase CLI and log in (`firebase login`). Project is set in `.firebaserc`; hosting site is `structured-output`.
 
-1. Ensure **Firebase CLI** is installed and you're logged in (`firebase login`). Project is set in `.firebaserc` (e.g. `codygo-website`); Hosting site is `structured-output` in `firebase.json`.
+2. Place API keys in `packages/backend/.env`:
+   ```
+   OPENAI_API_KEY=...
+   GOOGLE_GENERATIVE_AI_API_KEY=...
+   ANTHROPIC_API_KEY=...
+   GITHUB_PAT=...
+   ```
 
-2. Put API keys in `packages/backend/.env` (see `packages/backend/.env.sample`): `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `ANTHROPIC_API_KEY`. The predeploy script reads this file and creates/updates these three secrets in Google Secret Manager; the Cloud Functions use them at runtime. For local emulator, the same `.env` is copied into `.deployed` before the emulator starts.
-
-3. From the repo root:
-
+3. Deploy:
    ```bash
    pnpm run deploy
    ```
-
-   This runs `pnpm run build` then `firebase deploy` (hosting + functions). The site is served from `packages/frontend/out`; `/api/validate` and `/api/fix` are rewritten to Cloud Functions (auth required) so the same origin is used.
+   This builds all packages then runs `firebase deploy` (hosting + functions).
 
 ## Scripts (root)
 
-- `pnpm dev` – Run frontend (Next.js HMR), backend (tsup watch), and Firebase emulators in parallel; open http://localhost:3000 (API proxied automatically)
-- `pnpm dev:frontend` – Next.js dev server only
-- `pnpm dev:backend` – Backend build in watch mode only
-- `pnpm dev:emulator` – Firebase emulators (functions + hosting) at http://localhost:5050
-- `pnpm build` – Build all packages (Turbo): frontend → `packages/frontend/out`, backend → `packages/backend/lib`, schema-utils → `packages/schema-utils/dist`
-- `pnpm lint` – Lint all packages
-- `pnpm typecheck` – Type-check all packages
-- `pnpm run deploy` – Build and deploy to Firebase (hosting + functions)
+| Script | Description |
+|--------|-------------|
+| `pnpm dev` | Frontend + backend + Firebase emulators in parallel |
+| `pnpm dev:frontend` | Next.js dev server only |
+| `pnpm dev:backend` | Backend build in watch mode only |
+| `pnpm dev:emulator` | Firebase emulators only |
+| `pnpm build` | Build all packages (Turbo) |
+| `pnpm lint` | Lint all packages |
+| `pnpm typecheck` | Type-check all packages |
+| `pnpm run deploy` | Build and deploy to Firebase |
 
 ## How it works
 
-1. **Model groups**: The compatibility runner tests all configured models; models with identical schema support are grouped. The validator shows one option per group and uses the **minimal-cost model** in that group at runtime (e.g. nano/mini/lite).
-2. You pick which groups to validate against, then paste or load a JSON schema.
-3. You click **Validate**. The API is called with the representative (min-cost) model for each selected group.
-4. Results show per group: success/failure, model used, latency, and any error message.
+1. **Rule sets** group providers with identical schema support (e.g. GPT 4+, Claude 4.5+, Gemini 2.5+).
+2. User picks a rule set, pastes or loads a JSON schema in the Monaco editor.
+3. **Client-side validation** runs automatically (200ms debounce) — markers appear as squiggly underlines on problematic lines.
+4. **Auto-fix** applies mechanical fixes (add `additionalProperties: false`, move unsupported fields to `required`, etc.).
+5. **Optional server validation** sends the schema to the actual provider endpoint for real-world testing (requires auth).
+
+## Documentation
+
+See [docs/](docs/) for detailed documentation:
+
+- [Architecture](docs/architecture.md) — monorepo structure, data flow, tech stack
+- [API Reference](docs/api.md) — backend endpoints and auth
+- [MCP Server](docs/mcp-server.md) — tools, prompts, setup instructions
+- [Skill Plugin](docs/skill.md) — Claude Code / Cursor skill
+- [Design System](docs/design-system.md) — CSS tokens and Tailwind utilities
+- [Deployment](docs/deployment.md) — Firebase deploy and local dev
+- [Contributing](docs/contributing.md) — workflow and project rules
+- [Vocabulary](docs/vocabulary.md) — schema vs meta-schema vs metadata
 
 Open source by Codygo.

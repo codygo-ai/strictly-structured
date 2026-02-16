@@ -10,12 +10,13 @@ Strictly Structured deploys to Firebase (Hosting + Cloud Functions).
 
 ## API Keys
 
-Place API keys in `packages/backend/.env`:
+Place API keys in `packages/backend/.env` (see `packages/backend/.env.sample`):
 
 ```
 OPENAI_API_KEY=...
 GOOGLE_GENERATIVE_AI_API_KEY=...
 ANTHROPIC_API_KEY=...
+GITHUB_PAT=...
 ```
 
 The predeploy script reads this file and creates/updates secrets in Google Secret Manager. Cloud Functions access them at runtime.
@@ -31,7 +32,7 @@ pnpm run deploy
 This runs `pnpm build` followed by `firebase deploy` (hosting + functions).
 
 - Frontend static export is served from `packages/frontend/out`
-- `/api/validate` and `/api/fix` are rewritten to Cloud Functions
+- `/api/validate`, `/api/fix`, `/api/evaluate`, and `/api/feedback` are rewritten to Cloud Functions
 
 ## Local Development
 
@@ -44,7 +45,7 @@ Runs in parallel:
 - Backend build in watch mode (`tsup`)
 - Firebase emulators (functions + hosting)
 
-The dev server proxies `/api/validate` and `/api/fix` to the emulator. Before starting, the emulator step copies `.env` into `packages/backend/.deployed` so functions load the keys.
+The dev server proxies `/api/*` endpoints to the emulator. Before starting, the emulator step copies `.env` into `packages/backend/.deployed` so functions load the keys.
 
 ### Emulator Only
 

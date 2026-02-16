@@ -14,13 +14,17 @@ This monorepo uses **`@ssv/*`** for all packages:
 
 - **`@ssv/frontend`**: Next.js app (packages/frontend)
 - **`@ssv/backend`**: Firebase functions / server (packages/backend)
-- **`@ssv/schema-utils`**: Shared schema validation and types (packages/schema-utils)
+- **`@ssv/schemas`**: Canonical rule sets, validation engine, auto-fix engine, types (packages/schemas)
+- **`@ssv/mcp-server`**: MCP server exposing schema & code tools (packages/mcp-server)
+- **`@ssv/skill`**: Claude Code / Cursor skill plugin (packages/skill)
+- **`@ssv/codegen`**: Zod/Pydantic ↔ JSON Schema conversion, SDK simulation (packages/codegen)
+- **`@ssv/audit`**: Shared audit event types and utilities (packages/audit)
 - **`@ssv/tsconfig`**: Shared TypeScript configs (devops/tsconfig)
-- **`@ssv/eslint-config`**: Shared ESLint config
+- **`@ssv/eslint-config`**: Shared ESLint config (devops/eslint-config)
 
 ## Build patterns
 
-- **Libraries** (e.g. `@ssv/schema-utils`): Build with `tsc` or source imports; `typecheck` with `tsc --noEmit`.
+- **Libraries** (e.g. `@ssv/schemas`): Build with `tsc` or source imports; `typecheck` with `tsc --noEmit`.
 - **Applications** (e.g. `@ssv/frontend`, `@ssv/backend`): Use Next.js or tsup as appropriate; run `build` before deploy.
 
 ## Package imports only
@@ -29,10 +33,10 @@ Use package imports, not direct file paths across packages:
 
 ```typescript
 // ✅ CORRECT
-import { validateSchema } from '@ssv/schema-utils';
+import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 
 // ❌ WRONG
-import { validateSchema } from '../../schema-utils/src/validate';
+import { validateSchemaForRuleSet } from '../../schemas/src/ruleSetValidator';
 ```
 
 ## Relative paths
@@ -43,5 +47,5 @@ import { validateSchema } from '../../schema-utils/src/validate';
 ## Dependency management
 
 - Common tooling (TypeScript, ESLint, turbo) is at repo root. Use same major versions across packages.
-- Internal deps: `"@ssv/schema-utils": "workspace:*"` etc.
+- Internal deps: `"@ssv/schemas": "workspace:*"` etc.
 - Run `pnpm i` at root after any package.json change.

@@ -2,7 +2,7 @@
 
 ## Context
 
-**Strictly Structured** (by Codygo) is an open-source structured schema validation toolset that validates and auto-fixes JSON schemas for LLM structured output APIs across OpenAI, Anthropic, and Google Gemini. It ships as a web app, MCP server, and CLI skill.
+**Strictly Structured** (by Codygo) is an open-source structured schema validation toolset that validates and auto-fixes JSON schemas for LLM structured output APIs across OpenAI, Anthropic, and Google Gemini. It ships as a web app, MCP server, and Claude Code / Cursor skill.
 
 **Situation**: Solo founder based in Israel. Strong LinkedIn network. No X/Twitter or Facebook presence. ~$250 budget for ads/promotion. 30-day sprint. All content AI-generatable.
 
@@ -79,7 +79,7 @@ What's the most frustrating API difference you've hit across AI providers?
 
 **Visual**: Comparison table — 3 columns (OpenAI / Claude / Gemini), 5 rows of key differences. Dark background, provider logos, green checkmarks and red X marks.
 
-**First comment**: "Here's the tool: [link]. Works as a web app, MCP server for Claude Code/Cursor, and CLI. Would love feedback."
+**First comment**: "Here's the tool: [link]. Works as a web app, MCP server for Claude Code/Cursor, and Cursor skill. Would love feedback."
 
 ---
 
@@ -130,7 +130,7 @@ Then I built a validator that catches them all.
 Today it works as:
 → A web app (paste & validate)
 → An MCP server (validate from Claude Code / Cursor)
-→ A CLI tool (validate in your pipeline)
+→ A Cursor / Claude Code skill (conversational in-editor validation)
 
 The hardest part wasn't the code.
 It was deciding what NOT to build.
@@ -496,7 +496,7 @@ What works on one can silently fail on another."
 (Show: click "Fix All", see schema transform, errors disappear)
 
 [40-50s] EDITOR INTEGRATION (screen recording or mockup)
-"Works as a web app, MCP server for your editor, or CLI in your pipeline."
+"Works as a web app, MCP server for your editor, or Cursor skill."
 
 [50-60s] CTA (text on screen)
 "Free. Open source. No signup.
@@ -684,7 +684,7 @@ This tool checks your schema against all provider rules and auto-fixes issues.
 Available as:
 - Web app: [link]
 - MCP server for Claude Code / Cursor
-- CLI tool
+- Cursor / Claude Code skill
 
 Open source: [GitHub link]
 
