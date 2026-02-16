@@ -4,12 +4,12 @@ import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import type { SchemaRuleSet } from "@ssv/schemas/types";
 import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
+import type { ServerValidationState } from "~/lib/providers/types";
 import { RuleSetStatusCard } from "~/components/RuleSetStatusCard";
-import { IssuesTab } from "~/components/IssuesTab";
-import { ServerTestTab } from "~/components/ServerTestTab";
+import { IssuesTab, type OtherProviderStatus } from "~/components/IssuesTab";
 import { ReferenceTab } from "~/components/ReferenceTab";
 
-type TabId = "issues" | "server-test" | "reference";
+type TabId = "issues" | "reference";
 
 interface CompatibilityDashboardProps {
   ruleSets: SchemaRuleSet[];
@@ -20,12 +20,15 @@ interface CompatibilityDashboardProps {
   onFixAll: (fixedSchema: string, fixResult: FixResult) => void;
   onScrollToLine: (line: number) => void;
   fixResult: FixResult | null;
+  onUndo: () => void;
+  lastFixedForRuleSetId: string | null;
+  serverValidation: ServerValidationState;
+  onServerValidate: () => void;
 }
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "issues", label: "Issues" },
   { id: "reference", label: "Reference" },
-  { id: "server-test", label: "Server Test" },
 ];
 
 export function CompatibilityDashboard({
@@ -37,6 +40,10 @@ export function CompatibilityDashboard({
   onFixAll,
   onScrollToLine,
   fixResult,
+  onUndo,
+  lastFixedForRuleSetId,
+  serverValidation,
+  onServerValidate,
 }: CompatibilityDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabId>("issues");
   const sidebarRef = useRef<HTMLElement>(null);
@@ -95,6 +102,23 @@ export function CompatibilityDashboard({
   );
 
   const selectedSummary = validationResults.get(selectedRuleSetId);
+
+  const otherProviderStatuses: OtherProviderStatus[] = useMemo(
+    () =>
+      ruleSets
+        .filter((rs) => rs.ruleSetId !== selectedRuleSetId)
+        .map((rs) => {
+          const summary = validationResults.get(rs.ruleSetId);
+          return {
+            ruleSetId: rs.ruleSetId,
+            displayName: rs.displayName,
+            providerId: rs.providerId,
+            errorCount: summary?.errorCount ?? 0,
+            warningCount: summary?.warningCount ?? 0,
+          };
+        }),
+    [ruleSets, selectedRuleSetId, validationResults],
+  );
 
   return (
     <aside
@@ -163,13 +187,12 @@ export function CompatibilityDashboard({
                 onFixAll={onFixAll}
                 onScrollToLine={onScrollToLine}
                 fixResult={fixResult}
-              />
-            )}
-            {activeTab === "server-test" && (
-              <ServerTestTab
-                schema={schema}
-                ruleSet={selectedRuleSet}
-                isValidJsonSchema={selectedSummary?.isValidJsonSchema ?? true}
+                onUndo={onUndo}
+                otherProviderStatuses={otherProviderStatuses}
+                lastFixedForRuleSetId={lastFixedForRuleSetId}
+                onSelectRuleSet={onSelectRuleSet}
+                serverValidation={serverValidation}
+                onServerValidate={onServerValidate}
               />
             )}
             {activeTab === "reference" && (
