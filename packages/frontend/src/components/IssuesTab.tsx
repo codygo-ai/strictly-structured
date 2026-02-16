@@ -397,6 +397,11 @@ export function IssuesTab({
           />
           <FixResultContent fixResult={fixResult} />
         </div>
+        <ServerValidationSection
+          ruleSet={ruleSet}
+          serverValidation={serverValidation}
+          onServerValidate={onServerValidate}
+        />
         <div className="issues-card-footer">
           <Button variant="ghost" onClick={onUndo}>
             Undo
@@ -467,6 +472,7 @@ export function IssuesTab({
           </div>
         ))}
       </div>
+
       {isValidJsonSchema && fixableCount > 0 && (
         <div className="issues-card-footer">
           <Button variant="primary" onClick={handleFixAll}>
@@ -475,6 +481,11 @@ export function IssuesTab({
           {error && <span className="text-xs text-error">{error}</span>}
         </div>
       )}
+      <ServerValidationSection
+        ruleSet={ruleSet}
+        serverValidation={serverValidation}
+        onServerValidate={onServerValidate}
+      />
     </div>
   );
 }
