@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import type { SchemaRuleSet } from "@ssv/schemas/types";
+import type { SchemaRuleSet, RuleSetId } from "@ssv/schemas/types";
 import type { RuleSetValidationSummary } from "~/hooks/useAllRuleSetsValidation";
 import type { FixResult } from "@ssv/schemas/ruleSetFixer";
 import type { ServerValidationState } from "~/lib/providers/types";
@@ -14,14 +14,14 @@ type TabId = "issues" | "reference";
 interface CompatibilityDashboardProps {
   ruleSets: SchemaRuleSet[];
   validationResults: Map<string, RuleSetValidationSummary>;
-  selectedRuleSetId: string;
-  onSelectRuleSet: (id: string) => void;
+  selectedRuleSetId: RuleSetId;
+  onSelectRuleSet: (id: RuleSetId) => void;
   schema: string;
   onFixAll: (fixedSchema: string, fixResult: FixResult) => void;
   onScrollToLine: (line: number) => void;
   fixResult?: FixResult;
   onUndo: () => void;
-  lastFixedForRuleSetId?: string;
+  lastFixedForRuleSetId?: RuleSetId;
   serverValidation: ServerValidationState;
   onServerValidate: () => void;
 }

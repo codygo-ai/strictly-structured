@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { SchemaRuleSet } from "@ssv/schemas/types";
+import type { SchemaRuleSet, RuleSetId } from "@ssv/schemas/types";
 import type { SchemaMarker } from "@ssv/schemas/ruleSetValidator";
 import { fixSchemaForRuleSet, type FixResult } from "@ssv/schemas/ruleSetFixer";
 import { SeverityIcon } from "~/components/SeverityIcon";
@@ -13,7 +13,7 @@ import type { ServerValidationState } from "~/lib/providers/types";
 /* ─── Types ───────────────────────────────────────────────────────────── */
 
 export interface OtherRuleSetStatus {
-  ruleSetId: string;
+  ruleSetId: RuleSetId;
   displayName: string;
   errorCount: number;
   warningCount: number;
@@ -29,8 +29,8 @@ interface IssuesTabProps {
   fixResult?: FixResult;
   onUndo: () => void;
   otherRuleSetStatuses: OtherRuleSetStatus[];
-  lastFixedForRuleSetId?: string;
-  onSelectRuleSet: (id: string) => void;
+  lastFixedForRuleSetId?: RuleSetId;
+  onSelectRuleSet: (id: RuleSetId) => void;
   serverValidation: ServerValidationState;
   onServerValidate: () => void;
 }
@@ -70,7 +70,7 @@ function CrossProviderBanner({
 }: {
   ruleSet: SchemaRuleSet;
   statuses: OtherRuleSetStatus[];
-  onSelectRuleSet: (id: string) => void;
+  onSelectRuleSet: (id: RuleSetId) => void;
 }) {
   const withIssues = statuses.filter((s) => s.errorCount > 0 || s.warningCount > 0);
   if (withIssues.length === 0) return null;
