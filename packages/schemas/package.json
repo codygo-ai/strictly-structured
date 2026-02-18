@@ -8,7 +8,6 @@
     "./types": "./src/types.ts",
     "./ruleSetValidator": "./src/ruleSetValidator.ts",
     "./ruleSetFixer": "./src/ruleSetFixer.ts",
-    "./models": "./src/models.ts",
     "./data/schemaRuleSets.json": "./data/schemaRuleSets.json",
     "./data/versionAggregatedJsonSchema.json": "./data/versionAggregatedJsonSchema.json"
   },
