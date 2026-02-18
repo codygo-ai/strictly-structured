@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsx build.ts",
-    "lint": "eslint src --max-warnings 0",
-    "typecheck": "echo 'No TypeScript to check (skill uses plain .mjs)'"
+    "lint": "eslint build.ts src --max-warnings 0",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",

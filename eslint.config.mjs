@@ -112,4 +112,12 @@ export default [
       '@codygo-ai/mono/no-js-extension': 'off',
     },
   },
+  // Skill package: plain ESM .mjs (no TypeScript project)
+  {
+    files: ['packages/skill/**/*.mjs'],
+    languageOptions: {
+      globals: { ...globals.node },
+      parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+    },
+  },
 ];

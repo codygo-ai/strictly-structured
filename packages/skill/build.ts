@@ -13,7 +13,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const args = process.argv.slice(2);
 const outDirIdx = args.indexOf('--out-dir');
-const outDir = outDirIdx !== -1 ? args[outDirIdx + 1] : join(__dirname, 'dist');
+const outDirRaw = outDirIdx !== -1 ? args[outDirIdx + 1] : undefined;
+const outDir = outDirRaw ?? join(__dirname, 'dist');
+if (outDirIdx !== -1 && !outDirRaw) {
+  throw new Error('--out-dir requires a path argument');
+}
 
 const rulesSource = join(__dirname, '..', 'schemas', 'data', 'schemaRuleSets.json');
 const skillDir = join(__dirname, 'skills', 'validate-schema');
