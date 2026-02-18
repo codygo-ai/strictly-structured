@@ -6,7 +6,8 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "paths": { "~/*": ["src/*"] }
+    "paths": { "~/*": ["src/*"] },
+    "moduleResolution": "bundler"
   },
   "include": [
     "next-env.d.ts",

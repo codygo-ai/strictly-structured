@@ -23,6 +23,7 @@ interface CompatibilityDashboardProps {
   fixResult?: FixResult;
   onUndo: () => void;
   lastFixedForRuleSetId?: RuleSetId;
+  otherRuleSetStatusesAtFix?: OtherRuleSetStatus[];
   serverValidation: ServerValidationState;
   onServerValidate: () => void;
 }
@@ -43,6 +44,7 @@ export function CompatibilityDashboard({
   fixResult,
   onUndo,
   lastFixedForRuleSetId,
+  otherRuleSetStatusesAtFix,
   serverValidation,
   onServerValidate,
 }: CompatibilityDashboardProps) {
@@ -185,6 +187,7 @@ export function CompatibilityDashboard({
                 fixResult={fixResult}
                 onUndo={onUndo}
                 otherRuleSetStatuses={otherRuleSetStatuses}
+                otherRuleSetStatusesAtFix={otherRuleSetStatusesAtFix}
                 lastFixedForRuleSetId={lastFixedForRuleSetId}
                 onSelectRuleSet={onSelectRuleSet}
                 serverValidation={serverValidation}

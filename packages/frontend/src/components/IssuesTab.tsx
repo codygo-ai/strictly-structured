@@ -30,6 +30,7 @@ interface IssuesTabProps {
   fixResult?: FixResult;
   onUndo: () => void;
   otherRuleSetStatuses: OtherRuleSetStatus[];
+  otherRuleSetStatusesAtFix?: OtherRuleSetStatus[];
   lastFixedForRuleSetId?: RuleSetId;
   onSelectRuleSet: (id: RuleSetId) => void;
   serverValidation: ServerValidationState;
@@ -315,6 +316,7 @@ export function IssuesTab({
   fixResult,
   onUndo,
   otherRuleSetStatuses,
+  otherRuleSetStatusesAtFix,
   lastFixedForRuleSetId,
   onSelectRuleSet,
   serverValidation,
@@ -386,15 +388,23 @@ export function IssuesTab({
       ? `${fixResult.appliedFixes.length} fix${fixResult.appliedFixes.length !== 1 ? 'es' : ''} applied for ${ruleSet.displayName}`
       : `${fixResult.appliedFixes.length} fixed \u00B7 ${fixResult.unresolvedErrors.length} needs manual fix`;
 
+    // Use snapshot computed synchronously at fix time to avoid flickering
+    // The snapshot contains accurate post-fix status for other providers
+    const bannerStatuses = otherRuleSetStatusesAtFix ?? otherRuleSetStatuses;
+    const withIssues = bannerStatuses.filter((s) => s.errorCount > 0 || s.warningCount > 0);
+    const shouldShowBanner = withIssues.length > 0;
+
     return (
       <div className="issues-card">
         <CardHeader icon={icon} iconVariant={iconVariant} label={label} sublabel={sublabel} />
         <div className="issues-card-content">
-          <CrossRuleSetBanner
-            ruleSet={ruleSet}
-            statuses={otherRuleSetStatuses}
-            onSelectRuleSet={onSelectRuleSet}
-          />
+          {shouldShowBanner && (
+            <CrossRuleSetBanner
+              ruleSet={ruleSet}
+              statuses={withIssues}
+              onSelectRuleSet={onSelectRuleSet}
+            />
+          )}
           <FixResultContent fixResult={fixResult} />
         </div>
         <div className="issues-card-footer">
