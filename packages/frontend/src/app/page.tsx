@@ -5,7 +5,7 @@ import type { FixResult } from '@ssv/schemas/ruleSetFixer';
 import { validateSchemaForRuleSet } from '@ssv/schemas/ruleSetValidator';
 import type { SchemaRuleSetsData, RuleSetId } from '@ssv/schemas/types';
 import { useSearchParams } from 'next/navigation';
-import { useReducer, useCallback, useMemo, useRef, useEffect, Suspense } from 'react';
+import { useReducer, useState, useCallback, useMemo, useRef, useEffect, Suspense } from 'react';
 
 import { CompatibilityDashboard } from '~/components/CompatibilityDashboard';
 import { EditorBottomBar } from '~/components/EditorBottomBar';
@@ -227,18 +227,16 @@ function validatorReducer(state: ValidatorState, action: ValidatorAction): Valid
 /* ─── Onboarding hint ───────────────────────────────────────────────── */
 
 function useOnboardingHint() {
-  const [visible, setVisible] = useReducer(
-    () => false,
-    undefined,
-    () => {
-      if (typeof window === 'undefined') return false;
-      return localStorage.getItem(ONBOARDING_KEY) === null;
-    },
-  );
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const isDismissed = localStorage.getItem(ONBOARDING_KEY) !== null;
+    setVisible(!isDismissed);
+  }, []);
 
   const dismiss = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, '1');
-    setVisible();
+    setVisible(false);
   }, []);
 
   return { visible, dismiss };
