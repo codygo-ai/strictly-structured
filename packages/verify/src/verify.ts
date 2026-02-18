@@ -23,12 +23,10 @@ import type {
   VerifyReport,
 } from './types';
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? 'OPENAI_API_KEY_missing';
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY ?? 'ANTHROPIC_API_KEY_missing';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const GOOGLE_GENERATIVE_AI_API_KEY =
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY ??
-  process.env.GEMINI_API_KEY ??
-  'GEMINI_API_KEY_missing';
+  process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? process.env.GEMINI_API_KEY;
 
 const ruleSetsData = ruleSetsDataJson as unknown as SchemaRuleSetsData;
 const RULE_SETS = ruleSetsData.ruleSets;
@@ -66,9 +64,29 @@ function skippedLlmResult(ruleSetId: RuleSetId): LlmTestOutcome {
   return {
     model: RULESET_TO_CHEAPEST_MODEL[ruleSetId],
     valid: false,
-    error: 'skipped',
+    skipped: true,
     latencyMs: 0,
   };
+}
+
+function requireApiKey(provider: string): string {
+  switch (provider) {
+    case 'openai':
+      if (!OPENAI_API_KEY) throw new Error('OPENAI_API_KEY env var is required for LLM testing');
+      return OPENAI_API_KEY;
+    case 'anthropic':
+      if (!ANTHROPIC_API_KEY)
+        throw new Error('ANTHROPIC_API_KEY env var is required for LLM testing');
+      return ANTHROPIC_API_KEY;
+    case 'google':
+      if (!GOOGLE_GENERATIVE_AI_API_KEY)
+        throw new Error(
+          'GOOGLE_GENERATIVE_AI_API_KEY or GEMINI_API_KEY env var is required for LLM testing',
+        );
+      return GOOGLE_GENERATIVE_AI_API_KEY;
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
 }
 
 async function runLlmTest(
@@ -76,19 +94,21 @@ async function runLlmTest(
   ruleSetId: RuleSetId,
 ): Promise<LlmTestOutcome> {
   const modelId = RULESET_TO_CHEAPEST_MODEL[ruleSetId];
-  const [providerPrefix, ...modelParts] = modelId.split(':');
-  const model = modelParts.join(':');
+  const colonIdx = modelId.indexOf(':');
+  const providerPrefix = modelId.slice(0, colonIdx);
+  const model = modelId.slice(colonIdx + 1);
+  const apiKey = requireApiKey(providerPrefix);
 
   let result: ProviderResult;
   switch (providerPrefix) {
     case 'openai':
-      result = await validateWithOpenAI(schema, OPENAI_API_KEY, model);
+      result = await validateWithOpenAI(schema, apiKey, model);
       break;
     case 'anthropic':
-      result = await validateWithAnthropic(schema, ANTHROPIC_API_KEY, model);
+      result = await validateWithAnthropic(schema, apiKey, model);
       break;
     case 'google':
-      result = await validateWithGoogle(schema, GOOGLE_GENERATIVE_AI_API_KEY, model);
+      result = await validateWithGoogle(schema, apiKey, model);
       break;
     default:
       throw new Error(`Unknown provider prefix: ${providerPrefix}`);
@@ -119,14 +139,15 @@ async function verifyDocument(
       : await runLlmTest(schema, ruleSetId);
 
     let fix: FixOutcome | undefined;
-    if (!validation.valid && !llmTest.valid && !opts.skipFix) {
+    if (!validation.valid && !opts.skipLlm && !llmTest.valid && !opts.skipFix) {
       const fixResult = fixSchemaForRuleSet(schema, ruleSet);
       const fixedRaw = JSON.stringify(fixResult.fixedSchema, null, 2);
 
       const postFixValidation = runValidation(fixedRaw, ruleSet);
-      const postFixLlmTest = opts.skipLlm
-        ? skippedLlmResult(ruleSetId)
-        : await runLlmTest(fixResult.fixedSchema as Record<string, unknown>, ruleSetId);
+      const postFixLlmTest = await runLlmTest(
+        fixResult.fixedSchema as Record<string, unknown>,
+        ruleSetId,
+      );
 
       fix = {
         appliedFixes: fixResult.appliedFixes,
@@ -149,12 +170,21 @@ function buildSummary(documents: DocumentReport[]): VerifyReport['summary'] {
   let failedValidationOnly = 0;
   let failedLlmOnly = 0;
   let failedBoth = 0;
+  let llmSkipped = 0;
   let fixAttempted = 0;
   let fixSucceeded = 0;
 
   for (const doc of documents) {
     for (const rs of doc.ruleSetResults) {
       totalTests++;
+
+      if (rs.llmTest.skipped) {
+        llmSkipped++;
+        if (!rs.validation.valid) failedValidationOnly++;
+        else passedBoth++;
+        continue;
+      }
+
       const vFail = !rs.validation.valid;
       const lFail = !rs.llmTest.valid;
 
@@ -177,6 +207,7 @@ function buildSummary(documents: DocumentReport[]): VerifyReport['summary'] {
     failedValidationOnly,
     failedLlmOnly,
     failedBoth,
+    llmSkipped,
     fixAttempted,
     fixSucceeded,
   };

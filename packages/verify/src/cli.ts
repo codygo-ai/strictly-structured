@@ -52,7 +52,7 @@ function parseRuleSetIds(raw: string | undefined): RuleSetId[] | undefined {
 
 const opts: VerifyOptions = {
   ruleSetIds: parseRuleSetIds(values.rulesets),
-  outputPath: values.output,
+  outputPath: values.output ? path.resolve(CALLER_CWD, values.output) : undefined,
   skipLlm: values['no-llm'],
   skipFix: values['no-fix'],
 };

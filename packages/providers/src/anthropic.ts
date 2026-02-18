@@ -22,10 +22,10 @@ export async function validateWithAnthropic(
         {
           name: 'output',
           description: 'Return the JSON output',
-          input_schema: { type: 'object' as const, ...schema } satisfies {
-            type: 'object';
-            [key: string]: unknown;
-          },
+          input_schema: {
+            ...(schema as Record<string, unknown>),
+            type: 'object' as const,
+          } satisfies { type: 'object'; [key: string]: unknown },
         },
       ],
       tool_choice: { type: 'tool', name: 'output' },

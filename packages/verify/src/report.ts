@@ -7,12 +7,16 @@ function statusIcon(valid: boolean): string {
   return valid ? 'PASS' : 'FAIL';
 }
 
+function llmStatusIcon(rs: RuleSetReport): string {
+  return rs.llmTest.skipped ? 'SKIP' : statusIcon(rs.llmTest.valid);
+}
+
 function formatRuleSetLine(rs: RuleSetReport): string {
   const parts = [
     `    [${rs.ruleSetId}]`,
     `validation=${statusIcon(rs.validation.valid)}`,
-    `llm=${statusIcon(rs.llmTest.valid)}`,
-    rs.llmTest.error && rs.llmTest.error !== 'skipped' ? `(${rs.llmTest.error.slice(0, 80)})` : '',
+    `llm=${llmStatusIcon(rs)}`,
+    rs.llmTest.error && !rs.llmTest.skipped ? `(${rs.llmTest.error.slice(0, 80)})` : '',
   ];
 
   if (rs.fix) {
@@ -55,6 +59,9 @@ export function printReport(report: VerifyReport): void {
   console.log(`  Failed validation only: ${s.failedValidationOnly}`);
   console.log(`  Failed LLM only:       ${s.failedLlmOnly}`);
   console.log(`  Failed both:           ${s.failedBoth}`);
+  if (s.llmSkipped > 0) {
+    console.log(`  LLM skipped:           ${s.llmSkipped}`);
+  }
   if (s.fixAttempted > 0) {
     console.log(`  Fix attempted: ${s.fixAttempted}, succeeded: ${s.fixSucceeded}`);
   }

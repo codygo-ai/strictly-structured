@@ -11,6 +11,7 @@ export interface ValidationOutcome {
 export interface LlmTestOutcome {
   model: string;
   valid: boolean;
+  skipped?: boolean;
   error?: string;
   latencyMs: number;
 }
@@ -43,6 +44,7 @@ export interface ReportSummary {
   failedValidationOnly: number;
   failedLlmOnly: number;
   failedBoth: number;
+  llmSkipped: number;
   fixAttempted: number;
   fixSucceeded: number;
 }
