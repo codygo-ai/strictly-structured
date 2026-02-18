@@ -83,6 +83,9 @@ importers:
       '@google/generative-ai':
         specifier: ^0.24.0
         version: 0.24.1
+      '@ssv/providers':
+        specifier: workspace:*
+        version: link:../providers
       firebase-admin:
         specifier: ^13.6.0
         version: 13.6.1(encoding@0.1.13)
@@ -91,7 +94,7 @@ importers:
         version: 7.0.5(firebase-admin@13.6.1(encoding@0.1.13))
       openai:
         specifier: ^6.21.0
-        version: 6.21.0(ws@7.5.10)(zod@3.25.76)
+        version: 6.21.0(zod@3.25.76)
     devDependencies:
       '@ssv/audit':
         specifier: workspace:*
@@ -171,7 +174,7 @@ importers:
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       openai:
         specifier: ^4.73.0
-        version: 4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@3.25.76)
+        version: 4.104.0(encoding@0.1.13)(zod@3.25.76)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -241,6 +244,28 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  packages/providers:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.74.0
+        version: 0.74.0(zod@3.25.76)
+      '@google/generative-ai':
+        specifier: ^0.24.0
+        version: 0.24.1
+      openai:
+        specifier: ^6.21.0
+        version: 6.21.0(zod@3.25.76)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+
   packages/schemas:
     dependencies:
       json-source-map:
@@ -276,6 +301,31 @@ importers:
         version: 4.21.0
       typescript:
         specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/verify:
+    dependencies:
+      '@ssv/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@ssv/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.11
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.2(jiti@2.6.1)
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.0
         version: 5.9.3
 
 packages:
@@ -10103,7 +10153,7 @@ snapshots:
     dependencies:
       is-wsl: 1.1.0
 
-  openai@4.104.0(encoding@0.1.13)(ws@7.5.10)(zod@3.25.76):
+  openai@4.104.0(encoding@0.1.13)(zod@3.25.76):
     dependencies:
       '@types/node': 18.19.130
       '@types/node-fetch': 2.6.13
@@ -10113,14 +10163,12 @@ snapshots:
       formdata-node: 4.4.1
       node-fetch: 2.7.0(encoding@0.1.13)
     optionalDependencies:
-      ws: 7.5.10
       zod: 3.25.76
     transitivePeerDependencies:
       - encoding
 
-  openai@6.21.0(ws@7.5.10)(zod@3.25.76):
+  openai@6.21.0(zod@3.25.76):
     optionalDependencies:
-      ws: 7.5.10
       zod: 3.25.76
 
   openapi3-ts@3.2.0:
