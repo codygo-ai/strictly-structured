@@ -1,0 +1,25 @@
+{
+  "name": "@ssv/verify",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "verify": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0"
+  },
+  "dependencies": {
+    "@ssv/schemas": "workspace:*",
+    "@ssv/providers": "workspace:*",
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "eslint": "^9.39.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.0"
+  }
+}
