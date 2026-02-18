@@ -1,0 +1,10 @@
+{
+  "extends": "@codygo-ai/tsconfig/base.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["build.ts"],
+  "exclude": ["node_modules"]
+}
