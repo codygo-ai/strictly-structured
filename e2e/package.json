@@ -1,0 +1,8 @@
+{
+  "name": "@ssv/e2e",
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@ssv/schemas": "workspace:*"
+  }
+}

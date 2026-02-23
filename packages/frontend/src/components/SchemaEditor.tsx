@@ -165,6 +165,7 @@ export function SchemaEditor({
           ? 'flex-1 min-h-0 rounded-t-lg overflow-hidden flex flex-col border border-b-0 border-border bg-surface shadow-sm'
           : 'rounded-t-lg overflow-hidden min-h-[280px] border border-b-0 border-border bg-surface shadow-sm'
       }
+      data-testid="schema-editor"
     >
       <Monaco
         height={fillHeight ? '100%' : '280px'}
