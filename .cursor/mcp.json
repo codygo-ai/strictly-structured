@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ssv": {
+      "command": "pnpm",
+      "args": [
+        "--filter",
+        "@ssv/mcp-server",
+        "run",
+        "start"
+      ]
+    }
+  }
+}

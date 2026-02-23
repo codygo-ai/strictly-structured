@@ -27,6 +27,7 @@ const schemaFile = getArg('--schema-file');
 const schemaInline = getArg('--schema');
 const rulesFile = getArg('--rules-file');
 const providerFilter = getArg('--provider');
+const formatHuman = args.includes('--format') && getArg('--format') === 'human';
 
 if (!rulesFile) {
   console.error(
@@ -375,5 +376,33 @@ const summary =
       ? `Invalid for all ${results.length} providers.`
       : `Valid for ${validProviders.length}/${results.length} providers (${validProviders.join(', ')}). Issues found for: ${invalidProviders.join(', ')}.`;
 
-console.log(JSON.stringify({ results, summary }, null, 2));
+if (formatHuman) {
+  const lines = [
+    '## Schema Validation Results',
+    '',
+    '| Provider | Status | Errors |',
+    '|----------|--------|--------|',
+    ...results.map(
+      (r) =>
+        `| ${r.displayName} | ${r.valid ? 'PASS' : 'FAIL'} | ${r.valid ? '0' : r.errors.length} |`,
+    ),
+    '',
+    summary,
+  ];
+  if (invalidProviders.length > 0) {
+    lines.push('');
+    lines.push('### Errors by provider');
+    for (const r of results) {
+      if (!r.valid && r.errors.length) {
+        lines.push('');
+        lines.push(`**${r.displayName}**`);
+        r.errors.forEach((e) => lines.push(`- ${e}`));
+        if (r.warnings.length) r.warnings.forEach((w) => lines.push(`- (warning) ${w}`));
+      }
+    }
+  }
+  console.log(lines.join('\n'));
+} else {
+  console.log(JSON.stringify({ results, summary }, null, 2));
+}
 process.exit(invalidProviders.length > 0 ? 1 : 0);

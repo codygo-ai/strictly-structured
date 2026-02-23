@@ -1,11 +1,14 @@
 {
   "extends": "@codygo-ai/tsconfig/base.json",
   "compilerOptions": {
+    "module": "ES2022",
+    "moduleResolution": "bundler",
     "types": ["node"],
     "noEmit": true,
     "outDir": "dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts", "../schemas/src/types/*.d.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

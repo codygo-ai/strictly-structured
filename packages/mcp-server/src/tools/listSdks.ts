@@ -4,7 +4,7 @@ import { listSdks } from '@ssv/codegen';
 export function registerListSdksTool(server: McpServer): void {
   server.tool(
     'list_sdks',
-    'List all supported SDK/framework simulations with metadata. Shows which providers each SDK targets, what transforms it applies, and known gaps.',
+    'List supported SDK/framework simulations (Zod, Pydantic, etc.) with provider support and transform metadata. Use when the user asks about code generation or SDK compatibility.',
     {},
     async () => {
       const sdks = listSdks();
