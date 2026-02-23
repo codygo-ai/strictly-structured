@@ -5,10 +5,10 @@
 1. **Ensure `.cursor/mcp.json` is configured** (already done)
 2. **Restart Cursor** (or reload window: `Cmd+Shift+P` → "Developer: Reload Window")
 3. **After restart**, the MCP server "ssv" should be available
-4. **Test by asking the AI** to call MCP tools:
-   - "Call listRuleSets"
-   - "Validate this schema for openai: {...}"
-   - "Fix this schema for gemini: {...}"
+4. **Test by asking the AI** to use MCP tools, e.g.:
+   - "List rule sets" or "Call list_rule_sets"
+   - "Validate this schema for OpenAI: {\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"}}}"
+   - "Fix this schema for Gemini: {...}"
 
 ## Method 2: Manual Testing (Command Line)
 
@@ -45,7 +45,7 @@ Once connected, you can use these tools:
 
 - `validate_schema` - Validate a JSON schema against provider rules
 - `fix_schema` - Auto-fix a schema for a provider
-- `list_groups` - List available rule sets
+- `list_rule_sets` - List available rule sets
 - `convert_code` - Convert between Zod/Pydantic/JSON Schema
 - `validate_code` - Validate Zod/Pydantic code
 - `fix_code` - Fix Zod/Pydantic code

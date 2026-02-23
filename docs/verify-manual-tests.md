@@ -1,6 +1,6 @@
 # Manual Tests for Phase 1 Verify (#50)
 
-Run these commands to manually test the verification system:
+Run these commands to manually test the verification system. **Run all commands from the repository root** (so path arguments and report output paths resolve correctly).
 
 ## 1. Verify one file (no LLM)
 

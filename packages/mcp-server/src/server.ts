@@ -4,6 +4,7 @@ import { registerExplainErrorsPrompt } from './prompts/explainErrors';
 import { registerFixSchemaPrompt } from './prompts/fixSchema';
 import { registerGenerateSchemaPrompt } from './prompts/generateSchema';
 import { registerConvertCodeTool } from './tools/convertCode';
+import { registerExplainErrorsTool } from './tools/explainErrors';
 import { registerFixCodeTool } from './tools/fixCode';
 import { registerFixSchemaTool } from './tools/fixSchema';
 import { registerListRuleSetsTool } from './tools/listRuleSets';
@@ -22,6 +23,7 @@ export function createServer(): McpServer {
 
   registerValidateSchemaTool(server);
   registerListRuleSetsTool(server);
+  registerExplainErrorsTool(server);
   registerFixSchemaTool(server);
   registerConvertCodeTool(server);
   registerValidateCodeTool(server);

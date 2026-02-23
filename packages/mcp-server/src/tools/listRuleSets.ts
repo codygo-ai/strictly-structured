@@ -7,7 +7,7 @@ import type { ProviderId } from '../lib/types';
 export function registerListRuleSetsTool(server: McpServer): void {
   server.tool(
     'list_rule_sets',
-    'List available LLM provider rule sets and their models for structured output schema validation.',
+    'List available LLM provider rule sets (OpenAI, Anthropic, Gemini) and their models. Use to show the user which providers/rule sets exist before validating or fixing a schema.',
     {
       provider: z
         .enum(['openai', 'anthropic', 'gemini'])

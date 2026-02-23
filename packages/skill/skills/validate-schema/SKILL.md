@@ -27,7 +27,12 @@ If you cannot determine the schema, ask the user.
 
 ## Step 2: Validate
 
-Run the validation script. The script and rules file are in this skill's directory.
+**Prefer MCP when available.** If the SSV MCP server is available in this environment, use these tools first (do not run the script):
+- `validate_schema` — validate the schema; pass schema as a JSON string.
+- `fix_schema` — if the user asked for fixes; pass schema and provider.
+- `explain_errors` — if the user wants to understand why validation failed; pass schema and optional providers.
+
+**Only when MCP is not available**, run the validation script. The script and rules file are in this skill's directory.
 
 ```bash
 node scripts/validate.mjs \
@@ -35,12 +40,13 @@ node scripts/validate.mjs \
   --rules-file rules/schema_rule_sets.json
 ```
 
-Or with inline JSON:
+Or with inline JSON (add `--format human` for a readable table instead of JSON):
 
 ```bash
 node scripts/validate.mjs \
   --schema '{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}' \
-  --rules-file rules/schema_rule_sets.json
+  --rules-file rules/schema_rule_sets.json \
+  --format human
 ```
 
 To validate against a specific provider only:
@@ -52,7 +58,7 @@ node scripts/validate.mjs \
   --provider openai
 ```
 
-The script outputs JSON with per-provider results.
+The script outputs JSON by default, or a human-readable table with `--format human`.
 
 ### Fallback
 

@@ -12,10 +12,13 @@ Instead of using tool calls directly (like the MCP server), the skill offers a n
    ```bash
    pnpm --filter @ssv/skill run build
    ```
-2. **Install into this project** — copy the built skill into Cursor’s skills folder:
+2. **Install into this project** — either copy once, or symlink (so rebuilds are picked up without re-copying):
    ```bash
    mkdir -p .cursor/skills
+   # Option A: copy (re-run after each build if you want latest)
    cp -R packages/skill/dist/validate-schema/skills/validate-schema .cursor/skills/validate-schema
+   # Option B: symlink (one-time; Cursor sees latest build automatically)
+   ln -sf "$(pwd)/packages/skill/dist/validate-schema/skills/validate-schema" .cursor/skills/validate-schema
    ```
 3. **Reload Cursor** (e.g. `Cmd+Shift+P` → “Developer: Reload Window”) so it picks up the new skill.
 
