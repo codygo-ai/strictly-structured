@@ -22,11 +22,28 @@ function isValidJson(schema: string): boolean {
   }
 }
 
+const JSON_SCHEMA_ROOT_KEYS = new Set([
+  'type',
+  'oneOf',
+  'anyOf',
+  'allOf',
+  'not',
+  '$ref',
+  '$defs',
+  'definitions',
+  'properties',
+  'items',
+  'if',
+  'then',
+  'else',
+]);
+
 function isValidJsonSchema(schema: string): boolean {
   if (!isValidJson(schema)) return false;
   try {
     const parsed = JSON.parse(schema) as Record<string, unknown>;
-    return typeof parsed === 'object' && parsed !== null && 'type' in parsed;
+    if (typeof parsed !== 'object' || parsed === null) return false;
+    return Object.keys(parsed).some((k) => JSON_SCHEMA_ROOT_KEYS.has(k));
   } catch {
     return false;
   }
