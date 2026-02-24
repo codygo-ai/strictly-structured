@@ -3,23 +3,13 @@ import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
 
+import { E2E_SCHEMA, E2E_SCHEMA_ID, schemaToBase64 } from '../fixtures/schema';
 import { getServerValidationResults } from '../serverBaseline';
 import { assertUrlSchemaApplied } from '../urlSchema';
 
-const INVALID_SCHEMA = `{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  }
-}`;
-
-function schemaToBase64(schema: string): string {
-  return Buffer.from(schema, 'utf-8').toString('base64');
-}
-
 test.describe('Server vs UI comparison', () => {
   test('UI validation results match server validation baseline', async ({ page }) => {
-    const schema = INVALID_SCHEMA;
+    const schema = E2E_SCHEMA;
     const base64 = schemaToBase64(schema);
     await page.goto(`/?schema=${base64}`);
 
@@ -62,7 +52,7 @@ test.describe('Server vs UI comparison', () => {
 
       const match = server.valid === uiValid && server.errorCount === uiErrorCount;
       results.push({
-        schemaId: 'invalid-openai',
+        schemaId: E2E_SCHEMA_ID,
         ruleSetId: server.ruleSetId,
         serverValid: server.valid,
         serverErrorCount: server.errorCount,
@@ -75,7 +65,7 @@ test.describe('Server vs UI comparison', () => {
     const mismatches = results.filter((r) => !r.match);
     const resultsDir = path.join(process.cwd(), 'e2e', 'results');
     fs.mkdirSync(resultsDir, { recursive: true });
-    const reportPath = path.join(resultsDir, `phase2-comparison-${Date.now()}.json`);
+    const reportPath = path.join(resultsDir, `comparison-${Date.now()}.json`);
     fs.writeFileSync(reportPath, JSON.stringify(results, null, 2));
 
     expect(

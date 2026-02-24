@@ -1,20 +1,11 @@
 import { expect, test } from '@playwright/test';
 
-const INVALID_SCHEMA = `{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  }
-}`;
-
-function schemaToBase64(schema: string): string {
-  return Buffer.from(schema, 'utf-8').toString('base64');
-}
+import { E2E_SCHEMA, schemaToBase64 } from '../fixtures/schema';
 
 test.describe('Server validation', () => {
   test('Validate on server updates UI (results or error)', async ({ page }) => {
     test.setTimeout(90_000);
-    const base64 = schemaToBase64(INVALID_SCHEMA);
+    const base64 = schemaToBase64(E2E_SCHEMA);
     await page.goto(`/?schema=${base64}`);
 
     await expect(page.getByTestId('compatibility-dashboard')).toBeVisible({

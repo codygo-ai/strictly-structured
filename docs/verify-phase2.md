@@ -136,7 +136,7 @@ These test IDs are for E2E only and must not change without updating `e2e/tests/
   - **Server:** valid + errorCount (and optionally warningCount) per rule set (from Phase 1 helper or report JSON).
   - **UI:** valid + errorCount per rule set (from DOM). Read **numeric** error count from `data-testid="rule-set-error-count"` (or a `data-*` attribute) on each card — do not parse display strings like "N issues". Derive valid from status (e.g. "Compatible" vs error/warning state).
 - **Match rule:** Consider a (schema, ruleSet) a **match** if `valid` is the same and `errorCount` is the same. Optionally compare `warningCount`.
-- **Report:** Write to `e2e/results/phase2-comparison-<timestamp>.json` (or similar) an array of: `{ schemaId, ruleSetId, serverValid, serverErrorCount, uiValid, uiErrorCount, match }`. If any `match === false`, the test fails.
+- **Report:** Write to `e2e/results/comparison-<timestamp>.json` (or similar) an array of: `{ schemaId, ruleSetId, serverValid, serverErrorCount, uiValid, uiErrorCount, match }`. If any `match === false`, the test fails.
 - **Assertion:** In the test, after comparing, `expect(mismatches).toHaveLength(0)` (or equivalent) with a clear message listing mismatches.
 
 ### 4.7 Fix workflow (in scope for #51; second slice)
