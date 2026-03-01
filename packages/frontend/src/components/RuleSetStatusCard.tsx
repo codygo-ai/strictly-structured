@@ -46,8 +46,16 @@ export function RuleSetStatusCard({
     statusClass = 'ok';
   }
 
+  const valid = isValidJson && isValidJsonSchema && !hasErrors;
+
   return (
-    <button type="button" className={`status-card ${selected ? 'selected' : ''}`} onClick={onClick}>
+    <button
+      type="button"
+      className={`status-card ${selected ? 'selected' : ''}`}
+      onClick={onClick}
+      data-testid={`rule-set-card-${ruleSet.ruleSetId}`}
+      data-valid={valid}
+    >
       <div className="status-card-provider">
         <ProviderIcon provider={ruleSet.providerId} />
         <span>{ruleSet.displayName}</span>
@@ -57,7 +65,9 @@ export function RuleSetStatusCard({
         {isValidJsonSchema && hasErrors && <span>&#x2717; </span>}
         {isValidJsonSchema && !hasErrors && hasWarnings && <span>&#x26A0; </span>}
         {isValidJsonSchema && !hasErrors && !hasWarnings && <span>&#x2713; </span>}
-        {statusText}
+        <span data-testid="rule-set-error-count" data-error-count={errorCount}>
+          {statusText}
+        </span>
       </div>
     </button>
   );

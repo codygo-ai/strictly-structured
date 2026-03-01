@@ -73,6 +73,7 @@ The single source of truth for provider rules is `packages/schemas/data/schemaRu
 | Script | Description |
 |--------|-------------|
 | `pnpm dev` | Frontend + backend + Firebase emulators in parallel |
+| `pnpm dev:e2e` | Same as `dev` with `NEXT_PUBLIC_E2E=true` (for E2E tests that use `?schema=`) |
 | `pnpm dev:frontend` | Next.js dev server only |
 | `pnpm dev:backend` | Backend build in watch mode only |
 | `pnpm dev:emulator` | Firebase emulators only |
@@ -80,6 +81,19 @@ The single source of truth for provider rules is `packages/schemas/data/schemaRu
 | `pnpm lint` | Lint all packages |
 | `pnpm typecheck` | Type-check all packages |
 | `pnpm run deploy` | Build and deploy to Firebase |
+| `pnpm run e2e` | Run Playwright E2E tests (see [E2E](#e2e-tests)) |
+| `pnpm run e2e:headed` | E2E with browser visible |
+| `pnpm run e2e:debug` | E2E in debug mode (browser stays open) |
+
+## E2E tests
+
+1. Start the app so the frontend reads `?schema=` and the backend/emulators are reachable (e.g. for server-validate):
+   - **Full stack (recommended):** `pnpm run dev:e2e` — same as `pnpm dev` but with `NEXT_PUBLIC_E2E=true` so comparison and fix-workflow tests get the URL schema.
+   - Frontend only: `NEXT_PUBLIC_E2E=true pnpm run dev:frontend`
+2. In another terminal: `pnpm run e2e`  
+   Override base URL with `BASE_URL` if needed (e.g. deployed preview).
+
+See [docs/verify-phase2.md](docs/verify-phase2.md) for full details.
 
 ## How it works
 
@@ -93,6 +107,7 @@ The single source of truth for provider rules is `packages/schemas/data/schemaRu
 
 See [docs/](docs/) for detailed documentation:
 
+- [Phase 2 E2E verification](docs/verify-phase2.md) — Playwright setup, comparison tests, how to run
 - [Architecture](docs/architecture.md) — monorepo structure, data flow, tech stack
 - [API Reference](docs/api.md) — backend endpoints and auth
 - [MCP Server](docs/mcp-server.md) — tools, prompts, setup instructions

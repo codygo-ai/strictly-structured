@@ -4,10 +4,19 @@
     "jsx": "preserve",
     "noEmit": true,
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
-    "paths": { "~/*": ["src/*"] },
-    "moduleResolution": "bundler"
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    },
+    "moduleResolution": "bundler",
+    "module": "esnext"
   },
   "include": [
     "next-env.d.ts",
@@ -15,5 +24,7 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

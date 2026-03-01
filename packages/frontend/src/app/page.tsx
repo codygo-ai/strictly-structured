@@ -252,8 +252,17 @@ function HomeContent() {
     const fromUrl = params.get('ruleSet');
     const ruleSetId =
       RULE_SETS.find((r) => r.ruleSetId === fromUrl)?.ruleSetId ?? RULE_SETS[0]!.ruleSetId;
+    let schema = DEFAULT_SCHEMA;
+    const schemaBase64 = params.get('schema');
+    if (schemaBase64 && typeof process !== 'undefined' && process.env.NEXT_PUBLIC_E2E === 'true') {
+      try {
+        schema = atob(schemaBase64);
+      } catch {
+        // leave default
+      }
+    }
     return {
-      schema: DEFAULT_SCHEMA,
+      schema,
       selectedRuleSetId: ruleSetId,
       hasMonacoErrors: false,
       serverValidation: INITIAL_SERVER_VALIDATION,
@@ -274,6 +283,23 @@ function HomeContent() {
     RULE_SETS,
     !state.hasMonacoErrors,
   );
+
+  // Apply schema from ?schema= when URL has it (e.g. after hydration). Only depend on searchParams
+  // so we don't overwrite state.schema after the user applies a fix.
+  useEffect(() => {
+    const schemaBase64 = searchParams.get('schema');
+    if (!schemaBase64 || typeof process === 'undefined' || process.env.NEXT_PUBLIC_E2E !== 'true')
+      return;
+    try {
+      const urlSchema = atob(schemaBase64);
+      if (urlSchema !== state.schema) {
+        dispatch({ type: 'SCHEMA_CHANGED', schema: urlSchema });
+      }
+    } catch {
+      // ignore invalid base64
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only sync when URL changes, not when state.schema changes (e.g. after fix)
+  }, [searchParams]);
 
   const schemaHash = useMemo(() => {
     const anySummary = validationResults.values().next().value;
@@ -391,7 +417,13 @@ function HomeContent() {
     dispatch({ type: 'SERVER_VALIDATION_STARTED' });
     try {
       const modelId = RULESET_TO_CHEAPEST_MODEL_ID[state.selectedRuleSetId];
-      if (!modelId) return;
+      if (!modelId) {
+        dispatch({
+          type: 'SERVER_VALIDATION_FAILED',
+          error: `No model configured for ${state.selectedRuleSetId}`,
+        });
+        return;
+      }
 
       const hash = await hashSchema(state.schema);
       emit('server.validate.requested', {
@@ -432,6 +464,11 @@ function HomeContent() {
           });
         }
         dispatch({ type: 'SERVER_VALIDATION_COMPLETED', results: data.results });
+      } else {
+        dispatch({
+          type: 'SERVER_VALIDATION_FAILED',
+          error: data.error ?? 'Server returned no results',
+        });
       }
     } catch (err) {
       dispatch({ type: 'SERVER_VALIDATION_FAILED', error: (err as Error).message });
@@ -532,6 +569,13 @@ function HomeContent() {
               accept=".json,application/json"
               className="hidden"
               onChange={handleFileChange}
+            />
+            <input
+              type="hidden"
+              data-testid="schema-content"
+              value={state.schema}
+              readOnly
+              aria-hidden
             />
             <SchemaEditor
               value={state.schema}

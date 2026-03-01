@@ -228,7 +228,7 @@ function ServerValidationSection({
           <div className="server-validate-hint">
             Send this schema to {ruleSet.provider}&apos;s API to confirm it works in production.
           </div>
-          <Button variant="primary" onClick={onServerValidate}>
+          <Button variant="primary" onClick={onServerValidate} data-testid="server-validate-button">
             Validate against {ruleSet.provider}
           </Button>
         </>
@@ -236,7 +236,7 @@ function ServerValidationSection({
 
       {/* Loading */}
       {loading && (
-        <div className="server-validate-loading">
+        <div className="server-validate-loading" data-testid="server-validation-loading">
           <span className="server-validate-spinner" />
           Sending schema to {ruleSet.models.length} model{ruleSet.models.length !== 1 ? 's' : ''}
           &hellip;
@@ -244,11 +244,15 @@ function ServerValidationSection({
       )}
 
       {/* Error from fetch itself */}
-      {error && <div className="server-result-error">{error}</div>}
+      {error && (
+        <div className="server-result-error" data-testid="server-validation-error">
+          {error}
+        </div>
+      )}
 
       {/* Results */}
       {results && (
-        <>
+        <div data-testid="server-validation-results">
           {!allOk && (
             <div className="server-validate-hint">
               Our local rules said this was compatible, but the API disagreed.
@@ -274,7 +278,7 @@ function ServerValidationSection({
                 </div>
               ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
@@ -395,7 +399,7 @@ export function IssuesTab({
     const shouldShowBanner = withIssues.length > 0;
 
     return (
-      <div className="issues-card">
+      <div className="issues-card" data-testid="issues-tab" data-fix-applied="true">
         <CardHeader icon={icon} iconVariant={iconVariant} label={label} sublabel={sublabel} />
         <div className="issues-card-content">
           {shouldShowBanner && (
@@ -426,7 +430,7 @@ export function IssuesTab({
   /* ── State C: Compatible (no issues) ── */
   if (sorted.length === 0) {
     return (
-      <div className="issues-card">
+      <div className="issues-card" data-testid="issues-tab">
         <CardHeader
           icon={'\u2713'}
           iconVariant="success"
@@ -455,7 +459,7 @@ export function IssuesTab({
 
   /* ── State A: Issues found ── */
   return (
-    <div className="issues-card">
+    <div className="issues-card" data-testid="issues-tab">
       <CardHeader
         icon={'\u2715'}
         iconVariant="error"
@@ -485,7 +489,7 @@ export function IssuesTab({
 
       {isValidJsonSchema && fixableCount > 0 && (
         <div className="issues-card-footer">
-          <Button variant="primary" onClick={handleFixAll}>
+          <Button variant="primary" onClick={handleFixAll} data-testid="fix-all-button">
             Fix all {fixableCount} issue{fixableCount !== 1 ? 's' : ''}
           </Button>
           {error && <span className="text-xs text-error">{error}</span>}

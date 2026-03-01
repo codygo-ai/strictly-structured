@@ -89,8 +89,35 @@ const CONSTRAINT_TEMPLATES: Record<string, (v: unknown) => string> = {
 
 // ── Entry point ───────────────────────────────────────────────────────
 
+/** Canonical flags per rule set so fixer behaves correctly even when bundled data is incomplete. */
+const FIXER_CANONICAL: Record<
+  string,
+  { allFieldsRequired: boolean; additionalPropertiesMustBeFalse: boolean }
+> = {
+  'gpt-4-o1': { allFieldsRequired: true, additionalPropertiesMustBeFalse: true },
+  'claude-4-5': { allFieldsRequired: false, additionalPropertiesMustBeFalse: false },
+  'gemini-2-5': { allFieldsRequired: false, additionalPropertiesMustBeFalse: false },
+};
+
+function getFixerFlags(ruleSet: SchemaRuleSet): {
+  allFieldsRequired: boolean;
+  additionalPropertiesMustBeFalse: boolean;
+} {
+  const canonical = FIXER_CANONICAL[ruleSet.ruleSetId];
+  if (canonical)
+    return {
+      allFieldsRequired: canonical.allFieldsRequired,
+      additionalPropertiesMustBeFalse: canonical.additionalPropertiesMustBeFalse,
+    };
+  return {
+    allFieldsRequired: ruleSet.allFieldsRequired ?? false,
+    additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse ?? false,
+  };
+}
+
 export function fixSchemaForRuleSet(schema: JsonNode, ruleSet: SchemaRuleSet): FixResult {
   const fixed = structuredClone(schema);
+  const flags = getFixerFlags(ruleSet);
 
   const ctx: FixContext = {
     supportedComposition: new Set(ruleSet.composition?.supported ?? []),
@@ -101,8 +128,8 @@ export function fixSchemaForRuleSet(schema: JsonNode, ruleSet: SchemaRuleSet): F
     supportedStringFormats: ruleSet.stringFormats ?? [],
     rootType: Array.isArray(ruleSet.rootType) ? ruleSet.rootType : [ruleSet.rootType],
     rootAnyOfAllowed: ruleSet.rootAnyOfAllowed,
-    allFieldsRequired: ruleSet.allFieldsRequired,
-    additionalPropertiesMustBeFalse: ruleSet.additionalPropertiesMustBeFalse,
+    allFieldsRequired: flags.allFieldsRequired,
+    additionalPropertiesMustBeFalse: flags.additionalPropertiesMustBeFalse,
     additionalPropertiesFalseRecommended: ruleSet.additionalPropertiesFalseRecommended ?? false,
     fixes: [],
     unresolved: [],

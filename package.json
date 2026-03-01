@@ -5,6 +5,7 @@
   "description": "Structured Schema Validator monorepo",
   "scripts": {
     "dev": "concurrently -n fe,be,em -c blue,green,magenta \"pnpm --filter @ssv/frontend dev\" \"pnpm --filter @ssv/backend dev\" \"pnpm --filter @ssv/backend serve\"",
+    "dev:e2e": "NEXT_PUBLIC_E2E=true pnpm dev",
     "dev:frontend": "pnpm --filter @ssv/frontend dev",
     "dev:backend": "pnpm --filter @ssv/backend dev",
     "build": "turbo run build",
@@ -13,7 +14,10 @@
     "validate": "turbo run lint typecheck",
     "start": "pnpm --filter @ssv/frontend start",
     "deploy": "pnpm run build && pnpm exec firebase deploy",
-    "prepare": "husky"
+    "prepare": "husky",
+    "e2e": "playwright test --config e2e/playwright.config.ts",
+    "e2e:headed": "playwright test --config e2e/playwright.config.ts --headed",
+    "e2e:debug": "playwright test --config e2e/playwright.config.ts --debug"
   },
   "engines": {
     "node": ">=22.15.0",
@@ -37,10 +41,12 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.0.0",
     "turbo": "^2.3.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "@playwright/test": "^1.58.2"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs}": "eslint --max-warnings 0"
   },
   "packageManager": "pnpm@9.0.0"
+
 }

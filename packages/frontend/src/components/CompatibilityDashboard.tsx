@@ -123,7 +123,12 @@ export function CompatibilityDashboard({
   );
 
   return (
-    <aside ref={sidebarRef} className="sidebar" style={width ? { width } : undefined}>
+    <aside
+      ref={sidebarRef}
+      className="sidebar"
+      style={width ? { width } : undefined}
+      data-testid="compatibility-dashboard"
+    >
       {/* Resize grip */}
       <div
         role="separator"
